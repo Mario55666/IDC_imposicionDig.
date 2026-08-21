@@ -1496,6 +1496,14 @@ const SIGNATURES={
   treintaidosava:{n:32,lab:'Treintaidosava · 32vo (32 pp)'},
 };
 function isFoldBinding(){ return bindingInfo().draw==='fold'; }
+/* Secuencia de plegado: en qué posición física va cada página de una signatura.
+   Para n=8 → [1,8,2,7,3,6,4,5] (las páginas emparejadas quedan CONTIGUAS). */
+function foldSeq(n){ const a=[]; for(let i=0;i<n;i++) a.push(i%2===0 ? 1+i/2 : n-(i-1)/2); return a; }
+function imposedPageNumbers(poses,sigN){
+  const seq=foldSeq(sigN), arr=[];
+  for(let p=0;p<poses;p++){ const blk=Math.floor(p/sigN), pos=p%sigN; arr.push(blk*sigN+seq[pos]); }
+  return arr;
+}
 function getColorBarSwatches(type){
   switch(type){
     case '4color': return [['#00B7EB','C'],['#EC008C','M'],['#FFE800','Y'],['#111','K'],['#7DDCEF','C50'],['#F47BBE','M50'],['#FFF480','Y50'],['#7F7F7F','K50'],['#005C75','C+'],['#760046','M+'],['#807400','Y+'],['#1A1A1A','K+']];
@@ -1570,14 +1578,27 @@ function buildPlateMarkup(g,pxcm){
     s+=`<text x="${PAD+sidePx+6}" y="${PAD+grPx+16}" font-size="9" fill="#7dd3fc" font-weight="700">ÁREA IMPRIMIBLE ${uDim(usableW)} × ${uDim(usableH)}</text>`;
   }
 
-  // Poses
+  // Poses — numeración según estilo de encuadernación (orden de imposición)
   const CMYK=['#00B7EB','#EC008C','#FFE800','#111'];
+  const bdFold=bindingInfo().draw==='fold';
+  const sigN=(SIGNATURES[state.signature]||SIGNATURES.octava).n;
+  const imposed=bdFold?imposedPageNumbers(r.poses,sigN):null;
+  const tiroretiro=state.calc.print==='tiroretiro';
+  // devuelve el número a mostrar en cada pose y su sub-etiqueta
+  const poseNum=(idx0)=>{
+    if(!imposed) return {n:idx0+1, sub:state.face==='retiro'?'RETIRO':'TIRO'};
+    const base=imposed[idx0];
+    const isRet=state.face==='retiro';
+    const pg=(tiroretiro&&isRet)?(base%2?base+1:base-1):base;
+    return {n:pg, sub:(isRet?'RETIRO':'TIRO')+' · pos '+(idx0+1)};
+  };
   for(let row=0;row<r.rows;row++)for(let col=0;col<r.cols;col++){
     const visCol=state.face==='retiro'?(r.cols-1-col):col;
     const x=PAD+(offX+visCol*(r.pieceW+gap))*pxcm;
     const y=PAD+(offY+row*(r.pieceH+gap))*pxcm;
     const w=r.pieceW*pxcm, h=r.pieceH*pxcm;
     const nEl=row*r.cols+col+1;
+    const pn=poseNum(nEl-1);
     const isSel=state.selectedPose===nEl;
     const fill=sep?CMYK[(nEl-1)%4]:'var(--paper)';
     const op=sep?0.35:1;
@@ -1590,11 +1611,11 @@ function buildPlateMarkup(g,pxcm){
         const pg=state.art.pages[(nEl-1)%state.art.pages.length];
         s+=`<image x="${x}" y="${y}" width="${w}" height="${h}" href="${pg}" preserveAspectRatio="xMidYMid slice"/>`;
         s+=`<rect x="${x+bleedPx}" y="${y+bleedPx}" width="${w-2*bleedPx}" height="${h-2*bleedPx}" fill="none" stroke="#dc2626" stroke-dasharray="3 2" stroke-width="0.7"/>`;
-        s+=`<rect x="${x}" y="${y}" width="15" height="12" fill="#0d1117" opacity=".8"/><text x="${x+7.5}" y="${y+9}" text-anchor="middle" font-size="8" font-weight="800" fill="#fff">${nEl}</text>`;
+        s+=`<rect x="${x}" y="${y}" width="${bdFold?22:15}" height="12" fill="#0d1117" opacity=".8"/><text x="${x+(bdFold?11:7.5)}" y="${y+9}" text-anchor="middle" font-size="8" font-weight="800" fill="${bdFold?'#4ade80':'#fff'}">${bdFold?'p'+pn.n:pn.n}</text>`;
       }else{
         s+=`<rect x="${x+bleedPx}" y="${y+bleedPx}" width="${w-2*bleedPx}" height="${h-2*bleedPx}" fill="none" stroke="#9ca3af" stroke-dasharray="3 2" stroke-width="0.7"/>`;
-        s+=`<text x="${x+w/2}" y="${y+h/2-2}" text-anchor="middle" font-size="13" font-weight="800" fill="#1e293b">${nEl}</text>`;
-        s+=`<text x="${x+w/2}" y="${y+h/2+12}" text-anchor="middle" font-size="8" fill="#64748b">${state.face==='retiro'?'RETIRO':'TIRO'}</text>`;
+        s+=`<text x="${x+w/2}" y="${y+h/2-2}" text-anchor="middle" font-size="13" font-weight="800" fill="${bdFold?'#15803d':'#1e293b'}">${bdFold?'pág. '+pn.n:pn.n}</text>`;
+        s+=`<text x="${x+w/2}" y="${y+h/2+12}" text-anchor="middle" font-size="8" fill="#64748b">${pn.sub}</text>`;
       }
     }
     // Marcas de corte por pose
@@ -1622,10 +1643,6 @@ function buildPlateMarkup(g,pxcm){
         s+=`<line x1="${x+6}" y1="${y}" x2="${x+6}" y2="${y+h}" stroke="#22c55e" stroke-dasharray="1 2" stroke-width="0.5"/>`;
       }else if(bd.draw==='spine'){
         s+=`<rect x="${x}" y="${y}" width="3.5" height="${h}" fill="#7c3aed" opacity="0.75"/>`;
-      }else if(bd.draw==='fold'){
-        // Encuadernado con doblez: la página se empareja con su contigua (1-8, 2-7…)
-        const pair=r.poses+1-nEl;
-        s+=`<text x="${x+w-3}" y="${y+h-3}" text-anchor="end" font-size="7.5" font-weight="700" fill="#16a34a">↔ p${pair}</text>`;
       }
     }
     s+=`</g>`;
@@ -1742,10 +1759,18 @@ function renderPoseProps(){
   const box=$('poseProps');
   if(!r||r.error||!n){ box.innerHTML='<div class="pose-empty">Haz clic en una pose de la plancha para ver sus propiedades.</div>'; return; }
   const col=(n-1)%r.cols, row=Math.floor((n-1)/r.cols);
+  const bdFold=bindingInfo().draw==='fold';
+  const sigN=(SIGNATURES[state.signature]||SIGNATURES.octava).n;
+  let pageRow;
+  if(bdFold){
+    const base=imposedPageNumbers(r.poses,sigN)[n-1];
+    const back=base%2?base+1:base-1;
+    pageRow=state.calc.print==='tiroretiro'?`tiro p${base} / retiro p${back}`:`p${base} (imposición)`;
+  }else pageRow=state.calc.print==='tiroretiro'?`${n} / ${n+r.poses}`:`${n}`;
   box.innerHTML=[
     ['Número de pose',`#${n} de ${r.poses}`],
     ['Posición',`Col ${col+1} · Fila ${row+1}`],
-    ['Página',state.calc.print==='tiroretiro'?`${n} / ${n+r.poses}`:`${n}`],
+    ['Página',pageRow],
     ['Orientación',r.rotated?'Horizontal':'Vertical'],
     ['Producto',`${uDim(state.prod.w)} × ${uDim(state.prod.h)}`],
     ['Con sangrado',`${uDim(r.pieceW)} × ${uDim(r.pieceH)}`],
@@ -1776,8 +1801,10 @@ function renderBindingPanel(){
     const opts=Object.entries(SIGNATURES).map(([k,v])=>`<option value="${k}"${k===state.signature?' selected':''}>${v.lab}</option>`).join('');
     let pairs='';
     if(r&&!r.error&&r.poses>=2){
-      const list=[]; for(let n=1;n<=Math.floor(r.poses/2);n++) list.push(`${n}–${r.poses+1-n}`);
-      pairs=`<div style="font-size:11px;color:#9aa6b3;margin-top:8px;line-height:1.5">Las uniones (dobleces) van <b style="color:#86efac">entre páginas contiguas, en las calles</b> — no dentro de la página. Emparejamiento: <b style="color:#86efac">${list.join(' · ')}</b>. El <b style="color:#86efac">▲ LOMO</b> marca el doblez central.</div>`;
+      const sn=(SIGNATURES[state.signature]||SIGNATURES.octava).n;
+      const seq=foldSeq(Math.min(sn,r.poses));
+      const list=[]; for(let i=0;i<seq.length;i+=2) list.push(`${seq[i]}–${seq[i+1]!==undefined?seq[i+1]:''}`);
+      pairs=`<div style="font-size:11px;color:#9aa6b3;margin-top:8px;line-height:1.5">La <b style="color:#86efac">numeración de las poses</b> sigue el orden de imposición del plegado (no 1,2,3…). Las páginas emparejadas quedan <b style="color:#86efac">contiguas</b>: ${list.join(' · ')}. El <b style="color:#86efac">▲ LOMO</b> marca el doblez central; las uniones van en las calles entre páginas.</div>`;
     }
     extra=`<div class="mt-sub">Esquema de pliego (signatura)</div>
       <select id="sigSel" style="width:100%;padding:7px 9px;border:1px solid #2a3543;border-radius:8px;background:#1c232c;color:#e6edf3;font-size:12px">${opts}</select>${pairs}`;
