@@ -351,6 +351,23 @@ table.tech tr.hl td:last-child{color:var(--accent-ink)}
 .art-xbtn .xic{font-size:16px}
 .art-xbtn .xn{font-size:12px;font-weight:700}
 .art-xbtn .xd{font-size:10px;color:#8895a3;margin-top:1px}
+.isec-desc{font-size:11px;color:#8895a3;line-height:1.5;margin-bottom:9px}
+.isec-desc .en{color:#5c6773;font-style:italic;font-size:10.5px}
+.seg2b.wrap{flex-wrap:wrap}
+.seg2b.wrap button{flex:1 1 44%}
+.gutter-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:5px}
+.gutter-tog{background:#1c232c;border:1px solid #2a3543;color:#9aa6b3;font-size:11px;font-weight:600;padding:7px 4px;border-radius:7px;cursor:pointer;text-align:center}
+.gutter-tog:hover{background:#232c37;color:#dbe4ee}
+.gutter-tog.on{background:#16a34a;border-color:#16a34a;color:#fff}
+.art-drop.hot{border-color:var(--accent);background:#241a12;box-shadow:0 0 0 3px rgba(255,107,26,.15)}
+.art-note{font-size:10.5px;color:#fbbf24;margin-top:7px;line-height:1.45}
+.side-alert{margin:0 12px 10px;padding:11px 13px;border-radius:11px;background:#2a1e05;border:1px solid #78350f;color:#fcd34d;font-size:11.5px;line-height:1.45;display:none}
+.side-alert.on{display:block}
+.side-alert b{color:#fde68a}
+.side-alert.err{background:#2a0d0d;border-color:#7f1d1d;color:#fca5a5}
+.side-alert.err b{color:#fecaca}
+.side-alert.ok{background:#052e16;border-color:#14532d;color:#4ade80}
+.side-alert.ok b{color:#86efac}
 .pose-props{font-size:12px}
 .pose-props .pp{display:flex;justify-content:space-between;padding:5px 0;border-bottom:1px solid #10151b}
 .pose-props .pp .k{color:#7a8797;font-weight:600}
@@ -480,7 +497,8 @@ table.tech tr.hl td:last-child{color:var(--accent-ink)}
   .app,.dock,.topbar,.flowbar,.side{display:none!important}
   body{overflow:visible}
   #printArea{display:block!important}
-  #printArea svg{width:100%!important;height:auto!important;max-width:720px;display:block;margin:0 auto}
+  #printArea .print-plate{width:100%;text-align:center}
+  #printArea .print-plate svg{display:block;margin:0 auto}
 }
 #printArea{display:none}
 </style>
@@ -504,6 +522,7 @@ table.tech tr.hl td:last-child{color:var(--accent-ink)}
       <button data-u="in">in</button>
     </div>
     <div class="chip status-chip" id="tbStatus">● NO INICIADO</div>
+    <button class="tb" id="btnDemo" title="Cargar demo: tarjeta personal 9×5" style="background:var(--accent);color:#fff;border-color:var(--accent)">▶ DEMO tarjeta</button>
     <button class="tb" id="btnReset" title="Reiniciar todo">↺ Reiniciar</button>
   </header>
 
@@ -560,6 +579,16 @@ table.tech tr.hl td:last-child{color:var(--accent-ink)}
                 <div class="field"><label>Ruta de producción</label><input id="f_route" value="Preprensa → CTP → Offset → Acabado"></div>
               </div>
               <div class="field"><label>Especificaciones de calidad</label><input id="f_quality" value="ISO 12647-2 · ΔE ≤ 4 · registro ≤ 0,1 mm"></div>
+              <div class="field"><label>Encuadernación / Acabado <button class="info-i" data-concept="encuadernacion" type="button">i</button></label>
+                <select id="f_binding">
+                  <option value="Sin encuadernación">Sin encuadernación</option>
+                  <option value="Engrampado metálico">Engrampado metálico</option>
+                  <option value="Fresado">Fresado (encolado / hotmelt)</option>
+                  <option value="Cosido">Cosido</option>
+                  <option value="Termocosido">Termocosido</option>
+                  <option value="Tapa dura">Encuadernación de tapa dura</option>
+                  <option value="Espiral">Encuadernación en espiral</option>
+                </select></div>
               <div class="field-row-3">
                 <div class="field"><label>Tiempo estimado (h)</label><input id="f_time" type="number" step="0.5" value="4"></div>
                 <div class="field"><label>Mano de obra</label><input id="f_labor" value="1 op. CTP + 1 op. prensa"></div>
@@ -728,12 +757,13 @@ table.tech tr.hl td:last-child{color:var(--accent-ink)}
 
         <aside class="impo-side">
           <div class="isec">
-            <h4>Arte final · Documento PDF</h4>
-            <div class="art-drop" id="artDrop">
+            <h4>★ Arte final · Documento PDF</h4>
+            <div class="art-drop hot" id="artDrop">
               <div class="ai">⬆</div>
               <div class="at">Arrastra tu PDF aquí o haz clic para elegir</div>
               <div class="ah">Producto final, ya con sangrado incluido si aplica.</div>
             </div>
+            <div class="art-note">⚠ El PDF debe ir <b>con sangrado</b> y <b>SIN marcas de impresión</b>: las marcas de corte, registro y control las agrega la imposición sobre la plancha.</div>
             <input type="file" id="artFile" accept="application/pdf,image/*" hidden>
             <div class="art-stage" id="artStage">
               <div class="empty"><div class="ei">📄</div>Sin documento cargado<div class="ah">La vista previa aparecerá aquí</div></div>
@@ -770,14 +800,29 @@ table.tech tr.hl td:last-child{color:var(--accent-ink)}
           <div class="isec">
             <h4>Marcas de producción</h4>
             <div class="marks-list" id="marksList"></div>
-            <div class="mt-sub" style="margin-top:10px">Tira de control de color</div>
-            <div class="cbar-ctrl">
-              <label class="cbar-up">📎 Cargar SVG/imagen
-                <input type="file" id="cbarFile" accept=".svg,image/*" hidden>
-              </label>
-              <button class="mt-btn ghost" id="cbarDefault">Usar CMYK por defecto</button>
+          </div>
+          <div class="isec">
+            <h4>▦ Tira de control · Color Bar SmartMarks</h4>
+            <div class="isec-desc">Selecciona un preset de tira de control SmartMarks o carga el tuyo propio (PDF/PNG).<br><span class="en">Choose a SmartMarks color bar preset or upload your own (PDF/PNG).</span></div>
+            <div class="seg2b wrap" id="cbarPreset">
+              <button data-p="cmyk" class="on">CMYK</button>
+              <button data-p="4color">4-Color</button>
+              <button data-p="6color">6-Color</button>
+              <button data-p="5spot">5-Spot</button>
             </div>
-            <div class="mt-read" id="cbarRead">Tira actual: CMYK por defecto</div>
+            <label class="cbar-up" style="margin-top:8px">📎 Cargar tira propia (PDF/PNG)
+              <input type="file" id="cbarFile" accept="application/pdf,.svg,image/*" hidden>
+            </label>
+            <button class="mt-btn ghost" id="cbarDefault" style="margin-top:6px">Usar preset por defecto</button>
+            <div class="mt-read" id="cbarRead">Tira actual: CMYK (preset)</div>
+          </div>
+          <div class="isec">
+            <h4>⚏ Gutters · SmartMarks (.smk)</h4>
+            <div class="isec-desc">Posiciones de marcas adicionales (texto, registros, signaturas) en la plancha.<br><span class="en">Anchor positions for SmartMarks gutters loaded from .smk files.</span></div>
+            <div class="gutter-grid" id="gutterGrid"></div>
+            <label class="cbar-up" style="margin-top:8px">📎 Cargar archivo .smk
+              <input type="file" id="smkFile" accept=".smk,text/plain" hidden>
+            </label>
           </div>
           <div class="isec">
             <h4>Pose seleccionada</h4>
@@ -834,6 +879,7 @@ table.tech tr.hl td:last-child{color:var(--accent-ink)}
   <aside class="side">
     <div class="side-h">Panel Técnico <span class="live"><i></i>LIVE</span></div>
     <div class="tech-grid" id="sideTech"></div>
+    <div class="side-alert" id="sideAlert"></div>
     <div class="mini-plate">
       <div class="cap">Vista de plancha</div>
       <svg id="miniPlate" viewBox="0 0 200 160" style="width:100%;height:auto"></svg>
@@ -929,6 +975,7 @@ const CONCEPTS = {
   utilizacion:{ic:'📈',t:'Aprovechamiento (utilización)',def:'Porcentaje del pliego ocupado por producto útil.',fun:'util % = poses · área_producto / área_pliego × 100.',con:'Baja utilización = mucho papel al basurero; guía la imposición recomendada.'},
   registro:{ic:'🎯',t:'Cruces de registro',def:'Marcas que alinean las cuatro planchas de color.',fun:'Permiten superponer C, M, Y y K sin desfase.',con:'Sin registro correcto la imagen sale "movida" o con halos de color.'},
   ctp:{ic:'💿',t:'CTP READY',def:'Estado en que todas las condiciones técnicas están validadas.',fun:'Autoriza el grabado de la plancha y el paso a prensa.',con:'Grabar sin CTP READY arriesga replanchar: tiempo y aluminio perdidos.'},
+  encuadernacion:{ic:'📚',t:'Encuadernación / Acabado',def:'Sistema que une las hojas del producto terminado. Opciones: engrampado metálico (grapa a caballete), fresado (lomo encolado con hotmelt), cosido (hilo), termocosido, tapa dura (cartón forrado) y espiral.',fun:'Determina el acabado final y define cómo se pliega, junta y refila el producto.',con:'Cada sistema exige un montaje distinto: el engrampado y el cosido necesitan pliegos y signaturas; el fresado, lomo; la espiral, margen de perforado.'},
 };
 
 /* Ayuda por campo: qué información se ingresa en cada cuadro de texto.
@@ -946,6 +993,7 @@ const FIELD_HELP = {
   f_raw:{t:'Materias primas',d:'Papel y tintas a usar: tipo, gramaje y color (p. ej. "Couché 150 g · CMYK").'},
   f_route:{t:'Ruta de producción',d:'Secuencia de estaciones por las que pasa el trabajo (Preprensa → CTP → Offset → Acabado).'},
   f_quality:{t:'Especificaciones de calidad',d:'Norma y tolerancias exigidas (p. ej. ISO 12647-2, ΔE ≤ 4, registro ≤ 0,1 mm).'},
+  f_binding:{t:'Encuadernación / Acabado',d:'Sistema de unión del producto: engrampado metálico, fresado, cosido, termocosido, tapa dura o espiral. Define el acabado y el tipo de montaje.'},
   f_time:{t:'Tiempo estimado',d:'Horas previstas de producción, para planificar la máquina.'},
   f_labor:{t:'Mano de obra',d:'Operarios necesarios (p. ej. 1 op. CTP + 1 op. prensa).'},
   f_waste:{t:'Desperdicio previsto',d:'Porcentaje de pliegos que se perderán; se sincroniza con la merma de la Etapa 03.'},
@@ -985,6 +1033,8 @@ const state = {
   alignPinza:false,          // pegar el montaje a la pinza
   nudge:{x:0,y:0},           // desplazamiento manual (cm)
   customColorBar:null,       // dataURL de tira de color cargada
+  colorBarPreset:'cmyk',     // preset SmartMarks: cmyk|4color|6color|5spot
+  gutters:{Top:false,Bottom:false,Left:false,Right:false,Center:false,Mid:false},
   art:{pages:[], name:'', size:null},  // arte final PDF/imagen cargado
 };
 
@@ -1162,7 +1212,7 @@ function syncFromInputs(){
     route:$('f_route').value.trim(), quality:$('f_quality').value.trim(), time:num('f_time'),
     labor:$('f_labor').value.trim(), materials:$('f_materials').value.trim(), done:num('f_done'),
     inspect:$('f_inspect').value.trim(), owner:$('f_owner').value.trim(), approval:$('f_approval').value,
-    notes:$('f_notes').value.trim(),
+    notes:$('f_notes').value.trim(), binding:$('f_binding')?$('f_binding').value:'Sin encuadernación',
   };
   state.prod.w=num('f_prodW'); state.prod.h=num('f_prodH'); state.prod.bleed=num('f_bleed');
   state.calc.qty=num('f_qty');
@@ -1195,6 +1245,7 @@ function renderAll(){
   renderSideTech();
   renderMiniPlate();
   renderSideStatus();
+  renderSideAlert();
   renderJobPanel();
   renderMontageControls();
   renderDock();
@@ -1408,6 +1459,22 @@ function buildMarks(){
     });
   });
 }
+function getColorBarSwatches(type){
+  switch(type){
+    case '4color': return [['#00B7EB','C'],['#EC008C','M'],['#FFE800','Y'],['#111','K'],['#7DDCEF','C50'],['#F47BBE','M50'],['#FFF480','Y50'],['#7F7F7F','K50'],['#005C75','C+'],['#760046','M+'],['#807400','Y+'],['#1A1A1A','K+']];
+    case '6color': return [['#00B7EB','C'],['#7DDCEF','Lc'],['#EC008C','M'],['#F47BBE','Lm'],['#FFE800','Y'],['#FFA500','Or'],['#111','K'],['#7F7F7F','K50']];
+    case '5spot': return [['#00B7EB','C'],['#EC008C','M'],['#FFE800','Y'],['#111','K'],['#a78bfa','S1'],['#54bdb0','S2'],['#fb923c','S3'],['#10b981','S4']];
+    case 'cmyk': default: return [['#00B7EB','C'],['#EC008C','M'],['#FFE800','Y'],['#111','K'],['#7DDCEF','C50'],['#F47BBE','M50'],['#FFF480','Y50'],['#7F7F7F','K50']];
+  }
+}
+const GUTTER_KEYS=['Top','Bottom','Left','Right','Center','Mid'];
+function buildGutters(){
+  const g=$('gutterGrid'); if(!g)return;
+  g.innerHTML=GUTTER_KEYS.map(k=>`<button class="gutter-tog${state.gutters[k]?' on':''}" data-g="${k}">${k}</button>`).join('');
+  g.querySelectorAll('.gutter-tog').forEach(b=>b.addEventListener('click',()=>{
+    const k=b.dataset.g; state.gutters[k]=!state.gutters[k]; b.classList.toggle('on',state.gutters[k]); drawPlate(); saveState();
+  }));
+}
 function computeGeom(){
   const r=state.result; if(!r||r.error)return null;
   const m=state.machine;
@@ -1431,20 +1498,12 @@ function currentScale(){
   const s=Math.min(availW/g.m.w, availH/g.m.h);
   return Math.max(2,Math.min(s,60))/7; // normalize to px/cm base of 7
 }
-function drawPlate(){
-  const svg=$('plateSvg'), g=computeGeom();
-  if(!g){ svg.innerHTML=''; svg.setAttribute('viewBox','0 0 400 300');
-    svg.innerHTML=`<text x="200" y="150" text-anchor="middle" fill="#e2e8f0" font-size="14">${state.result&&state.result.error?state.result.error:'Sin imposición válida'}</text>`;
-    return; }
+function buildPlateMarkup(g,pxcm){
   const {m,usableW,usableH,offX,offY,r}=g;
   const PAD=46;
-  const pxcm=7*currentScale();
   const W=m.w*pxcm, H=m.h*pxcm;
   const VW=W+PAD*2, VH=H+PAD*2;
-  svg.setAttribute('viewBox',`0 0 ${VW} ${VH}`);
-  svg.setAttribute('width',VW); svg.setAttribute('height',VH);
   const gap=state.prod.gap/10, bleedPx=(state.prod.bleed/10)*pxcm;
-  const showPoses=state.view!=='marcas'||true;
   const sep=state.view==='separaciones';
 
   let s='';
@@ -1534,9 +1593,10 @@ function drawPlate(){
       s+=`<image x="${PAD+sidePx+2}" y="${by}" width="${cbW}" height="${cbH}" href="${state.customColorBar.url}" preserveAspectRatio="xMidYMid meet"/>`;
       s+=`<text x="${PAD+sidePx+2}" y="${by-3}" font-size="6.5" fill="#22c55e" font-weight="700">★ TIRA DE CONTROL PROPIA</text>`;
     }else{
-      const sw=Math.max(10,W/28), sh=9; let bx=PAD+sidePx+2; const by=PAD+H-tailPx-sh-3;
-      const bars=[['#00B7EB','C'],['#EC008C','M'],['#FFE800','Y'],['#111','K'],['#7DDCEF','C50'],['#F47BBE','M50'],['#FFF480','Y50'],['#7F7F7F','K50']];
-      s+=`<text x="${PAD+sidePx+2}" y="${by-3}" font-size="6.5" fill="#94a3b8" font-weight="700">▦ CONTROL CMYK</text>`;
+      const bars=getColorBarSwatches(state.colorBarPreset);
+      const sw=Math.max(8,W/(bars.length+2)), sh=9; let bx=PAD+sidePx+2; const by=PAD+H-tailPx-sh-3;
+      const label={cmyk:'CMYK','4color':'4-COLOR','6color':'6-COLOR','5spot':'5-SPOT'}[state.colorBarPreset]||'CMYK';
+      s+=`<text x="${PAD+sidePx+2}" y="${by-3}" font-size="6.5" fill="#94a3b8" font-weight="700">▦ SMARTMARKS · ${label}</text>`;
       bars.forEach(([c,l])=>{ s+=`<rect x="${bx}" y="${by}" width="${sw}" height="${sh}" fill="${c}" stroke="#000" stroke-width="0.3"/><text x="${bx+sw/2}" y="${by+sh+6}" font-size="5" fill="#94a3b8" text-anchor="middle">${l}</text>`; bx+=sw; });
     }
   }
@@ -1562,13 +1622,29 @@ function drawPlate(){
     for(let i=0;i<40;i++){ if(Math.random()>.5)bar+=`<rect x="${bx+i*2}" y="${by}" width="1.2" height="10" fill="#e2e8f0"/>`; }
     s+=bar;
   }
-  // SmartMarks (gutters)
-  if(state.marks.smart){
-    s+=`<g fill="#22c55e" font-size="6" font-weight="700">
-      <circle cx="${PAD+W/2}" cy="${PAD+grPx+4}" r="2"/><text x="${PAD+W/2+5}" y="${PAD+grPx+6}">Top</text>
-      <circle cx="${PAD+W/2}" cy="${PAD+H/2}" r="2"/><text x="${PAD+W/2+5}" y="${PAD+H/2+2}">Center</text></g>`;
-  }
+  // SmartMarks / Gutters (posiciones ancla)
+  const anchors={
+    Top:[PAD+W/2,PAD+grPx+4], Bottom:[PAD+W/2,PAD+H-tailPx-4],
+    Left:[PAD+sidePx+4,PAD+H/2], Right:[PAD+W-sidePx-4,PAD+H/2],
+    Center:[PAD+W/2,PAD+H/2], Mid:[PAD+W/2,PAD+grPx+(H-grPx-tailPx)/2],
+  };
+  const showG=state.marks.smart;
+  GUTTER_KEYS.forEach(k=>{
+    if(!(state.gutters[k]||(showG&&(k==='Top'||k==='Center'))))return;
+    const [cx,cy]=anchors[k];
+    s+=`<g fill="#22c55e" font-size="6" font-weight="700"><circle cx="${cx}" cy="${cy}" r="2.2"/><text x="${cx+5}" y="${cy+2}">${k}</text></g>`;
+  });
 
+  return {s,VW,VH};
+}
+function drawPlate(){
+  const svg=$('plateSvg'), g=computeGeom();
+  if(!g){ svg.setAttribute('viewBox','0 0 400 300');
+    svg.innerHTML=`<text x="200" y="150" text-anchor="middle" fill="#e2e8f0" font-size="14">${state.result&&state.result.error?state.result.error:'Sin imposición válida'}</text>`;
+    return; }
+  const {s,VW,VH}=buildPlateMarkup(g,7*currentScale());
+  svg.setAttribute('viewBox',`0 0 ${VW} ${VH}`);
+  svg.setAttribute('width',VW); svg.setAttribute('height',VH);
   svg.innerHTML=s;
   svg.querySelectorAll('.pose').forEach(p=>p.addEventListener('click',()=>selectPose(+p.dataset.pose)));
   updateZoomLabel();
@@ -1615,7 +1691,9 @@ function renderMontageControls(){
   $('nudgeRead').textContent=`Δ ${state.nudge.x.toFixed(1)} · ${state.nudge.y.toFixed(1)} cm`;
   const rot=state.result&&!state.result.error&&state.result.rotated;
   const rb=$('btnRotate90'); if(rb){ rb.classList.toggle('active',rot); rb.textContent=rot?'⟳ Montaje rotado 90° (activo)':'⟳ Rotar montaje 90°'; }
-  const cr=$('cbarRead'); if(cr) cr.textContent=state.customColorBar?'Tira actual: archivo propio':'Tira actual: CMYK por defecto';
+  const cr=$('cbarRead'); if(cr){ const lbl={cmyk:'CMYK','4color':'4-Color','6color':'6-Color','5spot':'5-Spot'}[state.colorBarPreset]||'CMYK';
+    cr.textContent=state.customColorBar?'Tira actual: archivo propio':('Tira actual: '+lbl+' (preset)'); }
+  if($('cbarPreset')) $('cbarPreset').querySelectorAll('button').forEach(b=>b.classList.toggle('on',b.dataset.p===state.colorBarPreset&&!state.customColorBar));
 }
 function toggleRotate90(){
   const r=state.result; const nowRot=r&&!r.error&&r.rotated;
@@ -1656,6 +1734,50 @@ async function loadArt(file){
   }catch(e){ toast('No se pudo leer el archivo','err'); }
 }
 function clearArt(){ state.art={pages:[],name:'',size:null}; renderArtStage(); drawPlate(); toast('Arte quitado — vuelve al esquema','ok'); }
+/* Arte demo: tarjeta personal 9×5 cm (SVG → dataURL) */
+function makeCardArt(){
+  const W=900,H=500;
+  const svg=`<svg xmlns="http://www.w3.org/2000/svg" width="${W}" height="${H}" viewBox="0 0 ${W} ${H}">
+    <rect width="${W}" height="${H}" fill="#0d1117"/>
+    <rect x="0" y="0" width="16" height="${H}" fill="#ff6b1a"/>
+    <circle cx="${W-70}" cy="70" r="130" fill="#ff6b1a" opacity="0.16"/>
+    <text x="60" y="180" fill="#ffffff" font-family="Inter,Arial,sans-serif" font-size="56" font-weight="800">Mario Quiroz M.</text>
+    <text x="63" y="226" fill="#ff9540" font-family="Inter,Arial,sans-serif" font-size="24" font-weight="600" letter-spacing="4">DISEÑO &amp; PREPRENSA</text>
+    <line x1="63" y1="256" x2="400" y2="256" stroke="#2a3543" stroke-width="2"/>
+    <text x="63" y="316" fill="#c8d3df" font-family="Inter,Arial,sans-serif" font-size="24">✉  marioquirozm@gmail.com</text>
+    <text x="63" y="356" fill="#c8d3df" font-family="Inter,Arial,sans-serif" font-size="24">◈  d3magindesign</text>
+    <text x="63" y="452" fill="#6b7887" font-family="Inter,Arial,sans-serif" font-size="19">Tarjeta personal · 9 × 5 cm · con sangrado</text>
+  </svg>`;
+  return 'data:image/svg+xml;base64,'+btoa(unescape(encodeURIComponent(svg)));
+}
+function loadDemo(){
+  const set=(id,v)=>{ if($(id))$(id).value=v; };
+  set('f_job','JOB-DEMO-95'); set('f_piece','TARJETA-01'); set('f_desc','Tarjeta personal');
+  set('f_prodW','9'); set('f_prodH','5'); set('f_bleed','3'); set('f_qty','1000');
+  set('f_ref','DEMO-TARJETA'); set('f_raw','Couché mate 300 g/m² · CMYK');
+  if($('f_binding'))$('f_binding').value='Sin encuadernación';
+  set('c_qty','1000'); set('c_pages','1'); $('c_print').value='tiro';
+  set('c_weight','300'); set('c_prodW','9'); set('c_prodH','5'); set('c_gap','4');
+  state.orient='auto';
+  $('orientSeg').querySelectorAll('button').forEach(b=>b.classList.toggle('on',b.dataset.o==='auto'));
+  selectMachine('gto52');
+  state.art={pages:[makeCardArt()],name:'tarjeta-personal.svg',size:{w:9,h:5},count:1};
+  renderArtStage(); recalc(); goStep(4);
+  toast('DEMO · Tarjeta personal 9×5 cm montada en GTO 52','ok');
+}
+function renderSideAlert(){
+  const el=$('sideAlert'); if(!el)return;
+  const r=state.result;
+  if(r&&!r.error){
+    if(r.usePct<85){
+      el.className='side-alert on'+(r.usePct<50?' err':'');
+      el.innerHTML=`⚠ <b>Desperdicio alto de papel.</b> Aprovechamiento <b>${r.usePct.toFixed(1)}%</b> (&lt; 85%) · desperdicio ${r.despPct.toFixed(1)}%. Prueba otra orientación, otra máquina o agrupa más poses.`;
+    }else{
+      el.className='side-alert on ok';
+      el.innerHTML=`✓ <b>Aprovechamiento óptimo:</b> ${r.usePct.toFixed(1)}% (≥ 85%). Desperdicio ${r.despPct.toFixed(1)}%.`;
+    }
+  }else{ el.className='side-alert'; el.innerHTML=''; }
+}
 function renderArtStage(){
   const st=$('artStage'); if(!st)return;
   const meta=$('artMeta'), clr=$('artClear');
@@ -1832,12 +1954,14 @@ const PROCESS=[
   {ic:'📦',n:'Producto final',d:'Piezas terminadas, contadas y listas para entrega.'},
 ];
 function renderProcFlow(){
-  $('procFlow').innerHTML=PROCESS.map((p,i)=>`
+  const bind=state.order.binding&&state.order.binding!=='Sin encuadernación'?state.order.binding:null;
+  const steps=PROCESS.map(p=>p.n==='Acabado'&&bind?{...p,d:p.d+` En este trabajo: <b>${bind}</b>.`}:p);
+  $('procFlow').innerHTML=steps.map((p,i)=>`
     <div class="proc-node" data-i="${i}">
       <div class="pn-ic">${p.ic}</div><div class="pn-n">${p.n}</div><div class="pn-i">paso ${i+1}</div>
     </div>`).join('');
   $('procFlow').querySelectorAll('.proc-node').forEach(el=>{
-    el.addEventListener('click',()=>{ const p=PROCESS[+el.dataset.i];
+    el.addEventListener('click',()=>{ const p=steps[+el.dataset.i];
       openModal('🏭','PROCESO INDUSTRIAL',p.n,`<div class="concept-block"><div class="cb-txt">${p.d}</div></div>`);
     });
   });
@@ -1862,6 +1986,7 @@ function renderDashboard(){
     ['Pliegos',valid?fmt(r.totalSheets):'—'],
     ['Color','CMYK'],
     ['Peso total',valid?fmt(r.totalKg,1)+' kg':'—'],
+    ['Encuadernación',o.binding||'Sin encuadernación'],
     ['Costo',valid?cc.cur+' '+fmt(r.costLocal,2):'—','accent'],
   ];
   $('dashboard').innerHTML=`
@@ -1913,7 +2038,7 @@ function renderSideStatus(){
   const el=$('sideStatus'); const ready=isCtpReady();
   const valid=state.result&&!state.result.error;
   if(ready){ el.className='side-status ready'; el.querySelector('.big').textContent='CTP READY';
-    el.querySelector('.sub').textContent='Todas las condiciones válidas. Plancha lista para grabar.'; }
+    el.querySelector('.sub').innerHTML='La plancha cumple zona de pinza y márgenes seguros.<br><span style="color:#6b7887;font-style:italic">Plate respects gripper and safe margins.</span>'; }
   else if(valid){ el.className='side-status warn'; el.querySelector('.big').textContent='EN PROCESO';
     el.querySelector('.sub').textContent='Imposición válida. Revisa el preflight para llegar a CTP.'; }
   else { el.className='side-status'; el.querySelector('.big').textContent=state.machine?'SIN MONTAJE':'NO INICIADO';
@@ -1982,7 +2107,7 @@ function reportHTML(){
       ['Hojas de arranque',fmt(cc.setup)],['Pliegos a comprar',valid?fmt(r.totalSheets):'—'],
       ['Peso total',valid?fmt(r.totalKg,2)+' kg':'—'],
       ['Costo papel (USD)',valid?fmt(r.cost,2):'—'],['Costo local',valid?cc.cur+' '+fmt(r.costLocal,2):'—'],
-      ['Ruta',o.route],['Calidad',o.quality],['Responsable',o.owner],['Aprobación',o.approval],
+      ['Encuadernación',o.binding],['Ruta',o.route],['Calidad',o.quality],['Responsable',o.owner],['Aprobación',o.approval],
       ['Estado',isCtpReady()?'CTP READY':'EN PROCESO'],
     ].map(([k,v])=>`<tr><td style="padding:7px 10px;border-bottom:1px solid #eef2f6;color:#475766;font-weight:600">${k}</td><td style="padding:7px 10px;border-bottom:1px solid #eef2f6;text-align:right;font-weight:600">${v||'—'}</td></tr>`).join('')}
     </table>
@@ -1991,20 +2116,26 @@ function reportHTML(){
   </div>`;
 }
 function printReport(){
+  setPrintPage('size:A4; margin:14mm;');
   $('printArea').innerHTML=reportHTML();
   window.print();
 }
+function setPrintPage(spec){
+  let st=$('printPageStyle');
+  if(!st){ st=document.createElement('style'); st.id='printPageStyle'; document.head.appendChild(st); }
+  st.textContent=`@media print{ @page{ ${spec} } }`;
+}
 function printImposition(){
-  const svg=$('plateSvg');
-  if(!svg||!svg.innerHTML||!(state.result&&!state.result.error)){ toast('Genera una imposición válida primero (Etapa 04)','warn'); return; }
-  const xml=new XMLSerializer().serializeToString(svg);
-  const r=state.result;
-  $('printArea').innerHTML=`<div style="text-align:center;font-family:Inter,sans-serif;padding:14px">
-    <h2 style="margin:0 0 4px">Pliego imposicionado · ${state.order.job||''}</h2>
-    <div style="font-size:12px;color:#475766;margin-bottom:12px">${state.machine?state.machine.name:''} · ${state.machine?state.machine.w+'×'+state.machine.h+' cm':''} · ${r.cols}×${r.rows} = ${r.poses} poses · util ${r.usePct.toFixed(2)}%</div>
-    ${xml}
-    <div style="margin-top:12px;font-size:11px;color:#8a98a6">Diseñado por Mg Mario Quiroz Martínez · d3magindesign 2026</div>
+  const g=computeGeom();
+  if(!g||!(state.result&&!state.result.error)){ toast('Genera una imposición válida primero (Etapa 04)','warn'); return; }
+  // pxcm = 10  →  1 cm = 10 unidades de viewBox = 10 mm  →  tamaño REAL de plancha, sin escala
+  const {s,VW,VH}=buildPlateMarkup(g,10);
+  $('printArea').innerHTML=`<div class="print-plate">
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 ${VW} ${VH}" width="${VW}mm" height="${VH}mm">${s}</svg>
   </div>`;
+  // Página exactamente del tamaño del pliego (con el pequeño margen de marcas), sin ajustar
+  setPrintPage(`size:${VW}mm ${VH}mm; margin:0;`);
+  toast('PDF a tamaño real de plancha ('+state.machine.w+'×'+state.machine.h+' cm) — usa "Guardar como PDF"','ok');
   window.print();
 }
 function exportSvgJpg(){
@@ -2035,7 +2166,8 @@ function saveState(){
   try{ localStorage.setItem('idc-sim',JSON.stringify({
     order:state.order,machineId:state.machine?state.machine.id:null,prod:state.prod,
     calc:state.calc,orient:state.orient,marks:state.marks,step:state.step,unit:state.unit,
-    alignPinza:state.alignPinza,nudge:state.nudge
+    alignPinza:state.alignPinza,nudge:state.nudge,
+    colorBarPreset:state.colorBarPreset,gutters:state.gutters
   })); }catch(e){}
 }
 function loadState(){
@@ -2046,6 +2178,8 @@ function loadState(){
     state.orient=s.orient||'auto'; state.unit=s.unit||'cm';
     if(typeof s.alignPinza==='boolean')state.alignPinza=s.alignPinza;
     if(s.nudge&&typeof s.nudge.x==='number')state.nudge=s.nudge;
+    if(s.colorBarPreset)state.colorBarPreset=s.colorBarPreset;
+    if(s.gutters)Object.assign(state.gutters,s.gutters);
     if(s.machineId) state.machine=MACHINES.find(m=>m.id===s.machineId)||null;
     // repoblar inputs
     const o=state.order;
@@ -2055,6 +2189,8 @@ function loadState(){
     set('f_labor',o.labor);set('f_materials',o.materials);set('f_done',o.done);set('f_inspect',o.inspect);
     set('f_owner',o.owner);set('f_notes',o.notes);
     if(o.approval)$('f_approval').value=o.approval;
+    if(o.binding&&$('f_binding'))$('f_binding').value=o.binding;
+    buildGutters();
     set('f_prodW',state.prod.w);set('f_prodH',state.prod.h);set('f_bleed',state.prod.bleed);set('f_qty',o.qty);
     set('c_qty',state.calc.qty);set('c_pages',state.calc.pages);$('c_print').value=state.calc.print;
     set('c_weight',state.calc.weight);set('c_price',state.calc.price);set('c_fx',state.calc.fx);
@@ -2078,7 +2214,7 @@ function resetAll(){
 function bindEvents(){
   // inputs orden + papel → recalc
   ['f_job','f_piece','f_desc','f_ref','f_date','f_raw','f_route','f_quality','f_time','f_labor',
-   'f_materials','f_done','f_inspect','f_owner','f_approval','f_notes','f_prodW','f_prodH','f_bleed','f_qty',
+   'f_materials','f_done','f_inspect','f_owner','f_approval','f_notes','f_binding','f_prodW','f_prodH','f_bleed','f_qty',
    'c_qty','c_pages','c_print','c_weight','c_price','c_fx','c_cur','c_wastepct','c_setup','c_prodW','c_prodH','c_gap']
    .forEach(id=>{ const el=$(id); if(el){ el.addEventListener('input',recalc); el.addEventListener('change',recalc);} });
 
@@ -2103,6 +2239,7 @@ function bindEvents(){
   $('btnPrev').addEventListener('click',()=>goStep(Math.max(1,state.step-1)));
   $('btnNext').addEventListener('click',()=>{ if(state.step>=5){ toast('Trabajo completo — revisa el resumen','ok'); return;} goStep(Math.min(5,state.step+1)); });
   $('btnReset').addEventListener('click',resetAll);
+  $('btnDemo').addEventListener('click',loadDemo);
 
   // vista imposición
   $('viewSeg').querySelectorAll('button').forEach(b=>b.addEventListener('click',()=>{
@@ -2147,7 +2284,20 @@ function bindEvents(){
     rd.readAsDataURL(f);
     e.target.value='';
   });
-  $('cbarDefault').addEventListener('click',()=>{ state.customColorBar=null; renderMontageControls(); drawPlate(); toast('Tira CMYK por defecto','ok'); });
+  $('cbarDefault').addEventListener('click',()=>{ state.customColorBar=null; renderMontageControls(); drawPlate(); toast('Tira '+state.colorBarPreset.toUpperCase()+' (preset)','ok'); });
+  // preset de tira SmartMarks
+  $('cbarPreset').querySelectorAll('button').forEach(b=>b.addEventListener('click',()=>{
+    state.colorBarPreset=b.dataset.p; state.customColorBar=null; state.marks.color=true;
+    $('marksList').querySelector('[data-k="color"]')?.classList.add('on');
+    renderMontageControls(); drawPlate(); saveState();
+  }));
+  // gutters .smk
+  $('smkFile').addEventListener('change',e=>{
+    const f=e.target.files&&e.target.files[0]; if(!f)return;
+    GUTTER_KEYS.forEach(k=>state.gutters[k]=true); state.marks.smart=true;
+    buildGutters(); $('marksList').querySelector('[data-k="smart"]')?.classList.add('on');
+    drawPlate(); saveState(); toast('Gutters .smk cargado ('+f.name+')','ok'); e.target.value='';
+  });
 
   // Arte final (PDF/imagen)
   const adz=$('artDrop'), afi=$('artFile');
@@ -2182,7 +2332,7 @@ function bindEvents(){
    ============================================================ */
 document.addEventListener('DOMContentLoaded',()=>{
   $('f_date').value=new Date().toISOString().slice(0,10);
-  buildFlow(); buildMachines(); buildMarks(); injectFieldHelp();
+  buildFlow(); buildMachines(); buildMarks(); buildGutters(); injectFieldHelp();
   const restored=loadState();
   bindEvents();
   recalc();

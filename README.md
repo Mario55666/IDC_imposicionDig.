@@ -20,6 +20,12 @@ Incluye:
 - **Controles de montaje (Etapa 04)**: rotación 90°, alineación centrado/pegar a pinza, desplazamiento manual (nudge), y tira de control de color por **archivo propio (SVG/imagen)** o CMYK por defecto.
 - **Carga de arte final (Etapa 04)**: dropzone para el **PDF** (o imagen) del producto; las páginas se montan automáticamente en cada pose de la plancha y se pueden exportar como **PDF Imposicionado** o **Reporte de producción**.
 - Banda no imprimible correcta: **blanco de mordaza** (parte de la plancha) al extremo y **pinza de papel** (área del pliego) debajo.
+- **PDF Imposicionado a tamaño real** de la plancha (sin escala ni ajustes): la página se fija al formato del pliego en mm.
+- **Tira de control · Color Bar SmartMarks**: presets CMYK / 4-Color / 6-Color / 5-Spot o carga propia (PDF/PNG).
+- **Gutters · SmartMarks (.smk)**: posiciones ancla (Top/Bottom/Left/Right/Center/Mid) y carga de archivo `.smk`.
+- **Alertas de desperdicio**: el panel técnico avisa cuando el aprovechamiento cae por debajo del 85%.
+- **Botón DEMO** que monta una **tarjeta personal 9×5 cm** con arte de ejemplo.
+- **Encuadernación / acabado**: engrampado metálico, fresado, cosido, termocosido, tapa dura y espiral (se refleja en dashboard, reporte y flujo industrial).
 
 Diseñado por **Mg Mario Quiroz Martínez** · d3magindesign 2026.
 - **Cálculo automático** de poses, aprovechamiento, desperdicio, pliegos, peso y costo, con las mismas fórmulas del Excel *Cálculo de Papel* (`peso = w·h·gramaje/10⁷`, `poses = columnas×filas`, `utilización = poses·área_producto/área_pliego`).
