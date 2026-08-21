@@ -814,6 +814,14 @@ table.tech tr.hl td:last-child{color:var(--accent-ink)}
               <input type="file" id="cbarFile" accept="application/pdf,.svg,image/*" hidden>
             </label>
             <button class="mt-btn ghost" id="cbarDefault" style="margin-top:6px">Usar preset por defecto</button>
+            <div class="mt-sub">Desplazamiento de la tira (0,5 cm)</div>
+            <div class="nudge-pad" id="cbarNudgePad">
+              <button class="nb" data-n="up">↑</button>
+              <button class="nb" data-n="left">←</button>
+              <button class="nb nb-c" data-n="reset">⨯</button>
+              <button class="nb" data-n="right">→</button>
+              <button class="nb" data-n="down">↓</button>
+            </div>
             <div class="mt-read" id="cbarRead">Tira actual: CMYK (preset)</div>
           </div>
           <div class="isec">
@@ -1034,6 +1042,7 @@ const state = {
   nudge:{x:0,y:0},           // desplazamiento manual (cm)
   customColorBar:null,       // dataURL de tira de color cargada
   colorBarPreset:'cmyk',     // preset SmartMarks: cmyk|4color|6color|5spot
+  cbarNudge:{x:0,y:0},       // desplazamiento de la tira de control (cm)
   gutters:{Top:false,Bottom:false,Left:false,Right:false,Center:false,Mid:false},
   art:{pages:[], name:'', size:null},  // arte final PDF/imagen cargado
 };
@@ -1318,7 +1327,9 @@ function buildMachines(){
         <div class="mc-spec"><span class="k">Área máx. de impresión</span><span class="v">${m.printW}×${m.printH} cm</span></div>
         <div class="mc-spec"><span class="k">Formato máx. papel</span><span class="v">${m.paperMaxW}×${m.paperMaxH} cm</span></div>
         <div class="mc-spec"><span class="k">Formato mín. papel</span><span class="v">${m.minW}×${m.minH} cm</span></div>
-        <div class="mc-spec"><span class="k">Pinza normal</span><span class="v">${m.gripper} cm (${m.mordaza}+${m.pinzaPapel})</span></div>
+        <div class="mc-spec"><span class="k">Pinza normal (mordaza + pinza)</span><span class="v">${m.gripper} cm = ${m.mordaza} + ${m.pinzaPapel}</span></div>
+        <div class="mc-spec" style="border-bottom:0"><span class="k" style="color:#f59e0b">Blanco de mordaza</span><span class="v">${m.mordaza} cm</span></div>
+        <div class="mc-spec"><span class="k" style="color:#e11d48">Pinza de papel</span><span class="v">${m.pinzaPapel} cm</span></div>
       </div>
       <div class="mc-diagram">
         <div class="dcap">Plancha → área no imprimible → impresión → producto</div>
@@ -1585,18 +1596,19 @@ function buildPlateMarkup(g,pxcm){
       ${cross(PAD+W/2,PAD+grPx-6)}${cross(PAD+W/2,PAD+H-tailPx+6)}
       ${cross(PAD+sidePx-6,PAD+H/2)}${cross(PAD+W-sidePx+6,PAD+H/2)}</g>`;
   }
-  // Tira de control de color (custom SVG/imagen o CMYK por defecto)
+  // Tira de control de color (custom SVG/imagen o preset SmartMarks) — desplazable
   if(state.marks.color){
+    const cbDx=state.cbarNudge.x*pxcm, cbDy=state.cbarNudge.y*pxcm;
     if(state.customColorBar){
       const cbW=Math.min(W-2*sidePx-4, W*0.5), cbH=Math.min(tailPx>14?tailPx-4:16, cbW*(state.customColorBar.h/state.customColorBar.w)||16);
-      const by=PAD+H-tailPx-cbH-2;
-      s+=`<image x="${PAD+sidePx+2}" y="${by}" width="${cbW}" height="${cbH}" href="${state.customColorBar.url}" preserveAspectRatio="xMidYMid meet"/>`;
-      s+=`<text x="${PAD+sidePx+2}" y="${by-3}" font-size="6.5" fill="#22c55e" font-weight="700">★ TIRA DE CONTROL PROPIA</text>`;
+      const bx0=PAD+sidePx+2+cbDx, by=PAD+H-tailPx-cbH-2+cbDy;
+      s+=`<image x="${bx0}" y="${by}" width="${cbW}" height="${cbH}" href="${state.customColorBar.url}" preserveAspectRatio="xMidYMid meet"/>`;
+      s+=`<text x="${bx0}" y="${by-3}" font-size="6.5" fill="#22c55e" font-weight="700">★ TIRA DE CONTROL PROPIA</text>`;
     }else{
       const bars=getColorBarSwatches(state.colorBarPreset);
-      const sw=Math.max(8,W/(bars.length+2)), sh=9; let bx=PAD+sidePx+2; const by=PAD+H-tailPx-sh-3;
+      const sw=Math.max(8,W/(bars.length+2)), sh=9; let bx=PAD+sidePx+2+cbDx; const by=PAD+H-tailPx-sh-3+cbDy;
       const label={cmyk:'CMYK','4color':'4-COLOR','6color':'6-COLOR','5spot':'5-SPOT'}[state.colorBarPreset]||'CMYK';
-      s+=`<text x="${PAD+sidePx+2}" y="${by-3}" font-size="6.5" fill="#94a3b8" font-weight="700">▦ SMARTMARKS · ${label}</text>`;
+      s+=`<text x="${PAD+sidePx+2+cbDx}" y="${by-3}" font-size="6.5" fill="#94a3b8" font-weight="700">▦ SMARTMARKS · ${label}</text>`;
       bars.forEach(([c,l])=>{ s+=`<rect x="${bx}" y="${by}" width="${sw}" height="${sh}" fill="${c}" stroke="#000" stroke-width="0.3"/><text x="${bx+sw/2}" y="${by+sh+6}" font-size="5" fill="#94a3b8" text-anchor="middle">${l}</text>`; bx+=sw; });
     }
   }
@@ -1692,7 +1704,8 @@ function renderMontageControls(){
   const rot=state.result&&!state.result.error&&state.result.rotated;
   const rb=$('btnRotate90'); if(rb){ rb.classList.toggle('active',rot); rb.textContent=rot?'⟳ Montaje rotado 90° (activo)':'⟳ Rotar montaje 90°'; }
   const cr=$('cbarRead'); if(cr){ const lbl={cmyk:'CMYK','4color':'4-Color','6color':'6-Color','5spot':'5-Spot'}[state.colorBarPreset]||'CMYK';
-    cr.textContent=state.customColorBar?'Tira actual: archivo propio':('Tira actual: '+lbl+' (preset)'); }
+    const d=(state.cbarNudge.x||state.cbarNudge.y)?` · Δ ${state.cbarNudge.x.toFixed(1)},${state.cbarNudge.y.toFixed(1)} cm`:'';
+    cr.textContent=(state.customColorBar?'Tira actual: archivo propio':('Tira actual: '+lbl+' (preset)'))+d; }
   if($('cbarPreset')) $('cbarPreset').querySelectorAll('button').forEach(b=>b.classList.toggle('on',b.dataset.p===state.colorBarPreset&&!state.customColorBar));
 }
 function toggleRotate90(){
@@ -1800,7 +1813,9 @@ function renderJobPanel(){
     ['SIZE',state.machine?`${state.machine.w}×${state.machine.h} cm`:'—'],
     ['PAPER',`${state.calc.weight} g/m²`],
     ['COLOR','CMYK'],
-    ['GRIPPER',state.machine?uDim(state.machine.gripper):'—'],
+    ['PINZA NORMAL',state.machine?`${uDim(state.machine.gripper)} (${state.machine.mordaza}+${state.machine.pinzaPapel})`:'—'],
+    ['· Blanco mordaza',state.machine?uDim(state.machine.mordaza):'—'],
+    ['· Pinza papel',state.machine?uDim(state.machine.pinzaPapel):'—'],
     ['POSES',r&&!r.error?r.poses:'—'],
     ['BLEED',uDim(state.prod.bleed/10)],
     ['STATUS',isCtpReady()?'CTP READY':'EN PROCESO'],
@@ -2010,7 +2025,7 @@ function renderSideTech(){
     ['JOB',state.order.job||'—'],
     ['PRESS',m?m.name:'—'],
     ['PLATE',m?`${m.w}<small>×</small>${m.h}`:'—'],
-    ['GRIPPER',m?uDim(m.gripper):'—'],
+    ['PINZA NORM.',m?`${uDim(m.gripper)}<small> (${m.mordaza}+${m.pinzaPapel})</small>`:'—'],
     ['PRODUCT',`${state.prod.w}<small>×</small>${state.prod.h}`],
     ['POSES',r&&!r.error?r.poses:'—'],
     ['USE',r&&!r.error?r.usePct.toFixed(1)+'<small>%</small>':'—'],
@@ -2167,7 +2182,7 @@ function saveState(){
     order:state.order,machineId:state.machine?state.machine.id:null,prod:state.prod,
     calc:state.calc,orient:state.orient,marks:state.marks,step:state.step,unit:state.unit,
     alignPinza:state.alignPinza,nudge:state.nudge,
-    colorBarPreset:state.colorBarPreset,gutters:state.gutters
+    colorBarPreset:state.colorBarPreset,gutters:state.gutters,cbarNudge:state.cbarNudge
   })); }catch(e){}
 }
 function loadState(){
@@ -2179,6 +2194,7 @@ function loadState(){
     if(typeof s.alignPinza==='boolean')state.alignPinza=s.alignPinza;
     if(s.nudge&&typeof s.nudge.x==='number')state.nudge=s.nudge;
     if(s.colorBarPreset)state.colorBarPreset=s.colorBarPreset;
+    if(s.cbarNudge&&typeof s.cbarNudge.x==='number')state.cbarNudge=s.cbarNudge;
     if(s.gutters)Object.assign(state.gutters,s.gutters);
     if(s.machineId) state.machine=MACHINES.find(m=>m.id===s.machineId)||null;
     // repoblar inputs
@@ -2289,6 +2305,15 @@ function bindEvents(){
   $('cbarPreset').querySelectorAll('button').forEach(b=>b.addEventListener('click',()=>{
     state.colorBarPreset=b.dataset.p; state.customColorBar=null; state.marks.color=true;
     $('marksList').querySelector('[data-k="color"]')?.classList.add('on');
+    renderMontageControls(); drawPlate(); saveState();
+  }));
+  // desplazamiento de la tira de control
+  document.querySelectorAll('#cbarNudgePad .nb').forEach(b=>b.addEventListener('click',()=>{
+    const n=b.dataset.n, st=0.5;
+    if(n==='up')state.cbarNudge.y-=st; else if(n==='down')state.cbarNudge.y+=st;
+    else if(n==='left')state.cbarNudge.x-=st; else if(n==='right')state.cbarNudge.x+=st;
+    else if(n==='reset'){state.cbarNudge.x=0;state.cbarNudge.y=0;}
+    state.marks.color=true; $('marksList').querySelector('[data-k="color"]')?.classList.add('on');
     renderMontageControls(); drawPlate(); saveState();
   }));
   // gutters .smk
