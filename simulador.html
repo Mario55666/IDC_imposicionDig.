@@ -8,6 +8,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
 <style>
 /* ============================================================
    TOKENS DE DISEÑO — estética de software técnico de preprensa
@@ -166,6 +167,8 @@ input,select,textarea{font-size:13.5px}
 .side-status .sub{font-size:11px;color:#8895a3;margin-top:5px;line-height:1.4}
 .mini-plate{margin:4px 12px 10px;background:#0a0e13;border:1px solid #1c232c;border-radius:12px;padding:12px}
 .mini-plate .cap{font-size:10px;letter-spacing:1px;color:#6b7887;font-weight:800;margin-bottom:8px;text-transform:uppercase}
+.side-credit{margin-top:auto;padding:14px 16px;text-align:center;font-size:10.5px;color:#6b7887;line-height:1.5;border-top:1px solid #161b22}
+.side-credit b{color:#aab6c3}
 
 /* ============================================================
    COMPONENTES
@@ -332,6 +335,22 @@ table.tech tr.hl td:last-child{color:var(--accent-ink)}
 .cbar-ctrl{display:flex;flex-direction:column;gap:6px}
 .cbar-up{display:block;text-align:center;background:#232c37;border:1px dashed #2a3543;color:#dbe4ee;font-size:12px;font-weight:600;padding:9px;border-radius:8px;cursor:pointer}
 .cbar-up:hover{background:#2c3744;border-color:var(--accent)}
+.art-drop{border:1.5px dashed #2a3543;border-radius:10px;padding:16px 12px;text-align:center;cursor:pointer;background:#131922;transition:border .15s,background .15s}
+.art-drop:hover,.art-drop.drag{border-color:var(--accent);background:#1c232c}
+.art-drop .ai{font-size:26px}
+.art-drop .at{font-size:12px;font-weight:700;color:#dbe4ee;margin-top:4px}
+.art-drop .ah{font-size:10.5px;color:#6b7887;margin-top:2px}
+.art-stage{margin-top:10px;background:#0a0e13;border:1px solid #1c232c;border-radius:10px;min-height:110px;display:grid;place-items:center;padding:10px;text-align:center}
+.art-stage .empty{color:#6b7887;font-size:11px}
+.art-stage .empty .ei{font-size:30px;margin-bottom:4px}
+.art-stage img{max-width:100%;max-height:150px;border-radius:4px;box-shadow:0 4px 12px rgba(0,0,0,.4);background:#fff}
+.art-meta{font-size:10.5px;color:#8895a3;font-family:var(--mono);margin-top:7px;display:flex;justify-content:space-between;gap:8px}
+.art-exports{display:flex;flex-direction:column;gap:6px;margin-top:10px}
+.art-xbtn{display:flex;gap:9px;align-items:center;background:#232c37;border:1px solid #2a3543;color:#e6edf3;padding:9px 10px;border-radius:9px;cursor:pointer;text-align:left}
+.art-xbtn:hover{background:#2c3744;border-color:var(--accent)}
+.art-xbtn .xic{font-size:16px}
+.art-xbtn .xn{font-size:12px;font-weight:700}
+.art-xbtn .xd{font-size:10px;color:#8895a3;margin-top:1px}
 .pose-props{font-size:12px}
 .pose-props .pp{display:flex;justify-content:space-between;padding:5px 0;border-bottom:1px solid #10151b}
 .pose-props .pp .k{color:#7a8797;font-weight:600}
@@ -461,6 +480,7 @@ table.tech tr.hl td:last-child{color:var(--accent-ink)}
   .app,.dock,.topbar,.flowbar,.side{display:none!important}
   body{overflow:visible}
   #printArea{display:block!important}
+  #printArea svg{width:100%!important;height:auto!important;max-width:720px;display:block;margin:0 auto}
 }
 #printArea{display:none}
 </style>
@@ -583,8 +603,9 @@ table.tech tr.hl td:last-child{color:var(--accent-ink)}
         <div class="callout edu" style="margin-bottom:16px">
           <span class="cic">🔗</span>
           <div><b>Relación física:</b> PLACA → <b>ÁREA NO IMPRIMIBLE</b> → <b>ÁREA DE IMPRESIÓN</b> → PRODUCTO.
-          La banda superior <b>no imprimible</b> es la <b>pinza normal = blanco de mordaza + pinza de papel</b> (p. ej. GTO 52 = 3 cm → 2 de mordaza + 1 de pinza).
-          El <b>formato mínimo de papel</b> es la hoja más pequeña que la máquina puede arrastrar sin fallar el registro.</div>
+          La banda superior es la <b>pinza normal = blanco de mordaza + pinza de papel</b> (p. ej. GTO 52 = 3 cm → 2 + 1). En el extremo va el
+          <b>blanco de mordaza</b> (pertenece a la <b>plancha</b>) y, debajo, la <b>pinza de papel</b> (el <b>área del pliego</b> que sujetan las mordazas).
+          El <b>formato mínimo de papel</b> es la hoja más pequeña que la máquina arrastra sin fallar el registro.</div>
         </div>
 
         <div class="machine-grid" id="machineGrid"></div>
@@ -707,6 +728,24 @@ table.tech tr.hl td:last-child{color:var(--accent-ink)}
 
         <aside class="impo-side">
           <div class="isec">
+            <h4>Arte final · Documento PDF</h4>
+            <div class="art-drop" id="artDrop">
+              <div class="ai">⬆</div>
+              <div class="at">Arrastra tu PDF aquí o haz clic para elegir</div>
+              <div class="ah">Producto final, ya con sangrado incluido si aplica.</div>
+            </div>
+            <input type="file" id="artFile" accept="application/pdf,image/*" hidden>
+            <div class="art-stage" id="artStage">
+              <div class="empty"><div class="ei">📄</div>Sin documento cargado<div class="ah">La vista previa aparecerá aquí</div></div>
+            </div>
+            <div class="art-meta" id="artMeta" style="display:none"><span id="artNameLbl">—</span><span id="artSizeLbl">—</span></div>
+            <button class="mt-btn ghost" id="artClear" style="display:none;margin-top:8px">Quitar arte y volver al esquema</button>
+            <div class="art-exports">
+              <button class="art-xbtn" id="artExpImpo"><span class="xic">📄</span><div><div class="xn">PDF Imposicionado</div><div class="xd">Poses montadas en plancha, listo para CTP.</div></div></button>
+              <button class="art-xbtn" id="artExpReport"><span class="xic">📊</span><div><div class="xn">Reporte de producción</div><div class="xd">HTML/imprimible con cálculos y especificaciones.</div></div></button>
+            </div>
+          </div>
+          <div class="isec">
             <h4>Panel técnico · JOB</h4>
             <div class="pose-props" id="jobPanel"></div>
           </div>
@@ -769,9 +808,9 @@ table.tech tr.hl td:last-child{color:var(--accent-ink)}
           <div class="card-h"><span class="ic">📤</span><h3>Exportación</h3></div>
           <div class="card-b">
             <div class="exp-grid">
-              <button class="exp-btn" id="expImpo"><span class="eic">📄</span><div><div class="en">PDF Imposicionado</div><div class="ed">Pliego completo con poses y marcas</div></div></button>
+              <button class="exp-btn" id="expImpo"><span class="eic">📄</span><div><div class="en">PDF Imposicionado</div><div class="ed">Genera un PDF con las poses montadas en plancha, listo para enviar al CTP.</div></div></button>
               <button class="exp-btn" id="expSpreads"><span class="eic">📰</span><div><div class="en">PDF Printer Spreads</div><div class="ed">Páginas reorganizadas para imprimir</div></div></button>
-              <button class="exp-btn" id="expReport"><span class="eic">📑</span><div><div class="en">Reporte de Producción</div><div class="ed">Resumen técnico del trabajo</div></div></button>
+              <button class="exp-btn" id="expReport"><span class="eic">📊</span><div><div class="en">Reporte de producción</div><div class="ed">Documento HTML/imprimible con todos los cálculos, plancha y especificaciones.</div></div></button>
               <button class="exp-btn" id="expJpg"><span class="eic">🖼️</span><div><div class="en">JPG RGB 300 DPI</div><div class="ed">Visualización del resultado</div></div></button>
               <button class="exp-btn" id="expCtp"><span class="eic">🟦</span><div><div class="en">CTP Plate</div><div class="ed">Versión final de la plancha</div></div></button>
             </div>
@@ -804,6 +843,7 @@ table.tech tr.hl td:last-child{color:var(--accent-ink)}
       <div class="big">NO INICIADO</div>
       <div class="sub">Completa las etapas para llegar a CTP READY.</div>
     </div>
+    <div class="side-credit">Diseñado por <b>Mg Mario Quiroz Martínez</b><br>d3magindesign · 2026</div>
   </aside>
 
   <!-- DOCK -->
@@ -945,6 +985,7 @@ const state = {
   alignPinza:false,          // pegar el montaje a la pinza
   nudge:{x:0,y:0},           // desplazamiento manual (cm)
   customColorBar:null,       // dataURL de tira de color cargada
+  art:{pages:[], name:'', size:null},  // arte final PDF/imagen cargado
 };
 
 const $=id=>document.getElementById(id);
@@ -1157,7 +1198,7 @@ function renderAll(){
   renderJobPanel();
   renderMontageControls();
   renderDock();
-  if(state.step===4) drawPlate();
+  if(state.step===4){ renderArtStage(); drawPlate(); }
   if(state.step===5){ renderPreflight(); renderProcFlow(); renderDashboard(); }
   updateUnitLabels();
 }
@@ -1199,12 +1240,12 @@ function plateDiagram(m,big){
     <rect x="${areaX}" y="${areaY}" width="${areaW}" height="${areaH}" fill="#dbeafe" opacity=".95" rx="1"/>
     <text x="${areaX+areaW/2}" y="${areaY+areaH/2-2}" font-size="8" fill="#1e3a5f" text-anchor="middle" font-weight="800">ÁREA IMPRIMIBLE</text>
     <text x="${areaX+areaW/2}" y="${areaY+areaH/2+9}" font-size="7" fill="#1e3a5f" text-anchor="middle">${m.printW}×${m.printH} cm</text>
-    <!-- pinza de papel (extremo) -->
-    <rect x="${pad}" y="${pad}" width="${pw}" height="${pinza}" fill="#e11d48" opacity=".9"/>
-    ${big?`<text x="${pad+pw/2}" y="${pad+pinza/2+3}" font-size="6.5" fill="#fff" text-anchor="middle" font-weight="800">PINZA DE PAPEL ${m.pinzaPapel} cm</text>`:''}
-    <!-- blanco de mordaza -->
-    <rect x="${pad}" y="${pad+pinza}" width="${pw}" height="${mord}" fill="#f59e0b" opacity=".85"/>
-    ${big?`<text x="${pad+pw/2}" y="${pad+pinza+mord/2+3}" font-size="6.5" fill="#3b2600" text-anchor="middle" font-weight="800">BLANCO DE MORDAZA ${m.mordaza} cm</text>`:`<text x="${pad+pw/2}" y="${pad+pinza+mord/2+2.5}" font-size="5.5" fill="#3b2600" text-anchor="middle" font-weight="800">MORDAZA+PINZA ${m.gripper}cm</text>`}
+    <!-- blanco de mordaza (extremo — parte de la plancha) -->
+    <rect x="${pad}" y="${pad}" width="${pw}" height="${mord}" fill="#f59e0b" opacity=".9"/>
+    ${big?`<text x="${pad+pw/2}" y="${pad+mord/2+3}" font-size="6.5" fill="#3b2600" text-anchor="middle" font-weight="800">BLANCO DE MORDAZA ${m.mordaza} cm</text>`:`<text x="${pad+pw/2}" y="${pad+mord/2+2.5}" font-size="5.5" fill="#3b2600" text-anchor="middle" font-weight="800">MORDAZA+PINZA ${m.gripper}cm</text>`}
+    <!-- pinza de papel (debajo — área del pliego) -->
+    <rect x="${pad}" y="${pad+mord}" width="${pw}" height="${pinza}" fill="#e11d48" opacity=".85"/>
+    ${big?`<text x="${pad+pw/2}" y="${pad+mord+pinza/2+3}" font-size="6.5" fill="#fff" text-anchor="middle" font-weight="800">PINZA DE PAPEL ${m.pinzaPapel} cm</text>`:''}
     <!-- márgenes laterales -->
     <rect x="${pad}" y="${areaY}" width="${sd}" height="${areaH}" fill="#64748b" opacity=".45"/>
     <rect x="${pad+pw-sd}" y="${areaY}" width="${sd}" height="${areaH}" fill="#64748b" opacity=".45"/>
@@ -1409,15 +1450,16 @@ function drawPlate(){
   let s='';
   // Plancha
   s+=`<rect x="${PAD}" y="${PAD}" width="${W}" height="${H}" fill="${sep?'#0b1220':'#1c2531'}" stroke="#000" stroke-width="1" rx="3"/>`;
-  // Área no imprimible superior: pinza de papel (extremo) + blanco de mordaza
+  // Área no imprimible superior: blanco de mordaza (parte de la plancha, al extremo)
+  // + pinza de papel (área del pliego, debajo, junto al área imprimible)
   const pinzaPx=m.pinzaPapel*pxcm, mordPx=m.mordaza*pxcm, grPx=m.gripper*pxcm;
   const sidePx=m.side*pxcm, tailPx=m.tail*pxcm;
-  // pinza de papel (banda extrema)
-  s+=`<rect x="${PAD}" y="${PAD}" width="${W}" height="${pinzaPx}" fill="#e11d48" opacity=".85"/>`;
-  s+=`<text x="${PAD+W/2}" y="${PAD+pinzaPx/2+3.5}" text-anchor="middle" font-size="9" fill="#fff" font-weight="800" letter-spacing="1">PINZA DE PAPEL ${uDim(m.pinzaPapel)}</text>`;
-  // blanco de mordaza
-  s+=`<rect x="${PAD}" y="${PAD+pinzaPx}" width="${W}" height="${mordPx}" fill="#f59e0b" opacity=".8"/>`;
-  s+=`<text x="${PAD+W/2}" y="${PAD+pinzaPx+mordPx/2+3.5}" text-anchor="middle" font-size="9" fill="#3b2600" font-weight="800" letter-spacing="1">BLANCO DE MORDAZA ${uDim(m.mordaza)}</text>`;
+  // blanco de mordaza (banda extrema — pertenece a la plancha)
+  s+=`<rect x="${PAD}" y="${PAD}" width="${W}" height="${mordPx}" fill="#f59e0b" opacity=".85"/>`;
+  s+=`<text x="${PAD+W/2}" y="${PAD+mordPx/2+3.5}" text-anchor="middle" font-size="9" fill="#3b2600" font-weight="800" letter-spacing="1">BLANCO DE MORDAZA ${uDim(m.mordaza)}</text>`;
+  // pinza de papel (debajo — área del pliego que sujetan las mordazas)
+  s+=`<rect x="${PAD}" y="${PAD+mordPx}" width="${W}" height="${pinzaPx}" fill="#e11d48" opacity=".8"/>`;
+  s+=`<text x="${PAD+W/2}" y="${PAD+mordPx+pinzaPx/2+3.5}" text-anchor="middle" font-size="9" fill="#fff" font-weight="800" letter-spacing="1">PINZA DE PAPEL ${uDim(m.pinzaPapel)}</text>`;
   // cola inferior
   s+=`<rect x="${PAD}" y="${PAD+H-tailPx}" width="${W}" height="${tailPx}" fill="#64748b" opacity=".6"/>`;
   s+=`<text x="${PAD+W/2}" y="${PAD+H-tailPx/2+3}" text-anchor="middle" font-size="7.5" fill="#e2e8f0" font-weight="700">COLA ${uDim(m.tail)}</text>`;
@@ -1444,9 +1486,18 @@ function drawPlate(){
     s+=`<g class="pose" data-pose="${nEl}" style="cursor:pointer">
       <rect x="${x}" y="${y}" width="${w}" height="${h}" fill="${fill}" fill-opacity="${op}" stroke="${isSel?'#ff6b1a':(state.face==='retiro'?'#8b5cf6':'#0ea5e9')}" stroke-width="${isSel?2.4:1}" rx="1.5"/>`;
     if(!sep){
-      s+=`<rect x="${x+bleedPx}" y="${y+bleedPx}" width="${w-2*bleedPx}" height="${h-2*bleedPx}" fill="none" stroke="#9ca3af" stroke-dasharray="3 2" stroke-width="0.7"/>`;
-      s+=`<text x="${x+w/2}" y="${y+h/2-2}" text-anchor="middle" font-size="13" font-weight="800" fill="#1e293b">${nEl}</text>`;
-      s+=`<text x="${x+w/2}" y="${y+h/2+12}" text-anchor="middle" font-size="8" fill="#64748b">${state.face==='retiro'?'RETIRO':'TIRO'}</text>`;
+      const hasArt=state.art.pages.length>0;
+      if(hasArt){
+        // Arte final montado en la pose (una página por pose, cíclico)
+        const pg=state.art.pages[(nEl-1)%state.art.pages.length];
+        s+=`<image x="${x}" y="${y}" width="${w}" height="${h}" href="${pg}" preserveAspectRatio="xMidYMid slice"/>`;
+        s+=`<rect x="${x+bleedPx}" y="${y+bleedPx}" width="${w-2*bleedPx}" height="${h-2*bleedPx}" fill="none" stroke="#dc2626" stroke-dasharray="3 2" stroke-width="0.7"/>`;
+        s+=`<rect x="${x}" y="${y}" width="15" height="12" fill="#0d1117" opacity=".8"/><text x="${x+7.5}" y="${y+9}" text-anchor="middle" font-size="8" font-weight="800" fill="#fff">${nEl}</text>`;
+      }else{
+        s+=`<rect x="${x+bleedPx}" y="${y+bleedPx}" width="${w-2*bleedPx}" height="${h-2*bleedPx}" fill="none" stroke="#9ca3af" stroke-dasharray="3 2" stroke-width="0.7"/>`;
+        s+=`<text x="${x+w/2}" y="${y+h/2-2}" text-anchor="middle" font-size="13" font-weight="800" fill="#1e293b">${nEl}</text>`;
+        s+=`<text x="${x+w/2}" y="${y+h/2+12}" text-anchor="middle" font-size="8" fill="#64748b">${state.face==='retiro'?'RETIRO':'TIRO'}</text>`;
+      }
     }
     // Marcas de corte por pose
     if(state.marks.crop&&(state.view==='marcas'||state.view==='tecnica'||state.view==='imposicion')){
@@ -1572,6 +1623,51 @@ function toggleRotate90(){
   $('orientSeg').querySelectorAll('button').forEach(b=>b.classList.toggle('on',b.dataset.o===state.orient));
   recalc();
   toast(nowRot?'Montaje en vertical':'Montaje rotado 90°','ok');
+}
+
+/* ---------- Arte final (PDF / imagen) ---------- */
+async function loadArt(file){
+  if(!file)return;
+  const isPdf=file.type==='application/pdf'||/\.pdf$/i.test(file.name);
+  try{
+    if(isPdf){
+      if(typeof pdfjsLib==='undefined'){ toast('PDF.js no disponible (sin conexión). Carga una imagen PNG/JPG.','warn'); return; }
+      pdfjsLib.GlobalWorkerOptions.workerSrc='https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js';
+      toast('Procesando PDF…');
+      const buf=await file.arrayBuffer();
+      const doc=await pdfjsLib.getDocument({data:buf}).promise;
+      const pages=[]; let size=null; const max=Math.min(doc.numPages,32);
+      for(let i=1;i<=max;i++){
+        const pg=await doc.getPage(i);
+        const vp=pg.getViewport({scale:1.4});
+        const c=document.createElement('canvas'); c.width=vp.width; c.height=vp.height;
+        await pg.render({canvasContext:c.getContext('2d'),viewport:vp}).promise;
+        pages.push(c.toDataURL('image/png'));
+        if(i===1){ const v1=pg.getViewport({scale:1}); size={w:v1.width/28.3465,h:v1.height/28.3465}; }
+      }
+      state.art={pages,name:file.name,size,count:doc.numPages};
+      toast('Arte cargado · '+doc.numPages+' pág.','ok');
+    }else if(/^image\//.test(file.type)||/\.(png|jpe?g|svg|webp)$/i.test(file.name)){
+      const url=await new Promise((res,rej)=>{const r=new FileReader();r.onload=()=>res(r.result);r.onerror=rej;r.readAsDataURL(file);});
+      state.art={pages:[url],name:file.name,size:null,count:1};
+      toast('Imagen cargada como arte final','ok');
+    }else{ toast('Formato no soportado: usa PDF o imagen','err'); return; }
+    renderArtStage(); drawPlate();
+  }catch(e){ toast('No se pudo leer el archivo','err'); }
+}
+function clearArt(){ state.art={pages:[],name:'',size:null}; renderArtStage(); drawPlate(); toast('Arte quitado — vuelve al esquema','ok'); }
+function renderArtStage(){
+  const st=$('artStage'); if(!st)return;
+  const meta=$('artMeta'), clr=$('artClear');
+  if(state.art.pages.length){
+    st.innerHTML=`<img src="${state.art.pages[0]}" alt="arte final">`;
+    meta.style.display='flex'; clr.style.display='';
+    $('artNameLbl').textContent=state.art.name.length>22?state.art.name.slice(0,20)+'…':state.art.name;
+    $('artSizeLbl').textContent=(state.art.count||1)+' pág.'+(state.art.size?` · ${state.art.size.w.toFixed(1)}×${state.art.size.h.toFixed(1)} cm`:'');
+  }else{
+    st.innerHTML=`<div class="empty"><div class="ei">📄</div>Sin documento cargado<div class="ah">La vista previa aparecerá aquí</div></div>`;
+    meta.style.display='none'; clr.style.display='none';
+  }
 }
 function renderJobPanel(){
   const r=state.result;
@@ -1776,7 +1872,8 @@ function renderDashboard(){
     <div class="dash-grid">
       ${cells.map(([k,v,cls])=>`<div class="dash-cell ${cls||''}"><div class="dk">${k}</div><div class="dv">${v}</div></div>`).join('')}
     </div>
-    <div class="dash-ready ${ready?'on':'off'}">${ready?'● CTP READY':'▲ FALTAN CONDICIONES PARA CTP'}</div>`;
+    <div class="dash-ready ${ready?'on':'off'}">${ready?'● CTP READY':'▲ FALTAN CONDICIONES PARA CTP'}</div>
+    <div style="text-align:center;margin-top:14px;font-size:11px;color:#6b7887">Diseñado por <b style="color:#aab6c3">Mg Mario Quiroz Martínez</b> · d3magindesign 2026</div>`;
 }
 
 /* ============================================================
@@ -1890,10 +1987,24 @@ function reportHTML(){
     ].map(([k,v])=>`<tr><td style="padding:7px 10px;border-bottom:1px solid #eef2f6;color:#475766;font-weight:600">${k}</td><td style="padding:7px 10px;border-bottom:1px solid #eef2f6;text-align:right;font-weight:600">${v||'—'}</td></tr>`).join('')}
     </table>
     <div style="margin-top:14px;font-size:11px;color:#8a98a6">Fórmulas: peso = ancho·alto·gramaje/10⁷ · poses = columnas×filas · utilización = poses·área_producto/área_pliego. Simulador educativo IDC — no sustituye RIP/CTP de producción.</div>
+    <div style="margin-top:8px;font-size:11px;color:#475766;text-align:center;border-top:1px solid #eef2f6;padding-top:10px">Diseñado por <b>Mg Mario Quiroz Martínez</b> · d3magindesign 2026</div>
   </div>`;
 }
 function printReport(){
   $('printArea').innerHTML=reportHTML();
+  window.print();
+}
+function printImposition(){
+  const svg=$('plateSvg');
+  if(!svg||!svg.innerHTML||!(state.result&&!state.result.error)){ toast('Genera una imposición válida primero (Etapa 04)','warn'); return; }
+  const xml=new XMLSerializer().serializeToString(svg);
+  const r=state.result;
+  $('printArea').innerHTML=`<div style="text-align:center;font-family:Inter,sans-serif;padding:14px">
+    <h2 style="margin:0 0 4px">Pliego imposicionado · ${state.order.job||''}</h2>
+    <div style="font-size:12px;color:#475766;margin-bottom:12px">${state.machine?state.machine.name:''} · ${state.machine?state.machine.w+'×'+state.machine.h+' cm':''} · ${r.cols}×${r.rows} = ${r.poses} poses · util ${r.usePct.toFixed(2)}%</div>
+    ${xml}
+    <div style="margin-top:12px;font-size:11px;color:#8a98a6">Diseñado por Mg Mario Quiroz Martínez · d3magindesign 2026</div>
+  </div>`;
   window.print();
 }
 function exportSvgJpg(){
@@ -2038,6 +2149,17 @@ function bindEvents(){
   });
   $('cbarDefault').addEventListener('click',()=>{ state.customColorBar=null; renderMontageControls(); drawPlate(); toast('Tira CMYK por defecto','ok'); });
 
+  // Arte final (PDF/imagen)
+  const adz=$('artDrop'), afi=$('artFile');
+  adz.addEventListener('click',()=>afi.click());
+  adz.addEventListener('dragover',e=>{e.preventDefault();adz.classList.add('drag');});
+  adz.addEventListener('dragleave',()=>adz.classList.remove('drag'));
+  adz.addEventListener('drop',e=>{e.preventDefault();adz.classList.remove('drag'); if(e.dataTransfer.files[0])loadArt(e.dataTransfer.files[0]);});
+  afi.addEventListener('change',()=>{ if(afi.files[0])loadArt(afi.files[0]); afi.value=''; });
+  $('artClear').addEventListener('click',clearArt);
+  $('artExpImpo').addEventListener('click',printImposition);
+  $('artExpReport').addEventListener('click',printReport);
+
   // modal
   $('mClose').addEventListener('click',()=>$('modalBg').classList.remove('on'));
   $('modalBg').addEventListener('click',e=>{ if(e.target===$('modalBg'))$('modalBg').classList.remove('on'); });
@@ -2046,7 +2168,7 @@ function bindEvents(){
 
   // exportaciones
   $('expReport').addEventListener('click',printReport);
-  $('expImpo').addEventListener('click',()=>{ goStep(4); setTimeout(()=>{ toast('Usa Imprimir → Guardar como PDF para el pliego','ok'); window.print(); },300); });
+  $('expImpo').addEventListener('click',()=>{ goStep(4); setTimeout(printImposition,300); });
   $('expSpreads').addEventListener('click',()=>toast('Printer spreads: reorganización didáctica (ver documentación v2)','ok'));
   $('expJpg').addEventListener('click',exportSvgJpg);
   $('expCtp').addEventListener('click',()=>{ goStep(4); $('viewSeg').querySelectorAll('button').forEach(x=>x.classList.toggle('on',x.dataset.v==='separaciones')); state.view='separaciones'; drawPlate(); toast('Vista de plancha CTP (separaciones)','ok'); });
