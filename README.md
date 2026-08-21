@@ -2,6 +2,31 @@ Imposición Digital — Sistema Offset 4.0
 Aplicativo educativo de imposición digital para producción offset industrial, con el módulo PDF Place & Export (printer spreads, nested, stack) y cálculo de papel, previsualización CTP y exportación.
 index.html
 
+---
+
+## Simulador educativo por etapas — `simulador.html`
+
+`simulador.html` es un **simulador interactivo de producción industrial offset** diseñado
+pedagógicamente. Guía al estudiante por un flujo secuencial de 5 etapas —
+**01 Orden → 02 Máquina → 03 Papel/Imposición → 04 Imposición Digital/CTP → 05 Preflight & CTP** —
+donde cada decisión se propaga automáticamente a la siguiente y se explica la relación
+`DECISIÓN → CÁLCULO → REPRESENTACIÓN VISUAL → CONSECUENCIA INDUSTRIAL`.
+
+Incluye:
+
+- **Gating secuencial**: cada etapa se desbloquea solo cuando la anterior cumple sus condiciones mínimas.
+- **Biblioteca de 8 máquinas** (GTO 52, Solna 125, Heidelberg Kord/Sorm/Speedmaster 102, Roland Favorit, Miller TP41S, Lithrone L-528) con medidas de plancha, área de impresión, formatos de papel y pinza; primero se elige la máquina y sus dimensiones pasan a la imposición.
+- **Cálculo automático** de poses, aprovechamiento, desperdicio, pliegos, peso y costo, con las mismas fórmulas del Excel *Cálculo de Papel* (`peso = w·h·gramaje/10⁷`, `poses = columnas×filas`, `utilización = poses·área_producto/área_pliego`).
+- **Optimizador de imposición** que compara alternativas de montaje y marca la **★ imposición recomendada**.
+- **Mesa de imposición SVG** con plancha, pinza, mordaza, márgenes, área imprimible, poses, sangrado, marcas de producción (corte, registro, tira CMYK, plegado, Plate ID, código de barras, SmartMarks), zoom y vistas técnica/imposición/marcas/separaciones.
+- **Preflight** con estados 🟢🟡🔴 y diagnóstico `QUÉ OCURRE → POR QUÉ → CÓMO SOLUCIONARLO`.
+- **Modales educativos** (ⓘ) `CONCEPTO → DEFINICIÓN → FUNCIÓN → CONSECUENCIA`, cambio de unidades mm/cm/in, flujo industrial clicable y **dashboard final** de producción.
+
+Un solo archivo HTML/CSS/JS vanilla, sin backend; guarda la sesión en `localStorage`.
+El `index.html` original (v2.0, con carga de PDF real y PDF Place & Export) se mantiene sin cambios.
+
+---
+
 Archivo principal: index.html (HTML/CSS/JS vanilla, sin servidor).
 index.html
 
