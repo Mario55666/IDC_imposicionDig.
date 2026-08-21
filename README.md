@@ -15,7 +15,9 @@ donde cada decisión se propaga automáticamente a la siguiente y se explica la 
 Incluye:
 
 - **Gating secuencial**: cada etapa se desbloquea solo cuando la anterior cumple sus condiciones mínimas.
-- **Biblioteca de 8 máquinas** (GTO 52, Solna 125, Heidelberg Kord/Sorm/Speedmaster 102, Roland Favorit, Miller TP41S, Lithrone L-528) con medidas de plancha, área de impresión, formatos de papel y pinza; primero se elige la máquina y sus dimensiones pasan a la imposición.
+- **Biblioteca de 8 máquinas** (GTO 52, Solna 125, Heidelberg Kord/Sorm/Speed Master 102, Roland Favorit, Miller TP41S, Lithrone L-528) con **medidas exactas** del taller: medidas de placa, área máxima de impresión, formato máximo y mínimo de papel, y **pinza normal = blanco de mordaza + pinza de papel** (bandas separadas en el diagrama). Primero se elige la máquina y sus dimensiones pasan a la imposición.
+- **Ayuda contextual en cada campo**: todos los cuadros de texto tienen un botón ⓘ que abre un diálogo explicando qué información se ingresa.
+- **Controles de montaje (Etapa 04)**: rotación 90°, alineación centrado/pegar a pinza, desplazamiento manual (nudge), y tira de control de color por **archivo propio (SVG/imagen)** o CMYK por defecto.
 - **Cálculo automático** de poses, aprovechamiento, desperdicio, pliegos, peso y costo, con las mismas fórmulas del Excel *Cálculo de Papel* (`peso = w·h·gramaje/10⁷`, `poses = columnas×filas`, `utilización = poses·área_producto/área_pliego`).
 - **Optimizador de imposición** que compara alternativas de montaje y marca la **★ imposición recomendada**.
 - **Mesa de imposición SVG** con plancha, pinza, mordaza, márgenes, área imprimible, poses, sangrado, marcas de producción (corte, registro, tira CMYK, plegado, Plate ID, código de barras, SmartMarks), zoom y vistas técnica/imposición/marcas/separaciones.

@@ -313,6 +313,25 @@ table.tech tr.hl td:last-child{color:var(--accent-ink)}
 .mark-toggle .mwarn{margin-left:auto;font-size:9px;color:#fbbf24}
 .mark-toggle.disabled{opacity:.45;cursor:not-allowed}
 
+.mt-btn{width:100%;background:#232c37;border:1px solid #2a3543;color:#e6edf3;font-size:12.5px;font-weight:600;padding:8px;border-radius:8px;cursor:pointer;margin-bottom:8px}
+.mt-btn:hover{background:#2c3744}
+.mt-btn.ghost{background:transparent;color:#9aa6b3}
+.mt-btn.ghost:hover{background:#1c232c;color:#e6edf3}
+.mt-btn.active{background:var(--accent);border-color:var(--accent);color:#fff}
+.mt-sub{font-size:10px;letter-spacing:.5px;color:#6b7887;font-weight:700;text-transform:uppercase;margin:8px 0 5px}
+.seg2b{display:flex;background:#1c232c;border-radius:8px;padding:3px;gap:2px}
+.seg2b button{flex:1;background:transparent;border:0;color:#9aa6b3;font-size:11.5px;font-weight:600;padding:6px;border-radius:6px;cursor:pointer}
+.seg2b button.on{background:var(--accent);color:#fff}
+.nudge-pad{display:grid;grid-template-columns:repeat(3,1fr);grid-template-areas:". up ." "left c right" ". down .";gap:4px;max-width:150px}
+.nudge-pad .nb{background:#232c37;border:1px solid #2a3543;color:#dbe4ee;font-size:14px;font-weight:700;padding:7px;border-radius:7px;cursor:pointer}
+.nudge-pad .nb:hover{background:var(--accent);color:#fff}
+.nudge-pad .nb[data-n="up"]{grid-area:up}.nudge-pad .nb[data-n="down"]{grid-area:down}
+.nudge-pad .nb[data-n="left"]{grid-area:left}.nudge-pad .nb[data-n="right"]{grid-area:right}
+.nudge-pad .nb-c{grid-area:c;background:#1c232c;font-size:12px;color:#8895a3}
+.mt-read{font-size:11px;color:#8895a3;font-family:var(--mono);margin-top:7px}
+.cbar-ctrl{display:flex;flex-direction:column;gap:6px}
+.cbar-up{display:block;text-align:center;background:#232c37;border:1px dashed #2a3543;color:#dbe4ee;font-size:12px;font-weight:600;padding:9px;border-radius:8px;cursor:pointer}
+.cbar-up:hover{background:#2c3744;border-color:var(--accent)}
 .pose-props{font-size:12px}
 .pose-props .pp{display:flex;justify-content:space-between;padding:5px 0;border-bottom:1px solid #10151b}
 .pose-props .pp .k{color:#7a8797;font-weight:600}
@@ -563,8 +582,9 @@ table.tech tr.hl td:last-child{color:var(--accent-ink)}
 
         <div class="callout edu" style="margin-bottom:16px">
           <span class="cic">🔗</span>
-          <div><b>Relación física:</b> PLANCHA → <b>ÁREA NO IMPRIMIBLE</b> (pinza + mordaza + márgenes) → <b>ÁREA DE IMPRESIÓN</b> → PRODUCTO.
-          La pinza es la franja que sujetan las mordazas del cilindro: nada se imprime ahí.</div>
+          <div><b>Relación física:</b> PLACA → <b>ÁREA NO IMPRIMIBLE</b> → <b>ÁREA DE IMPRESIÓN</b> → PRODUCTO.
+          La banda superior <b>no imprimible</b> es la <b>pinza normal = blanco de mordaza + pinza de papel</b> (p. ej. GTO 52 = 3 cm → 2 de mordaza + 1 de pinza).
+          El <b>formato mínimo de papel</b> es la hoja más pequeña que la máquina puede arrastrar sin fallar el registro.</div>
         </div>
 
         <div class="machine-grid" id="machineGrid"></div>
@@ -691,8 +711,34 @@ table.tech tr.hl td:last-child{color:var(--accent-ink)}
             <div class="pose-props" id="jobPanel"></div>
           </div>
           <div class="isec">
+            <h4>Montaje · rotación y desplazamiento</h4>
+            <button class="mt-btn" id="btnRotate90">⟳ Rotar montaje 90°</button>
+            <div class="mt-sub">Alineación vertical</div>
+            <div class="seg2b" id="alignSeg">
+              <button data-a="centro" class="on">Centrado</button>
+              <button data-a="pinza">Pegar a pinza</button>
+            </div>
+            <div class="mt-sub">Desplazamiento manual (0,5 cm)</div>
+            <div class="nudge-pad">
+              <button class="nb" data-n="up">↑</button>
+              <button class="nb" data-n="left">←</button>
+              <button class="nb nb-c" data-n="reset">⨯</button>
+              <button class="nb" data-n="right">→</button>
+              <button class="nb" data-n="down">↓</button>
+            </div>
+            <div class="mt-read" id="nudgeRead">Δ 0,0 · 0,0 cm</div>
+          </div>
+          <div class="isec">
             <h4>Marcas de producción</h4>
             <div class="marks-list" id="marksList"></div>
+            <div class="mt-sub" style="margin-top:10px">Tira de control de color</div>
+            <div class="cbar-ctrl">
+              <label class="cbar-up">📎 Cargar SVG/imagen
+                <input type="file" id="cbarFile" accept=".svg,image/*" hidden>
+              </label>
+              <button class="mt-btn ghost" id="cbarDefault">Usar CMYK por defecto</button>
+            </div>
+            <div class="mt-read" id="cbarRead">Tira actual: CMYK por defecto</div>
           </div>
           <div class="isec">
             <h4>Pose seleccionada</h4>
@@ -790,24 +836,41 @@ table.tech tr.hl td:last-child{color:var(--accent-ink)}
    Plancha = pliego para el cálculo de peso (peso = w·h·gramaje/1e7).
    Área de impresión = (w − 2·margen) × (h − pinza − mordaza).
    ============================================================ */
+/* Medidas exactas del taller (mm → cm). Área de impresión, formatos de papel
+   y pinza NO se calculan: son valores medidos de la documentación.
+   PINZA NORMAL = blanco de mordaza + pinza de papel (bandas separadas). */
 const MACHINES = [
   { id:'gto52',  name:'GTO 52 doble oficio', cls:'Heidelberg · pliego pequeño',
-    w:52.1, h:41.5, gripper:3.0, side:0.5, minW:9.5,  minH:12.7 },
+    w:52.1, h:41.5, printW:50.5, printH:34.0, paperMaxW:52.0, paperMaxH:36.0, minW:18.0, minH:10.5,
+    pinzaPapel:1.0, mordaza:2.0 },
   { id:'solna',  name:'Solna 125', cls:'Solna · medio pliego',
-    w:64.5, h:51.0, gripper:3.0, side:0.5, minW:14.0, minH:20.0 },
+    w:64.5, h:51.0, printW:63.5, printH:46.9, paperMaxW:64.0, paperMaxH:48.3, minW:25.0, minH:21.0,
+    pinzaPapel:1.0, mordaza:2.0 },
   { id:'kord',   name:'Heidelberg Kord', cls:'Heidelberg · medio pliego',
-    w:65.0, h:55.0, gripper:5.0, side:0.5, minW:15.0, minH:20.0 },
+    w:65.0, h:55.0, printW:64.0, printH:45.0, paperMaxW:64.0, paperMaxH:46.0, minW:18.0, minH:14.0,
+    pinzaPapel:1.0, mordaza:4.0 },
   { id:'sorm',   name:'Heidelberg Sorm', cls:'Heidelberg · pliego ¾',
-    w:72.4, h:61.5, gripper:6.0, side:0.5, minW:20.0, minH:28.0 },
-  { id:'speed',  name:'Heidelberg Speedmaster 102', cls:'Heidelberg · pliego grande',
-    w:103.0, h:79.0, gripper:5.2, side:0.5, minW:34.0, minH:48.0 },
+    w:72.4, h:61.5, printW:71.0, printH:51.0, paperMaxW:72.0, paperMaxH:52.0, minW:40.0, minH:28.0,
+    pinzaPapel:1.0, mordaza:5.0 },
+  { id:'speed',  name:'Heidelberg Speed Master 102', cls:'Heidelberg · pliego grande',
+    w:103.0, h:79.0, printW:102.0, printH:71.0, paperMaxW:102.0, paperMaxH:72.0, minW:48.0, minH:34.0,
+    pinzaPapel:1.0, mordaza:4.2 },
   { id:'roland', name:'Roland Favorit RVF0B', cls:'Roland · pliego ¾',
-    w:72.4, h:61.5, gripper:6.0, side:0.5, minW:20.0, minH:28.0 },
-  { id:'miller', name:'Miller TP41S 1', cls:'Miller · pliego grande',
-    w:104.8, h:79.0, gripper:5.0, side:0.5, minW:30.0, minH:43.0 },
+    w:72.4, h:61.5, printW:72.0, printH:51.0, paperMaxW:72.0, paperMaxH:52.0, minW:28.0, minH:21.0,
+    pinzaPapel:1.0, mordaza:5.0 },
+  { id:'miller', name:'Miller Tp41S 1', cls:'Miller · pliego grande',
+    w:104.8, h:79.0, printW:103.0, printH:71.0, paperMaxW:104.0, paperMaxH:72.0, minW:28.0, minH:21.0,
+    pinzaPapel:1.0, mordaza:4.0 },
   { id:'lithrone', name:'Lithrone L-528', cls:'Komori · pliego ¾',
-    w:72.4, h:61.0, gripper:6.0, side:0.5, minW:20.0, minH:28.0 },
+    w:72.4, h:61.0, printW:71.0, printH:51.0, paperMaxW:72.0, paperMaxH:52.0, minW:40.0, minH:28.0,
+    pinzaPapel:1.0, mordaza:5.0 },
 ];
+/* Derivados: gripper (pinza total), margen lateral y cola (contrapinza) */
+MACHINES.forEach(m=>{
+  m.gripper=+(m.pinzaPapel+m.mordaza).toFixed(2);       // banda superior no imprimible
+  m.side=+(((m.w-m.printW)/2)).toFixed(2);              // margen lateral por lado
+  m.tail=+((m.h-m.gripper-m.printH)).toFixed(2);        // margen de cola inferior
+});
 
 /* Diccionario educativo: CONCEPTO → DEFINICIÓN → FUNCIÓN → CONSECUENCIA */
 const CONCEPTS = {
@@ -828,6 +891,44 @@ const CONCEPTS = {
   ctp:{ic:'💿',t:'CTP READY',def:'Estado en que todas las condiciones técnicas están validadas.',fun:'Autoriza el grabado de la plancha y el paso a prensa.',con:'Grabar sin CTP READY arriesga replanchar: tiempo y aluminio perdidos.'},
 };
 
+/* Ayuda por campo: qué información se ingresa en cada cuadro de texto.
+   Se inyecta un botón ⓘ en TODOS los campos. */
+const FIELD_HELP = {
+  f_job:{t:'N.º de orden de trabajo',d:'Código único que identifica el trabajo en el taller (p. ej. JOB-63025). Aparece en el Plate ID y en el reporte.'},
+  f_piece:{t:'N.º de producto / pieza',d:'Identificador de la pieza dentro de la orden (p. ej. PZ-01). Útil cuando una orden tiene varias piezas.'},
+  f_desc:{t:'Descripción del producto',d:'Nombre claro de lo que se imprime: "Volante A5", "Tarjeta de visita", "Tríptico".'},
+  f_prodW:{t:'Ancho del producto',d:'Medida horizontal de la pieza terminada (después de cortar), en la unidad activa.'},
+  f_prodH:{t:'Alto del producto',d:'Medida vertical de la pieza terminada, en la unidad activa.'},
+  f_bleed:{t:'Sangrado',d:'Excedente de imagen fuera del corte, en milímetros. Normalmente 3 mm por lado.'},
+  f_qty:{t:'Cantidad a producir (tiraje)',d:'Número de ejemplares buenos a entregar. Determina cuántos pliegos se imprimen.'},
+  f_ref:{t:'Referencia del pedido',d:'Código del pedido del cliente o de venta, para trazabilidad.'},
+  f_date:{t:'Fecha de producción',d:'Día programado para imprimir el trabajo.'},
+  f_raw:{t:'Materias primas',d:'Papel y tintas a usar: tipo, gramaje y color (p. ej. "Couché 150 g · CMYK").'},
+  f_route:{t:'Ruta de producción',d:'Secuencia de estaciones por las que pasa el trabajo (Preprensa → CTP → Offset → Acabado).'},
+  f_quality:{t:'Especificaciones de calidad',d:'Norma y tolerancias exigidas (p. ej. ISO 12647-2, ΔE ≤ 4, registro ≤ 0,1 mm).'},
+  f_time:{t:'Tiempo estimado',d:'Horas previstas de producción, para planificar la máquina.'},
+  f_labor:{t:'Mano de obra',d:'Operarios necesarios (p. ej. 1 op. CTP + 1 op. prensa).'},
+  f_waste:{t:'Desperdicio previsto',d:'Porcentaje de pliegos que se perderán; se sincroniza con la merma de la Etapa 03.'},
+  f_materials:{t:'Materiales emitidos',d:'Insumos entregados a producción (pliegos, planchas de aluminio, tintas).'},
+  f_done:{t:'Cantidad completada',d:'Unidades buenas ya producidas; sirve para el seguimiento del avance.'},
+  f_inspect:{t:'Resultados de inspección',d:'Observaciones de control de calidad (color, registro, corte).'},
+  f_owner:{t:'Responsable',d:'Persona que responde por el trabajo.'},
+  f_approval:{t:'Aprobación',d:'Estado de autorización del trabajo: Pendiente, Aprobado o Rechazado.'},
+  f_notes:{t:'Notas',d:'Comentarios libres o instrucciones especiales para el operario.'},
+  c_qty:{t:'Tiraje',d:'Cantidad de ejemplares buenos; se sincroniza con la orden.'},
+  c_pages:{t:'Páginas por unidad',d:'Cuántas páginas tiene cada ejemplar. Junto al tiro/retiro define las poses necesarias.'},
+  c_print:{t:'Tipo de impresión',d:'Solo tiro (una cara) o tiro y retiro (ambas caras del pliego).'},
+  c_weight:{t:'Gramaje',d:'Masa del papel en g/m². Interviene en el peso del pliego.'},
+  c_price:{t:'Precio del papel',d:'Costo del papel en dólares por kilogramo (USD/kg).'},
+  c_fx:{t:'Tipo de cambio',d:'Cuántas unidades de moneda local equivalen a 1 USD.'},
+  c_cur:{t:'Moneda local',d:'Moneda en la que se muestra el costo final.'},
+  c_wastepct:{t:'Merma de producción',d:'Porcentaje de pliegos que se pierden en registro, atascos y control.'},
+  c_setup:{t:'Hojas de arranque',d:'Pliegos gastados hasta lograr registro y densidad correctos.'},
+  c_prodW:{t:'Producto — ancho',d:'Ancho de la pieza; se sincroniza con la orden.'},
+  c_prodH:{t:'Producto — alto',d:'Alto de la pieza; se sincroniza con la orden.'},
+  c_gap:{t:'Separación entre poses',d:'Espacio entre piezas montadas, en milímetros. Deja lugar para las líneas de corte.'},
+};
+
 /* ============================================================
    ESTADO GLOBAL
    ============================================================ */
@@ -841,6 +942,9 @@ const state = {
   marks:{crop:true,reg:true,rules:false,scale:false,color:true,fold:false,plateid:true,barcode:false,smart:false},
   selectedPose:null,
   result:null,
+  alignPinza:false,          // pegar el montaje a la pinza
+  nudge:{x:0,y:0},           // desplazamiento manual (cm)
+  customColorBar:null,       // dataURL de tira de color cargada
 };
 
 const $=id=>document.getElementById(id);
@@ -944,9 +1048,10 @@ function calcImposition(){
   if(!m) return {error:'Selecciona una máquina en la Etapa 02.'};
   const plate={w:m.w,h:m.h,gripper:m.gripper,side:m.side};
   const prod=state.prod, cc=state.calc;
-  const usableW=plate.w-2*plate.side;
-  const mordaza=plate.side;
-  const usableH=plate.h-plate.gripper-mordaza;
+  // Área imprimible = valor medido de la máquina (no calculado)
+  const usableW=m.printW;
+  const mordaza=m.mordaza;
+  const usableH=m.printH;
   const bleed=prod.bleed/10, gap=prod.gap/10;
   const pieceW=prod.w+2*bleed, pieceH=prod.h+2*bleed;
 
@@ -1050,6 +1155,7 @@ function renderAll(){
   renderMiniPlate();
   renderSideStatus();
   renderJobPanel();
+  renderMontageControls();
   renderDock();
   if(state.step===4) drawPlate();
   if(state.step===5){ renderPreflight(); renderProcFlow(); renderDashboard(); }
@@ -1079,23 +1185,36 @@ function renderOrderSummary(){
 
 /* ---------- MÁQUINAS ---------- */
 function plateDiagram(m,big){
-  const W=big?230:200, H=big?150:130, pad=big?18:14;
+  const W=big?250:210, H=big?168:140, pad=big?20:15;
   const pw=W-pad*2, ph=H-pad*2;
-  const gr=ph*(m.gripper/m.h), sd=pw*(m.side/m.w), mo=ph*(m.side/m.h);
+  const sy=ph/m.h, sx=pw/m.w;
+  const pinza=m.pinzaPapel*sy;                 // banda extrema (pinza de papel)
+  const mord=m.mordaza*sy;                       // blanco de mordaza
+  const sd=m.side*sx;                            // margen lateral
+  const tail=m.tail*sy;                          // cola
+  const areaX=pad+sd, areaY=pad+pinza+mord, areaW=pw-2*sd, areaH=ph-pinza-mord-tail;
   return `<svg viewBox="0 0 ${W} ${H}" style="width:100%;height:auto">
-    <rect x="${pad}" y="${pad}" width="${pw}" height="${ph}" fill="#1c2531" rx="3"/>
-    <rect x="${pad+sd}" y="${pad+gr}" width="${pw-2*sd}" height="${ph-gr-mo}" fill="#dbeafe" opacity=".92" rx="1"/>
-    <rect x="${pad}" y="${pad}" width="${pw}" height="${gr}" fill="#e11d48" opacity=".85"/>
-    <text x="${pad+pw/2}" y="${pad+gr/2+3}" font-size="8" fill="#fff" text-anchor="middle" font-weight="700">PINZA ${m.gripper} cm</text>
-    <text x="${pad+pw/2}" y="${pad+gr+(ph-gr-mo)/2}" font-size="8" fill="#1e3a5f" text-anchor="middle" font-weight="700">ÁREA IMPRIMIBLE</text>
-    <text x="${pad+pw/2}" y="${pad+gr+(ph-gr-mo)/2+11}" font-size="7" fill="#1e3a5f" text-anchor="middle">${(m.w-2*m.side).toFixed(1)}×${(m.h-m.gripper-m.side).toFixed(1)} cm</text>
-    <rect x="${pad}" y="${pad+ph-mo}" width="${pw}" height="${mo}" fill="#94a3b8" opacity=".7"/>
-    <text x="${pad+pw/2}" y="${pad+ph-mo/2+3}" font-size="6.5" fill="#fff" text-anchor="middle" font-weight="600">MORDAZA</text>
+    <rect x="${pad}" y="${pad}" width="${pw}" height="${ph}" fill="#1c2531" stroke="#0b0f14" rx="3"/>
+    <!-- área imprimible -->
+    <rect x="${areaX}" y="${areaY}" width="${areaW}" height="${areaH}" fill="#dbeafe" opacity=".95" rx="1"/>
+    <text x="${areaX+areaW/2}" y="${areaY+areaH/2-2}" font-size="8" fill="#1e3a5f" text-anchor="middle" font-weight="800">ÁREA IMPRIMIBLE</text>
+    <text x="${areaX+areaW/2}" y="${areaY+areaH/2+9}" font-size="7" fill="#1e3a5f" text-anchor="middle">${m.printW}×${m.printH} cm</text>
+    <!-- pinza de papel (extremo) -->
+    <rect x="${pad}" y="${pad}" width="${pw}" height="${pinza}" fill="#e11d48" opacity=".9"/>
+    ${big?`<text x="${pad+pw/2}" y="${pad+pinza/2+3}" font-size="6.5" fill="#fff" text-anchor="middle" font-weight="800">PINZA DE PAPEL ${m.pinzaPapel} cm</text>`:''}
+    <!-- blanco de mordaza -->
+    <rect x="${pad}" y="${pad+pinza}" width="${pw}" height="${mord}" fill="#f59e0b" opacity=".85"/>
+    ${big?`<text x="${pad+pw/2}" y="${pad+pinza+mord/2+3}" font-size="6.5" fill="#3b2600" text-anchor="middle" font-weight="800">BLANCO DE MORDAZA ${m.mordaza} cm</text>`:`<text x="${pad+pw/2}" y="${pad+pinza+mord/2+2.5}" font-size="5.5" fill="#3b2600" text-anchor="middle" font-weight="800">MORDAZA+PINZA ${m.gripper}cm</text>`}
+    <!-- márgenes laterales -->
+    <rect x="${pad}" y="${areaY}" width="${sd}" height="${areaH}" fill="#64748b" opacity=".45"/>
+    <rect x="${pad+pw-sd}" y="${areaY}" width="${sd}" height="${areaH}" fill="#64748b" opacity=".45"/>
+    <!-- cola -->
+    <rect x="${pad}" y="${pad+ph-tail}" width="${pw}" height="${tail}" fill="#94a3b8" opacity=".6"/>
+    ${big?`<text x="${pad+pw/2}" y="${pad+ph-tail/2+3}" font-size="6" fill="#1c2531" text-anchor="middle" font-weight="700">COLA ${m.tail} cm</text>`:''}
   </svg>`;
 }
 function buildMachines(){
   $('machineGrid').innerHTML=MACHINES.map(m=>{
-    const printW=(m.w-2*m.side), printH=(m.h-m.gripper-m.side);
     return `<button class="machine-card" data-id="${m.id}">
       <div class="mc-head">
         <div class="mc-name">${m.name}</div>
@@ -1103,11 +1222,11 @@ function buildMachines(){
         <span class="mc-pick badge neutral">Elegir</span>
       </div>
       <div class="mc-body">
-        <div class="mc-spec"><span class="k">Medidas de plancha</span><span class="v">${m.w}×${m.h} cm</span></div>
-        <div class="mc-spec"><span class="k">Área máx. de impresión</span><span class="v">${printW.toFixed(1)}×${printH.toFixed(1)} cm</span></div>
-        <div class="mc-spec"><span class="k">Formato máx. papel</span><span class="v">${m.w}×${m.h} cm</span></div>
+        <div class="mc-spec"><span class="k">Medidas de placa</span><span class="v">${m.w}×${m.h} cm</span></div>
+        <div class="mc-spec"><span class="k">Área máx. de impresión</span><span class="v">${m.printW}×${m.printH} cm</span></div>
+        <div class="mc-spec"><span class="k">Formato máx. papel</span><span class="v">${m.paperMaxW}×${m.paperMaxH} cm</span></div>
         <div class="mc-spec"><span class="k">Formato mín. papel</span><span class="v">${m.minW}×${m.minH} cm</span></div>
-        <div class="mc-spec"><span class="k">Pinza normal</span><span class="v">${m.gripper} cm</span></div>
+        <div class="mc-spec"><span class="k">Pinza normal</span><span class="v">${m.gripper} cm (${m.mordaza}+${m.pinzaPapel})</span></div>
       </div>
       <div class="mc-diagram">
         <div class="dcap">Plancha → área no imprimible → impresión → producto</div>
@@ -1137,15 +1256,17 @@ function renderMachineDetail(){
     c.querySelector('.mc-pick').textContent=c.dataset.id===m.id?'✓ Seleccionada':'Elegir';
   });
   $('mdName').textContent=m.name; $('mdClass').textContent=m.cls;
-  const printW=(m.w-2*m.side), printH=(m.h-m.gripper-m.side);
   $('mdTable').innerHTML=[
-    ['Medidas de plancha',`${uDim(m.w)} × ${uDim(m.h)}`],
-    ['Área máxima de impresión',`${uDim(printW)} × ${uDim(printH)}`,true],
-    ['Formato máximo de papel',`${uDim(m.w)} × ${uDim(m.h)}`],
+    ['Medidas de placa',`${uDim(m.w)} × ${uDim(m.h)}`,true],
+    ['Área máxima de impresión',`${uDim(m.printW)} × ${uDim(m.printH)}`,true],
+    ['Formato máximo de papel',`${uDim(m.paperMaxW)} × ${uDim(m.paperMaxH)}`],
     ['Formato mínimo de papel',`${uDim(m.minW)} × ${uDim(m.minH)}`],
-    ['Pinza normal',uDim(m.gripper)],
-    ['Mordaza / margen',uDim(m.side)],
-    ['Área de plancha',`${fmt(m.w*m.h,0)} cm²`],
+    ['Pinza de papel',uDim(m.pinzaPapel)],
+    ['Blanco de mordaza',uDim(m.mordaza)],
+    ['Pinza normal (mordaza + pinza)',`${uDim(m.gripper)}`,true],
+    ['Margen lateral',uDim(m.side)],
+    ['Margen de cola',uDim(m.tail)],
+    ['Área de placa',`${fmt(m.w*m.h,0)} cm²`],
   ].map(([k,v,hl])=>`<tr class="${hl?'hl':''}"><td>${k}</td><td>${v}</td></tr>`).join('');
   $('mdDiagram').innerHTML=plateDiagram(m,true);
 }
@@ -1248,12 +1369,18 @@ function buildMarks(){
 }
 function computeGeom(){
   const r=state.result; if(!r||r.error)return null;
-  const m=r.plate;
+  const m=state.machine;
   const usableW=r.usableW, usableH=r.usableH;
   const gridW=r.cols*r.pieceW+(r.cols-1)*(state.prod.gap/10);
   const gridH=r.rows*r.pieceH+(r.rows-1)*(state.prod.gap/10);
-  const offX=m.side+(usableW-gridW)/2;
-  const offY=m.gripper+(usableH-gridH)/2;
+  // Base: centrado horizontal; vertical según alineación (pinza vs centro)
+  let offX=m.side+(usableW-gridW)/2;
+  let offY=state.alignPinza ? m.gripper : m.gripper+(usableH-gridH)/2;
+  // Desplazamiento manual
+  offX+=state.nudge.x; offY+=state.nudge.y;
+  // Mantener dentro de la placa
+  offX=Math.max(0,Math.min(offX,m.w-gridW));
+  offY=Math.max(0,Math.min(offY,m.h-gridH));
   return {m,usableW,usableH,gridW,gridH,offX,offY,r};
 }
 function currentScale(){
@@ -1282,18 +1409,24 @@ function drawPlate(){
   let s='';
   // Plancha
   s+=`<rect x="${PAD}" y="${PAD}" width="${W}" height="${H}" fill="${sep?'#0b1220':'#1c2531'}" stroke="#000" stroke-width="1" rx="3"/>`;
-  // Área no imprimible: pinza
-  const grPx=m.gripper*pxcm, sidePx=m.side*pxcm, moPx=m.side*pxcm;
-  s+=`<rect x="${PAD}" y="${PAD}" width="${W}" height="${grPx}" fill="#e11d48" opacity=".78"/>`;
-  s+=`<text x="${PAD+W/2}" y="${PAD+grPx/2+4}" text-anchor="middle" font-size="11" fill="#fff" font-weight="800" letter-spacing="1">PINZA · GRIPPER ${uDim(m.gripper)}</text>`;
-  // Mordaza
-  s+=`<rect x="${PAD}" y="${PAD+H-moPx}" width="${W}" height="${moPx}" fill="#64748b" opacity=".6"/>`;
+  // Área no imprimible superior: pinza de papel (extremo) + blanco de mordaza
+  const pinzaPx=m.pinzaPapel*pxcm, mordPx=m.mordaza*pxcm, grPx=m.gripper*pxcm;
+  const sidePx=m.side*pxcm, tailPx=m.tail*pxcm;
+  // pinza de papel (banda extrema)
+  s+=`<rect x="${PAD}" y="${PAD}" width="${W}" height="${pinzaPx}" fill="#e11d48" opacity=".85"/>`;
+  s+=`<text x="${PAD+W/2}" y="${PAD+pinzaPx/2+3.5}" text-anchor="middle" font-size="9" fill="#fff" font-weight="800" letter-spacing="1">PINZA DE PAPEL ${uDim(m.pinzaPapel)}</text>`;
+  // blanco de mordaza
+  s+=`<rect x="${PAD}" y="${PAD+pinzaPx}" width="${W}" height="${mordPx}" fill="#f59e0b" opacity=".8"/>`;
+  s+=`<text x="${PAD+W/2}" y="${PAD+pinzaPx+mordPx/2+3.5}" text-anchor="middle" font-size="9" fill="#3b2600" font-weight="800" letter-spacing="1">BLANCO DE MORDAZA ${uDim(m.mordaza)}</text>`;
+  // cola inferior
+  s+=`<rect x="${PAD}" y="${PAD+H-tailPx}" width="${W}" height="${tailPx}" fill="#64748b" opacity=".6"/>`;
+  s+=`<text x="${PAD+W/2}" y="${PAD+H-tailPx/2+3}" text-anchor="middle" font-size="7.5" fill="#e2e8f0" font-weight="700">COLA ${uDim(m.tail)}</text>`;
   // Márgenes laterales
-  s+=`<rect x="${PAD}" y="${PAD+grPx}" width="${sidePx}" height="${H-grPx-moPx}" fill="#64748b" opacity=".35"/>`;
-  s+=`<rect x="${PAD+W-sidePx}" y="${PAD+grPx}" width="${sidePx}" height="${H-grPx-moPx}" fill="#64748b" opacity=".35"/>`;
+  s+=`<rect x="${PAD}" y="${PAD+grPx}" width="${sidePx}" height="${H-grPx-tailPx}" fill="#64748b" opacity=".35"/>`;
+  s+=`<rect x="${PAD+W-sidePx}" y="${PAD+grPx}" width="${sidePx}" height="${H-grPx-tailPx}" fill="#64748b" opacity=".35"/>`;
   // Área imprimible
   if(state.view==='tecnica'){
-    s+=`<rect x="${PAD+sidePx}" y="${PAD+grPx}" width="${W-2*sidePx}" height="${H-grPx-moPx}" fill="#1e293b" stroke="#3b82f6" stroke-dasharray="6 4" stroke-width="1" opacity=".5"/>`;
+    s+=`<rect x="${PAD+sidePx}" y="${PAD+grPx}" width="${W-2*sidePx}" height="${H-grPx-tailPx}" fill="#1e293b" stroke="#3b82f6" stroke-dasharray="6 4" stroke-width="1" opacity=".5"/>`;
     s+=`<text x="${PAD+sidePx+6}" y="${PAD+grPx+16}" font-size="9" fill="#7dd3fc" font-weight="700">ÁREA IMPRIMIBLE ${uDim(usableW)} × ${uDim(usableH)}</text>`;
   }
 
@@ -1339,15 +1472,22 @@ function drawPlate(){
   if(state.marks.reg){
     const cross=(cx,cy)=>`<circle cx="${cx}" cy="${cy}" r="3.4" fill="none"/><line x1="${cx-6}" y1="${cy}" x2="${cx+6}" y2="${cy}"/><line x1="${cx}" y1="${cy-6}" x2="${cx}" y2="${cy+6}"/>`;
     s+=`<g stroke="#a78bfa" stroke-width="0.8" fill="none">
-      ${cross(PAD+W/2,PAD+grPx-6)}${cross(PAD+W/2,PAD+H-moPx+6)}
+      ${cross(PAD+W/2,PAD+grPx-6)}${cross(PAD+W/2,PAD+H-tailPx+6)}
       ${cross(PAD+sidePx-6,PAD+H/2)}${cross(PAD+W-sidePx+6,PAD+H/2)}</g>`;
   }
-  // Tira CMYK
+  // Tira de control de color (custom SVG/imagen o CMYK por defecto)
   if(state.marks.color){
-    const sw=Math.max(10,W/28), sh=9; let bx=PAD+sidePx+2; const by=PAD+H-moPx-sh-3;
-    const bars=[['#00B7EB','C'],['#EC008C','M'],['#FFE800','Y'],['#111','K'],['#7DDCEF','C50'],['#F47BBE','M50'],['#FFF480','Y50'],['#7F7F7F','K50']];
-    s+=`<text x="${PAD+sidePx+2}" y="${by-3}" font-size="6.5" fill="#94a3b8" font-weight="700">▦ CONTROL CMYK</text>`;
-    bars.forEach(([c,l])=>{ s+=`<rect x="${bx}" y="${by}" width="${sw}" height="${sh}" fill="${c}" stroke="#000" stroke-width="0.3"/><text x="${bx+sw/2}" y="${by+sh+6}" font-size="5" fill="#94a3b8" text-anchor="middle">${l}</text>`; bx+=sw; });
+    if(state.customColorBar){
+      const cbW=Math.min(W-2*sidePx-4, W*0.5), cbH=Math.min(tailPx>14?tailPx-4:16, cbW*(state.customColorBar.h/state.customColorBar.w)||16);
+      const by=PAD+H-tailPx-cbH-2;
+      s+=`<image x="${PAD+sidePx+2}" y="${by}" width="${cbW}" height="${cbH}" href="${state.customColorBar.url}" preserveAspectRatio="xMidYMid meet"/>`;
+      s+=`<text x="${PAD+sidePx+2}" y="${by-3}" font-size="6.5" fill="#22c55e" font-weight="700">★ TIRA DE CONTROL PROPIA</text>`;
+    }else{
+      const sw=Math.max(10,W/28), sh=9; let bx=PAD+sidePx+2; const by=PAD+H-tailPx-sh-3;
+      const bars=[['#00B7EB','C'],['#EC008C','M'],['#FFE800','Y'],['#111','K'],['#7DDCEF','C50'],['#F47BBE','M50'],['#FFF480','Y50'],['#7F7F7F','K50']];
+      s+=`<text x="${PAD+sidePx+2}" y="${by-3}" font-size="6.5" fill="#94a3b8" font-weight="700">▦ CONTROL CMYK</text>`;
+      bars.forEach(([c,l])=>{ s+=`<rect x="${bx}" y="${by}" width="${sw}" height="${sh}" fill="${c}" stroke="#000" stroke-width="0.3"/><text x="${bx+sw/2}" y="${by+sh+6}" font-size="5" fill="#94a3b8" text-anchor="middle">${l}</text>`; bx+=sw; });
+    }
   }
   // Reglas
   if(state.marks.rules){
@@ -1418,6 +1558,21 @@ function checkMarkSpace(){
   });
 }
 
+function renderMontageControls(){
+  if(!$('alignSeg'))return;
+  $('alignSeg').querySelectorAll('button').forEach(b=>b.classList.toggle('on',(b.dataset.a==='pinza')===state.alignPinza));
+  $('nudgeRead').textContent=`Δ ${state.nudge.x.toFixed(1)} · ${state.nudge.y.toFixed(1)} cm`;
+  const rot=state.result&&!state.result.error&&state.result.rotated;
+  const rb=$('btnRotate90'); if(rb){ rb.classList.toggle('active',rot); rb.textContent=rot?'⟳ Montaje rotado 90° (activo)':'⟳ Rotar montaje 90°'; }
+  const cr=$('cbarRead'); if(cr) cr.textContent=state.customColorBar?'Tira actual: archivo propio':'Tira actual: CMYK por defecto';
+}
+function toggleRotate90(){
+  const r=state.result; const nowRot=r&&!r.error&&r.rotated;
+  state.orient=nowRot?'vertical':'horizontal';
+  $('orientSeg').querySelectorAll('button').forEach(b=>b.classList.toggle('on',b.dataset.o===state.orient));
+  recalc();
+  toast(nowRot?'Montaje en vertical':'Montaje rotado 90°','ok');
+}
 function renderJobPanel(){
   const r=state.result;
   $('jobPanel').innerHTML=[
@@ -1691,6 +1846,23 @@ function openConcept(key){
     <div class="concept-block"><div class="cb-lab">Función</div><div class="cb-txt">${c.fun}</div></div>
     <div class="concept-block consequence"><div class="cb-lab">Consecuencia en producción</div><div class="cb-txt">${c.con}</div></div>`);
 }
+function openFieldHelp(id){
+  const f=FIELD_HELP[id]; if(!f)return;
+  openModal('✏️','Qué información ingresar',f.t,
+    `<div class="concept-block"><div class="cb-lab">En este campo</div><div class="cb-txt">${f.d}</div></div>`);
+}
+// Inyecta un botón ⓘ en cada campo que no tenga ya uno
+function injectFieldHelp(){
+  document.querySelectorAll('.field').forEach(fld=>{
+    const inp=fld.querySelector('input,select,textarea'); if(!inp)return;
+    const lab=fld.querySelector('label'); if(!lab)return;
+    if(lab.querySelector('.info-i'))return;              // ya tiene concepto
+    if(!FIELD_HELP[inp.id])return;
+    const b=document.createElement('button');
+    b.className='info-i'; b.type='button'; b.dataset.fhelp=inp.id; b.textContent='i';
+    lab.appendChild(b);
+  });
+}
 
 /* ============================================================
    EXPORTACIONES
@@ -1751,7 +1923,8 @@ function exportSvgJpg(){
 function saveState(){
   try{ localStorage.setItem('idc-sim',JSON.stringify({
     order:state.order,machineId:state.machine?state.machine.id:null,prod:state.prod,
-    calc:state.calc,orient:state.orient,marks:state.marks,step:state.step,unit:state.unit
+    calc:state.calc,orient:state.orient,marks:state.marks,step:state.step,unit:state.unit,
+    alignPinza:state.alignPinza,nudge:state.nudge
   })); }catch(e){}
 }
 function loadState(){
@@ -1760,6 +1933,8 @@ function loadState(){
     Object.assign(state.order,s.order||{}); Object.assign(state.prod,s.prod||{});
     Object.assign(state.calc,s.calc||{}); Object.assign(state.marks,s.marks||{});
     state.orient=s.orient||'auto'; state.unit=s.unit||'cm';
+    if(typeof s.alignPinza==='boolean')state.alignPinza=s.alignPinza;
+    if(s.nudge&&typeof s.nudge.x==='number')state.nudge=s.nudge;
     if(s.machineId) state.machine=MACHINES.find(m=>m.id===s.machineId)||null;
     // repoblar inputs
     const o=state.order;
@@ -1832,10 +2007,41 @@ function bindEvents(){
   $('zOut').addEventListener('click',()=>{ let z=state.zoom==='fit'?1:parseFloat(state.zoom); z=Math.max(0.25,z-0.25); state.zoom=String(z); $('zSel').value=state.zoom; drawPlate(); });
   $('zSel').addEventListener('change',e=>{ state.zoom=e.target.value; drawPlate(); });
 
+  // rotación 90°
+  $('btnRotate90').addEventListener('click',toggleRotate90);
+  // alineación
+  $('alignSeg').querySelectorAll('button').forEach(b=>b.addEventListener('click',()=>{
+    state.alignPinza=(b.dataset.a==='pinza'); renderMontageControls(); drawPlate(); saveState();
+  }));
+  // desplazamiento
+  document.querySelectorAll('.nudge-pad .nb').forEach(b=>b.addEventListener('click',()=>{
+    const n=b.dataset.n, s=0.5;
+    if(n==='up')state.nudge.y-=s; else if(n==='down')state.nudge.y+=s;
+    else if(n==='left')state.nudge.x-=s; else if(n==='right')state.nudge.x+=s;
+    else if(n==='reset'){state.nudge.x=0;state.nudge.y=0;}
+    renderMontageControls(); drawPlate(); saveState();
+  }));
+  // tira de color: cargar archivo
+  $('cbarFile').addEventListener('change',e=>{
+    const f=e.target.files&&e.target.files[0]; if(!f)return;
+    const rd=new FileReader();
+    rd.onload=()=>{
+      const url=rd.result;
+      const img=new Image();
+      img.onload=()=>{ state.customColorBar={url,w:img.naturalWidth||300,h:img.naturalHeight||40};
+        renderMontageControls(); drawPlate(); toast('Tira de control cargada','ok'); };
+      img.onerror=()=>{ state.customColorBar={url,w:300,h:40}; renderMontageControls(); drawPlate(); toast('Tira cargada (SVG)','ok'); };
+      img.src=url;
+    };
+    rd.readAsDataURL(f);
+    e.target.value='';
+  });
+  $('cbarDefault').addEventListener('click',()=>{ state.customColorBar=null; renderMontageControls(); drawPlate(); toast('Tira CMYK por defecto','ok'); });
+
   // modal
   $('mClose').addEventListener('click',()=>$('modalBg').classList.remove('on'));
   $('modalBg').addEventListener('click',e=>{ if(e.target===$('modalBg'))$('modalBg').classList.remove('on'); });
-  document.addEventListener('click',e=>{ const i=e.target.closest('.info-i'); if(i)openConcept(i.dataset.concept); });
+  document.addEventListener('click',e=>{ const i=e.target.closest('.info-i'); if(i){ if(i.dataset.fhelp)openFieldHelp(i.dataset.fhelp); else openConcept(i.dataset.concept); } });
   document.addEventListener('keydown',e=>{ if(e.key==='Escape')$('modalBg').classList.remove('on'); });
 
   // exportaciones
@@ -1854,7 +2060,7 @@ function bindEvents(){
    ============================================================ */
 document.addEventListener('DOMContentLoaded',()=>{
   $('f_date').value=new Date().toISOString().slice(0,10);
-  buildFlow(); buildMachines(); buildMarks();
+  buildFlow(); buildMachines(); buildMarks(); injectFieldHelp();
   const restored=loadState();
   bindEvents();
   recalc();
