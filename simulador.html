@@ -8,7 +8,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
-<script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
+<script defer src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
 <style>
 /* ============================================================
    TOKENS DE DISEÑO — estética de software técnico de preprensa
@@ -1531,7 +1531,9 @@ function computeGeom(){
 function currentScale(){
   if(state.zoom!=='fit') return parseFloat(state.zoom);
   const g=computeGeom(); if(!g)return 1;
-  const box=$('impoScroll'); const availW=box.clientWidth-70, availH=box.clientHeight-70;
+  const box=$('impoScroll');
+  let availW=(box?box.clientWidth:0)-70, availH=(box?box.clientHeight:0)-70;
+  if(!(availW>40)||!(availH>40)){ availW=760; availH=600; }   // fallback si el contenedor aún no tiene tamaño
   const s=Math.min(availW/g.m.w, availH/g.m.h);
   return Math.max(2,Math.min(s,60))/7; // normalize to px/cm base of 7
 }
@@ -1710,17 +1712,24 @@ function buildPlateMarkup(g,pxcm){
   return {s,VW,VH};
 }
 function drawPlate(){
-  const svg=$('plateSvg'), g=computeGeom();
+  const svg=$('plateSvg'); if(!svg)return;
+  const g=computeGeom();
   if(!g){ svg.setAttribute('viewBox','0 0 400 300');
     svg.innerHTML=`<text x="200" y="150" text-anchor="middle" fill="#e2e8f0" font-size="14">${state.result&&state.result.error?state.result.error:'Sin imposición válida'}</text>`;
     return; }
-  const {s,VW,VH}=buildPlateMarkup(g,7*currentScale());
-  svg.setAttribute('viewBox',`0 0 ${VW} ${VH}`);
-  svg.setAttribute('width',VW); svg.setAttribute('height',VH);
-  svg.innerHTML=s;
-  svg.querySelectorAll('.pose').forEach(p=>p.addEventListener('click',()=>selectPose(+p.dataset.pose)));
-  updateZoomLabel();
-  checkMarkSpace();
+  try{
+    const {s,VW,VH}=buildPlateMarkup(g,7*currentScale());
+    svg.setAttribute('viewBox',`0 0 ${VW} ${VH}`);
+    svg.setAttribute('width',VW); svg.setAttribute('height',VH);
+    svg.innerHTML=s;
+    svg.querySelectorAll('.pose').forEach(p=>p.addEventListener('click',()=>selectPose(+p.dataset.pose)));
+    updateZoomLabel();
+    checkMarkSpace();
+  }catch(err){
+    svg.setAttribute('viewBox','0 0 400 300');
+    svg.innerHTML=`<text x="200" y="150" text-anchor="middle" fill="#f87171" font-size="12">Error al dibujar la plancha</text>`;
+    console.error('drawPlate error',err);
+  }
 }
 function updateZoomLabel(){
   $('zLab').textContent = state.zoom==='fit'?'Ajustar':Math.round(parseFloat(state.zoom)*100)+'%';
