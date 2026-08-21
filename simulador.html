@@ -1047,6 +1047,7 @@ const state = {
   customColorBar:null,       // dataURL de tira de color cargada
   colorBarPreset:'cmyk',     // preset SmartMarks: cmyk|4color|6color|5spot
   cbarNudge:{x:0,y:0},       // desplazamiento de la tira de control (cm)
+  signature:'octava',        // esquema de pliego para encuadernado con doblez
   gutters:{Top:false,Bottom:false,Left:false,Right:false,Center:false,Mid:false},
   art:{pages:[], name:'', size:null},  // arte final PDF/imagen cargado
 };
@@ -1478,14 +1479,23 @@ function buildMarks(){
 /* Encuadernación / acabado → efecto en el montaje CTP */
 const BINDINGS={
   'Sin encuadernación':{icon:'▭',draw:'none',imp:'Piezas sueltas: sin plegado, cosido ni perforado.'},
-  'Engrampado metálico':{icon:'📎',draw:'fold',fold:true,imp:'Grapa a caballete: requiere pliegos plegados y printer spreads (múltiplos de 4). Se marca la línea de plegado central.'},
+  'Engrampado metálico':{icon:'📎',draw:'fold',fold:true,imp:'Grapa a caballete: pliegos plegados en signaturas. Las uniones van en las calles entre páginas contiguas (el LOMO es el doblez central).'},
   'Fresado':{icon:'📘',draw:'spine',imp:'Lomo encolado (hotmelt): se marca el borde de encolado (lomo) de cada pieza.'},
-  'Cosido':{icon:'🧵',draw:'fold',fold:true,imp:'Cosido por signaturas plegadas: se marca la línea de plegado central.'},
-  'Termocosido':{icon:'🧵',draw:'fold',fold:true,imp:'Signaturas cosidas y termofijadas: se marca la línea de plegado central.'},
-  'Tapa dura':{icon:'📗',draw:'fold',fold:true,imp:'Signaturas cosidas + tapa dura: se marca la línea de plegado central.'},
+  'Cosido':{icon:'🧵',draw:'fold',fold:true,imp:'Cosido por signaturas plegadas: las uniones van en las calles entre páginas contiguas.'},
+  'Termocosido':{icon:'🧵',draw:'fold',fold:true,imp:'Signaturas cosidas y termofijadas: uniones en las calles entre páginas contiguas.'},
+  'Tapa dura':{icon:'📗',draw:'fold',fold:true,imp:'Signaturas cosidas + tapa dura: uniones en las calles entre páginas contiguas.'},
   'Espiral':{icon:'🌀',draw:'punch',imp:'Encuadernación en espiral: margen de perforado (troquel de anillos) en el lomo de cada pieza.'},
 };
 function bindingInfo(){ return BINDINGS[state.order.binding]||BINDINGS['Sin encuadernación']; }
+/* Esquemas de pliego (signatura) para encuadernado con doblez */
+const SIGNATURES={
+  folio:{n:2,lab:'Folio (2 pp)'},
+  cuarta:{n:4,lab:'Cuarta · 4to (4 pp)'},
+  octava:{n:8,lab:'Octava · 8vo (8 pp)'},
+  dieciseisava:{n:16,lab:'Dieciseisava · 16vo (16 pp)'},
+  treintaidosava:{n:32,lab:'Treintaidosava · 32vo (32 pp)'},
+};
+function isFoldBinding(){ return bindingInfo().draw==='fold'; }
 function getColorBarSwatches(type){
   switch(type){
     case '4color': return [['#00B7EB','C'],['#EC008C','M'],['#FFE800','Y'],['#111','K'],['#7DDCEF','C50'],['#F47BBE','M50'],['#FFF480','Y50'],['#7F7F7F','K50'],['#005C75','C+'],['#760046','M+'],['#807400','Y+'],['#1A1A1A','K+']];
@@ -1602,7 +1612,7 @@ function buildPlateMarkup(g,pxcm){
     if(state.marks.fold&&state.view==='marcas'){
       s+=`<line x1="${x+w/2}" y1="${y}" x2="${x+w/2}" y2="${y+h}" stroke="#22c55e" stroke-dasharray="2 3" stroke-width="0.7"/>`;
     }
-    // Encuadernación / acabado — se ejecuta sobre cada pose
+    // Encuadernación / acabado — marca por pieza (espiral y fresado son por pieza)
     if(!sep){
       const bd=bindingInfo();
       if(bd.draw==='punch'){
@@ -1611,10 +1621,31 @@ function buildPlateMarkup(g,pxcm){
       }else if(bd.draw==='spine'){
         s+=`<rect x="${x}" y="${y}" width="3.5" height="${h}" fill="#7c3aed" opacity="0.75"/>`;
       }else if(bd.draw==='fold'){
-        s+=`<line x1="${x+w/2}" y1="${y}" x2="${x+w/2}" y2="${y+h}" stroke="#16a34a" stroke-dasharray="3 2" stroke-width="0.8"/>`;
+        // Encuadernado con doblez: la página se empareja con su contigua (1-8, 2-7…)
+        const pair=r.poses+1-nEl;
+        s+=`<text x="${x+w-3}" y="${y+h-3}" text-anchor="end" font-size="7.5" font-weight="700" fill="#16a34a">↔ p${pair}</text>`;
       }
     }
     s+=`</g>`;
+  }
+
+  // Uniones de encuadernado (dobleces) — ENTRE páginas contiguas, en las calles
+  if(bindingInfo().draw==='fold' && r.cols){
+    const gridW2=r.cols*r.pieceW+(r.cols-1)*gap;
+    const gridH2=r.rows*r.pieceH+(r.rows-1)*gap;
+    const top=PAD+offY*pxcm, bot=PAD+(offY+gridH2)*pxcm;
+    const left=PAD+offX*pxcm, right=PAD+(offX+gridW2)*pxcm;
+    const cxCenter=PAD+(offX+gridW2/2)*pxcm;               // lomo central
+    for(let c=0;c<r.cols-1;c++){
+      const gx=PAD+(offX+(c+1)*(r.pieceW+gap)-gap/2)*pxcm;
+      const isSpine=Math.abs(gx-cxCenter)<(gap*pxcm)+2;
+      s+=`<line x1="${gx}" y1="${top}" x2="${gx}" y2="${bot}" stroke="${isSpine?'#16a34a':'#4ade80'}" stroke-dasharray="${isSpine?'7 3':'3 3'}" stroke-width="${isSpine?1.8:1}"/>`;
+      if(isSpine) s+=`<text x="${gx}" y="${top-5}" text-anchor="middle" font-size="8" font-weight="800" fill="#16a34a">▲ LOMO · unión</text>`;
+    }
+    for(let rr=0;rr<r.rows-1;rr++){
+      const gy=PAD+(offY+(rr+1)*(r.pieceH+gap)-gap/2)*pxcm;
+      s+=`<line x1="${left}" y1="${gy}" x2="${right}" y2="${gy}" stroke="#4ade80" stroke-dasharray="3 3" stroke-width="1"/>`;
+    }
   }
 
   // Cruces de registro
@@ -1729,14 +1760,28 @@ function checkMarkSpace(){
 function renderBindingPanel(){
   const el=$('bindingPanel'); if(!el)return;
   const bd=bindingInfo(); const name=state.order.binding||'Sin encuadernación';
-  const chip={punch:'Perforado en lomo',spine:'Lomo encolado',fold:'Línea de plegado',none:'Sin marca'}[bd.draw];
+  const chip={punch:'Perforado en lomo',spine:'Lomo encolado',fold:'Doblez entre páginas',none:'Sin marca'}[bd.draw];
+  let extra='';
+  if(bd.draw==='fold'){
+    const r=state.result;
+    const opts=Object.entries(SIGNATURES).map(([k,v])=>`<option value="${k}"${k===state.signature?' selected':''}>${v.lab}</option>`).join('');
+    let pairs='';
+    if(r&&!r.error&&r.poses>=2){
+      const list=[]; for(let n=1;n<=Math.floor(r.poses/2);n++) list.push(`${n}–${r.poses+1-n}`);
+      pairs=`<div style="font-size:11px;color:#9aa6b3;margin-top:8px;line-height:1.5">Las uniones (dobleces) van <b style="color:#86efac">entre páginas contiguas, en las calles</b> — no dentro de la página. Emparejamiento: <b style="color:#86efac">${list.join(' · ')}</b>. El <b style="color:#86efac">▲ LOMO</b> marca el doblez central.</div>`;
+    }
+    extra=`<div class="mt-sub">Esquema de pliego (signatura)</div>
+      <select id="sigSel" style="width:100%;padding:7px 9px;border:1px solid #2a3543;border-radius:8px;background:#1c232c;color:#e6edf3;font-size:12px">${opts}</select>${pairs}`;
+  }
   el.innerHTML=`
     <div style="display:flex;align-items:center;gap:9px;margin-bottom:8px">
       <span style="font-size:20px">${bd.icon}</span>
       <div><div style="font-weight:700;font-size:13px;color:#e6edf3">${name}</div>
       <div style="font-size:10.5px;color:#8895a3">Marca en plancha: ${chip}</div></div>
     </div>
-    <div style="font-size:11px;color:#9aa6b3;line-height:1.5">${bd.imp}</div>`;
+    <div style="font-size:11px;color:#9aa6b3;line-height:1.5">${bd.imp}</div>${extra}`;
+  const sel=$('sigSel');
+  if(sel) sel.addEventListener('change',()=>{ state.signature=sel.value; drawPlate(); saveState(); });
 }
 function renderMontageControls(){
   if(!$('alignSeg'))return;
@@ -2224,7 +2269,8 @@ function saveState(){
     order:state.order,machineId:state.machine?state.machine.id:null,prod:state.prod,
     calc:state.calc,orient:state.orient,marks:state.marks,step:state.step,unit:state.unit,
     alignPinza:state.alignPinza,nudge:state.nudge,
-    colorBarPreset:state.colorBarPreset,gutters:state.gutters,cbarNudge:state.cbarNudge
+    colorBarPreset:state.colorBarPreset,gutters:state.gutters,cbarNudge:state.cbarNudge,
+    signature:state.signature
   })); }catch(e){}
 }
 function loadState(){
@@ -2237,6 +2283,7 @@ function loadState(){
     if(s.nudge&&typeof s.nudge.x==='number')state.nudge=s.nudge;
     if(s.colorBarPreset)state.colorBarPreset=s.colorBarPreset;
     if(s.cbarNudge&&typeof s.cbarNudge.x==='number')state.cbarNudge=s.cbarNudge;
+    if(s.signature&&SIGNATURES[s.signature])state.signature=s.signature;
     if(s.gutters)Object.assign(state.gutters,s.gutters);
     if(s.machineId) state.machine=MACHINES.find(m=>m.id===s.machineId)||null;
     // repoblar inputs
