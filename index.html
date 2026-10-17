@@ -73,6 +73,9 @@ input,select,textarea{font-size:13.5px}
   display:grid;place-items:center;color:#fff;font-weight:800;font-size:15px;
   box-shadow:0 0 0 3px rgba(255,107,26,.22);
 }
+.brand-logo{display:flex;align-items:center;height:38px;padding:3px 9px;background:#fff;border-radius:9px;flex:none}
+.brand-logo img{height:32px;width:auto;display:block}
+@media(max-width:1280px){.brand .t2{display:none}}
 .brand .t1{font-size:14.5px;line-height:1.05}
 .brand .t2{font-size:10.5px;color:#8b96a4;font-weight:500;letter-spacing:.4px}
 .topbar .spacer{flex:1}
@@ -201,6 +204,15 @@ input,select,textarea{font-size:13.5px}
 .field input:focus,.field select:focus,.field textarea:focus{outline:0;border-color:var(--primary);box-shadow:0 0 0 3px var(--primary-soft)}
 .field textarea{resize:vertical;min-height:60px}
 .field .hint{font-size:10.5px;color:var(--ink-muted);margin-top:3px}
+.field .hint.warn{color:#b45309;font-weight:600}
+.field .hint.ok{color:#15803d;font-weight:600}
+.field input.bad{border-color:#dc2626;box-shadow:0 0 0 3px rgba(220,38,38,.12)}
+.link-chip{margin-left:auto;font-size:9.5px;font-weight:800;letter-spacing:.3px;color:var(--accent-ink);background:var(--accent-soft);border-radius:999px;padding:2px 8px;white-space:nowrap}
+.ink-note{display:flex;align-items:center;justify-content:center;height:36px;border-radius:8px;background:var(--ink,#0f1720);color:#fff;font:800 17px/1 var(--mono);letter-spacing:1px}
+.ink-note small{font:700 9.5px/1 'Inter',sans-serif;letter-spacing:.3px;margin-left:6px;opacity:.75}
+.soft-tip{font-size:11.5px;line-height:1.55;color:var(--ink-soft);background:var(--panel-soft);border:1px solid var(--line);border-left:3px solid var(--accent);border-radius:9px;padding:10px 12px}
+.soft-tip b{color:var(--ink)}
+.soft-tip .ext{display:inline-block;font:700 10.5px/1.4 var(--mono);background:var(--panel-2);border-radius:5px;padding:1px 6px;margin-right:4px}
 .field-row{display:grid;grid-template-columns:1fr 1fr;gap:10px}
 .field-row-3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px}
 
@@ -258,6 +270,95 @@ table.tech tr.hl td:last-child{color:var(--accent-ink)}
 .locked-veil .lkic{font-size:40px}
 .locked-veil h2{font-size:19px;margin:10px 0 6px}
 .locked-veil p{color:var(--ink-soft);margin:0 0 16px}
+
+/* ============================================================
+   DATOS DE PRODUCCIÓN — formulario por bloques (Etapa 03)
+   ============================================================ */
+.field .sr-only{position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0,0,0,0);white-space:nowrap;border:0}
+.prod-card{overflow:hidden}
+.prod-card .card-h{padding:14px 18px}
+.prod-card .card-h .ic{background:var(--accent-soft)}
+.prod-live{margin-left:auto;display:inline-flex;align-items:center;gap:6px;font-size:10.5px;font-weight:700;color:#166534;letter-spacing:.3px}
+.prod-live i{width:7px;height:7px;border-radius:50%;background:var(--ok);box-shadow:0 0 0 3px var(--ok-soft)}
+.pblock{padding:16px 18px 14px;border-bottom:1px solid var(--line-soft)}
+.pblock-h{display:flex;align-items:center;gap:10px;margin-bottom:12px}
+.pblock-n{width:22px;height:22px;border-radius:7px;background:var(--bg);color:#fff;font:800 11px/1 var(--mono);display:grid;place-items:center;flex:none}
+.pblock-t{font-size:13px;font-weight:800;letter-spacing:-.1px}
+.pblock-d{margin-left:auto;font-size:11px;color:var(--ink-muted);text-align:right;line-height:1.3}
+.pblock-d b{color:var(--ink-soft);font-family:var(--mono)}
+.pblock.paper{background:linear-gradient(180deg,#fff8f3 0,#fff 70%)}
+.pblock.paper .pblock-n{background:var(--accent)}
+.inp{display:flex;align-items:stretch;border:1px solid var(--line-strong);border-radius:8px;background:#fff;transition:border .15s,box-shadow .15s}
+.inp:focus-within{border-color:var(--primary);box-shadow:0 0 0 3px var(--primary-soft)}
+.field .inp input,.field .inp input:focus{border:0;box-shadow:none;background:transparent;min-width:0;flex:1;
+  font-family:var(--mono);font-variant-numeric:tabular-nums;font-weight:600}
+.inp .sfx{display:flex;align-items:center;padding:0 9px;font:700 10.5px/1 var(--mono);color:var(--ink-muted);
+  background:var(--panel-soft);border-left:1px solid var(--line);border-radius:0 7px 7px 0;white-space:nowrap}
+.seg.full{display:flex;width:100%}
+.seg.full button{flex:1;display:inline-flex;align-items:center;justify-content:center;gap:6px;padding:7px 8px}
+.seg.full button svg{flex:none}
+.ptype-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}
+.ptype{border:1.5px solid var(--line);background:#fff;border-radius:10px;padding:9px 11px;text-align:left;cursor:pointer;
+  display:flex;flex-direction:column;gap:1px;transition:border .15s,box-shadow .15s,transform .1s}
+.ptype:hover{border-color:var(--primary);transform:translateY(-1px)}
+.ptype .pn{font-size:12.5px;font-weight:800;color:var(--ink)}
+.ptype .ps{font-size:10.5px;color:var(--ink-muted);font-weight:600}
+.ptype .pp{font:700 10.5px/1.2 var(--mono);color:#166534;margin-top:4px}
+.ptype .pp.q{color:var(--warn)}
+.ptype.on{border-color:var(--accent);box-shadow:0 0 0 3px var(--accent-soft);background:#fffaf6}
+.gram-row{display:flex;gap:10px;align-items:center;flex-wrap:wrap}
+.gram-row .chips{flex:1;min-width:200px}
+.gram-row .inp{width:128px;flex:none}
+.chips{display:flex;flex-wrap:wrap;gap:6px}
+.gchip{border:1px solid var(--line-strong);background:#fff;border-radius:999px;padding:5px 11px;cursor:pointer;
+  font:700 12px/1.2 var(--mono);color:var(--ink-soft);transition:background .12s,border .12s,color .12s}
+.gchip:hover{border-color:var(--primary);color:var(--primary)}
+.gchip small{font:600 10px/1 'Inter',sans-serif;opacity:.75;margin-right:4px}
+.gchip.on{background:var(--ink);border-color:var(--ink);color:#fff}
+.madre-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(168px,1fr));gap:8px}
+.madre{position:relative;border:1.5px solid var(--line);border-radius:11px;background:#fff;padding:10px 11px;cursor:pointer;
+  display:flex;gap:10px;align-items:center;text-align:left;transition:border .15s,box-shadow .15s,transform .1s}
+.madre:hover{border-color:var(--primary);transform:translateY(-1px)}
+.madre svg{flex:none;display:block}
+.madre .mm,.madre .mt,.madre .my{display:block}
+.madre .mm{font:800 13.5px/1.1 var(--mono);color:var(--ink)}
+.madre .mt{font-size:10.5px;color:var(--ink-muted);font-weight:600;margin-top:1px}
+.madre .my{font-size:10.5px;font-weight:700;color:var(--primary);margin-top:4px;line-height:1.3}
+.madre .my.bad{color:var(--err)}
+.madre.on{border-color:var(--accent);box-shadow:0 0 0 3px var(--accent-soft)}
+.madre.off{background:var(--panel-soft)}
+.madre .star{position:absolute;top:-8px;right:8px;background:var(--ok);color:#fff;font-size:9px;font-weight:800;
+  letter-spacing:.3px;padding:2px 7px;border-radius:999px}
+.madre-hint{margin-top:8px;font-size:11.5px;color:var(--ink-soft);line-height:1.5}
+.madre-hint.bad{color:#991b1b}
+.madre-hint button{background:none;border:0;color:var(--primary);font-weight:700;cursor:pointer;padding:0;font-size:inherit;text-decoration:underline}
+.pref{display:flex;align-items:center;gap:14px;margin-top:4px;padding:12px 14px;border-radius:12px;background:var(--bg);color:#cdd6e0}
+.pref .pk{font-size:9.5px;letter-spacing:1.1px;font-weight:800;color:#7a8797;text-transform:uppercase}
+.pref .pv{font:800 16px/1.15 var(--mono);color:#fff;margin-top:2px;white-space:nowrap}
+.pref .pv small{font-size:11px;color:#8895a3;font-weight:600}
+.pref .psrc{font-size:10.5px;color:#8895a3;line-height:1.45;flex:1;border-left:1px solid #232c37;padding-left:14px}
+.pref .psrc b{color:#e6edf3}
+.pref .psrc a{color:#fdba74}
+.pref .btn{padding:7px 12px;font-size:12px;flex:none}
+.buy{margin:14px 18px 16px;border:1px solid var(--line);border-radius:11px;background:var(--panel-soft)}
+.buy summary{cursor:pointer;padding:11px 14px;font-size:12.5px;font-weight:700;list-style:none;display:flex;align-items:center;gap:8px}
+.buy summary::-webkit-details-marker{display:none}
+.buy summary .bs{font-weight:500;color:var(--ink-muted);font-size:11.5px}
+.buy summary::after{content:"▾";margin-left:auto;color:var(--ink-muted);transition:transform .15s}
+.buy[open] summary::after{transform:rotate(180deg)}
+.buy-list{display:grid;grid-template-columns:1fr 1fr;gap:8px;padding:0 14px 14px}
+.buy-it{background:#fff;border:1px solid var(--line);border-radius:9px;padding:9px 11px;font-size:11.5px;line-height:1.45;color:var(--ink-soft)}
+.buy-it .bz{display:block;font-size:9.5px;font-weight:800;letter-spacing:.6px;color:var(--accent);text-transform:uppercase}
+.buy-it b{color:var(--ink);font-size:12.5px}
+.buy-it a{color:var(--primary);font-weight:600}
+.calc-card{position:sticky;top:12px;align-self:start}
+table.tech tr.sec td{background:var(--panel-soft);text-align:left;font:800 9.5px/1 'Inter',sans-serif;letter-spacing:1px;
+  text-transform:uppercase;color:var(--ink-muted);padding:9px 10px 7px}
+table.tech tr.alert td{background:var(--err-soft);color:#991b1b;text-align:left;font-family:inherit;font-weight:600;font-size:12px;line-height:1.45}
+@media(max-width:1280px){.paper-split{grid-template-columns:1fr}.calc-card{position:static}}
+@media(max-width:640px){.ptype-grid{grid-template-columns:repeat(2,1fr)}.buy-list{grid-template-columns:1fr}}
+@media(max-width:560px){.pref{flex-wrap:wrap}.pref .psrc{border-left:0;padding-left:0;flex-basis:100%}
+  .pblock-h{flex-wrap:wrap}.pblock-d{margin-left:32px;text-align:left;flex-basis:100%}}
 
 /* MACHINE CARDS */
 .machine-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:14px}
@@ -361,6 +462,80 @@ table.tech tr.hl td:last-child{color:var(--accent-ink)}
 .gutter-tog.on{background:#16a34a;border-color:#16a34a;color:#fff}
 .art-drop.hot{border-color:var(--accent);background:#241a12;box-shadow:0 0 0 3px rgba(255,107,26,.15)}
 .art-note{font-size:10.5px;color:#fbbf24;margin-top:7px;line-height:1.45}
+/* SEPARACIÓN DE TINTAS */
+.sep-sec{display:none}
+.sep-sec.on{display:block}
+.sep-sec.flash{animation:sepFlash 1.8s ease}
+@keyframes sepFlash{0%,40%{box-shadow:inset 0 0 0 2px var(--accent);background:#1a140f}100%{box-shadow:inset 0 0 0 2px transparent}}
+.sep-sel{width:100%;padding:7px 9px;border:1px solid #2a3543;border-radius:8px;background:#1c232c;color:#e6edf3;font-size:12px}
+.sep-note{font-size:10.5px;line-height:1.45;color:#9aa6b3;background:#131922;border:1px solid #1f2833;border-radius:8px;padding:7px 9px;margin-top:8px}
+.sep-note.warn{color:#fcd34d;background:#2a1e05;border-color:#78350f}
+.sep-note b{color:#e6edf3}
+.sep-note .lnk{background:none;border:0;color:var(--accent);font-weight:700;cursor:pointer;padding:0;font-size:10.5px;text-decoration:underline}
+.sep-inks{display:flex;flex-direction:column;gap:5px}
+.sep-ink{display:grid;grid-template-columns:24px 1fr auto;gap:3px 6px;align-items:center;background:#131922;border:1px solid #1f2833;border-radius:8px;padding:6px 7px}
+.sep-ink .nm{grid-column:2 / 4}
+.sep-ink .im{grid-column:1 / 3;white-space:normal!important}
+.sep-ink .acts{display:flex;gap:4px;justify-content:flex-end}
+.sep-pdesc{font-size:10px;color:#7a8797;margin-top:4px;line-height:1.4}
+.sep-ink.picking{border-color:var(--accent)}
+.sep-ink input[type=color]{width:24px;height:24px;border:1px solid #2a3543;padding:0;background:none;border-radius:6px;cursor:pointer}
+.sep-ink .nm{background:transparent;border:0;border-bottom:1px dashed transparent;color:#e6edf3;font-size:11.5px;font-weight:700;min-width:0;width:100%;padding:1px 0}
+.sep-ink .nm:focus{outline:0;border-bottom-color:var(--accent)}
+.sep-ink .im{font-size:9.5px;color:#7a8797;margin-top:1px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.sep-tag{display:inline-block;font-size:8.5px;font-weight:800;letter-spacing:.4px;padding:1px 4px;border-radius:4px;background:#232c37;color:#9aa6b3;margin-right:3px;text-transform:uppercase}
+.sep-tag.pdf{background:#14532d;color:#86efac}
+.sep-tag.np{background:#3b0d0d;color:#fca5a5}
+.sep-ib{background:#1c232c;border:1px solid #2a3543;color:#9aa6b3;border-radius:6px;width:24px;height:24px;cursor:pointer;font-size:11px;padding:0;line-height:1}
+.sep-ib:hover{border-color:var(--accent);color:#fff}
+.sep-ib.on{background:var(--accent);color:#fff;border-color:var(--accent)}
+.sep-add{display:grid;grid-template-columns:1fr auto auto;gap:5px;margin-top:6px}
+.sep-add input{min-width:0;padding:6px 8px;border:1px solid #2a3543;border-radius:7px;background:#1c232c;color:#e6edf3;font-size:11.5px}
+.sep-add .sep-ib{width:30px;height:auto}
+.sep-tol{display:flex;align-items:center;gap:8px;font-size:10.5px;color:#8895a3;margin-top:8px}
+.sep-tol input[type=range]{flex:1;accent-color:var(--accent)}
+.sep-tol b{font-family:var(--mono);color:#e6edf3;min-width:22px;text-align:right}
+.sep-prev{margin-top:10px;background:#0a0e13;border:1px solid #1c232c;border-radius:10px;padding:8px;text-align:center;min-height:90px;display:grid;place-items:center}
+.sep-prev canvas{max-width:100%;max-height:170px;border-radius:3px;box-shadow:0 4px 12px rgba(0,0,0,.4);display:block}
+.sep-prev .empty{color:#6b7887;font-size:11px}
+.sep-cap{display:flex;justify-content:space-between;gap:6px;align-items:center;font-size:10.5px;color:#8895a3;margin-top:6px}
+.sep-cap b{color:#e6edf3}
+.sep-pager{display:flex;align-items:center;gap:4px}
+.sep-pager button{background:#1c232c;border:1px solid #2a3543;color:#c8d3df;border-radius:5px;width:22px;height:20px;cursor:pointer;font-size:10px;padding:0}
+.sep-pager span{font-family:var(--mono);font-size:10px;color:#c8d3df}
+.sep-film{display:flex;align-items:center;gap:6px;font-size:10.5px;color:#9aa6b3;margin-top:6px;cursor:pointer}
+.sep-film input{accent-color:var(--accent)}
+.sep-plates{display:grid;grid-template-columns:repeat(3,1fr);gap:6px;margin-top:8px}
+.sep-pl{background:#131922;border:1.5px solid #1f2833;border-radius:8px;padding:4px 4px 5px;cursor:pointer;text-align:center;position:relative;color:inherit;font:inherit;min-width:0}
+.sep-pl:hover{border-color:#3a4757}
+.sep-pl.cur{border-color:var(--accent);box-shadow:0 0 0 2px rgba(255,107,26,.2)}
+.sep-pl.off .pimg{opacity:.3}
+.sep-pl.np{border-style:dashed}
+.sep-pl .pimg{width:100%;height:46px;background:#fff;border-radius:3px;display:block;object-fit:contain}
+.sep-pl .pimg.ph{background:#1c232c}
+.sep-pl .pn{display:flex;align-items:center;justify-content:center;gap:4px;font-size:10px;font-weight:700;color:#dbe4ee;margin-top:3px;white-space:nowrap;overflow:hidden}
+.sep-pl .pn i{width:8px;height:8px;border-radius:2px;flex:none;border:1px solid rgba(255,255,255,.25)}
+.sep-pl .pn span{overflow:hidden;text-overflow:ellipsis}
+.sep-pl .pc{font-size:9.5px;color:#8895a3;font-family:var(--mono)}
+.sep-pl .eye{position:absolute;top:2px;right:2px;width:18px;height:18px;border-radius:5px;border:0;background:rgba(13,17,23,.75);color:#e6edf3;font-size:10px;cursor:pointer;padding:0;line-height:18px}
+.sep-pl.off .eye{color:#6b7887}
+.sep-sum{margin-top:9px;font-size:11px;color:#9aa6b3;line-height:1.55}
+.sep-sum .row{display:flex;justify-content:space-between;gap:8px;padding:3px 0;border-bottom:1px solid #10151b}
+.sep-sum .row b{font-family:var(--mono);color:#eef3f8;text-align:right}
+.sep-sum .row b.ok{color:#4ade80}.sep-sum .row b.warn{color:#fbbf24}
+.sep-status{font-size:10.5px;color:#8895a3;margin-top:8px;font-family:var(--mono);min-height:14px}
+.sep-status.busy{color:var(--accent)}
+.sep-chips{position:absolute;top:52px;left:12px;z-index:4;display:none;flex-wrap:wrap;gap:4px;max-width:calc(100% - 24px);
+  background:rgba(13,17,23,.88);padding:5px;border-radius:9px;border:1px solid #2a3543;backdrop-filter:blur(4px)}
+.sep-chips.on{display:flex}
+.sep-chips .lab{font-size:9.5px;font-weight:800;letter-spacing:.8px;color:#6b7887;text-transform:uppercase;padding:5px 6px 0 4px}
+.sep-chip{display:flex;align-items:center;gap:5px;background:#1c232c;border:1px solid #2a3543;color:#c8d3df;font-size:11px;font-weight:600;padding:4px 8px;border-radius:6px;cursor:pointer}
+.sep-chip i{width:9px;height:9px;border-radius:2px;border:1px solid rgba(255,255,255,.3)}
+.sep-chip.on{background:var(--accent);border-color:var(--accent);color:#fff}
+.sep-chip.np{border-style:dashed;opacity:.75}
+.sep-chips .msg{font-size:11px;color:#fcd34d;padding:4px 6px}
+.art-stage.picking{cursor:crosshair;outline:2px dashed var(--accent);outline-offset:2px}
+.art-stage.picking img{cursor:crosshair}
 .side-alert{margin:0 12px 10px;padding:11px 13px;border-radius:11px;background:#2a1e05;border:1px solid #78350f;color:#fcd34d;font-size:11.5px;line-height:1.45;display:none}
 .side-alert.on{display:block}
 .side-alert b{color:#fde68a}
@@ -499,6 +674,8 @@ table.tech tr.hl td:last-child{color:var(--accent-ink)}
   #printArea{display:block!important}
   #printArea .print-plate{width:100%;text-align:center}
   #printArea .print-plate svg{display:block;margin:0 auto}
+  #printArea .print-plate.sep-page{break-after:page;page-break-after:always}
+  #printArea .print-plate.sep-page:last-child{break-after:auto;page-break-after:auto}
 }
 #printArea{display:none}
 </style>
@@ -508,7 +685,7 @@ table.tech tr.hl td:last-child{color:var(--accent-ink)}
   <!-- TOPBAR -->
   <header class="topbar">
     <div class="brand">
-      <div class="brand-mark">IDC</div>
+      <span class="brand-logo"><img src="data:image/png;base64,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" alt="IDC · Diseño &amp; Comunicación" width="101" height="32"></span>
       <div>
         <div class="t1">Simulador Offset · Imposición Digital</div>
         <div class="t2">Producción Industrial · Orden → Máquina → Papel → Imposición → CTP</div>
@@ -560,7 +737,7 @@ table.tech tr.hl td:last-child{color:var(--accent-ink)}
               <div class="field-row-3">
                 <div class="field"><label>Ancho <span class="uu">cm</span></label><input id="f_prodW" type="number" step="0.1" value="14.8"></div>
                 <div class="field"><label>Alto <span class="uu">cm</span></label><input id="f_prodH" type="number" step="0.1" value="21.0"></div>
-                <div class="field"><label>Sangrado <span class="uu-mm">mm</span> <button class="info-i" data-concept="sangrado">i</button></label><input id="f_bleed" type="number" step="0.5" value="3"></div>
+                <div class="field"><label>Sangrado <span class="uu-mm">mm</span> <button class="info-i" data-concept="sangrado">i</button></label><input id="f_bleed" type="number" step="0.5" min="3" max="5" value="3"><div class="hint" id="f_bleedHint">Mín. 3 · máx. 5 mm por lado</div></div>
               </div>
               <div class="field-row">
                 <div class="field"><label>Cantidad a producir (tiraje) <button class="info-i" data-concept="tiraje">i</button></label><input id="f_qty" type="number" value="1000"></div>
@@ -573,7 +750,13 @@ table.tech tr.hl td:last-child{color:var(--accent-ink)}
           <div class="card">
             <div class="card-h"><span class="ic">🏭</span><h3>Proceso y calidad</h3></div>
             <div class="card-b">
-              <div class="field"><label>Materias primas</label><input id="f_raw" value="Couché mate 150 g/m² · CMYK"></div>
+              <div class="field" style="margin-bottom:6px"><label>Materias primas <span class="link-chip" title="Sincronizado con el panel «Papel · compra en Lima» de la Etapa 03">🔗 Papel · Etapa 03</span></label></div>
+              <div class="field-row-3">
+                <div class="field"><label>Tipo de papel <button class="info-i" data-concept="sustrato" type="button">i</button></label><select id="f_ptype"></select></div>
+                <div class="field"><label>Gramaje <button class="info-i" data-concept="gramaje" type="button">i</button></label><select id="f_gram"></select></div>
+                <div class="field"><label>Pliego madre <button class="info-i" data-concept="madre" type="button">i</button></label><select id="f_madre"></select></div>
+              </div>
+              <div class="field"><textarea id="f_raw" readonly rows="2" style="background:var(--panel-2);min-height:0;resize:none" title="Se compone solo: papel + gramaje + pliego madre + tintas">Couché 150 g/m² · CMYK</textarea><div class="hint" id="f_rawHint"></div></div>
               <div class="field-row">
                 <div class="field"><label>Máquina / estación</label><input id="f_stationHint" placeholder="Se define en Etapa 02" readonly style="background:var(--panel-2)"></div>
                 <div class="field"><label>Ruta de producción</label><input id="f_route" value="Preprensa → CTP → Offset → Acabado"></div>
@@ -597,6 +780,43 @@ table.tech tr.hl td:last-child{color:var(--accent-ink)}
               <div class="field-row">
                 <div class="field"><label>Materiales emitidos</label><input id="f_materials" value="Pliegos + planchas Al"></div>
                 <div class="field"><label>Cantidad completada</label><input id="f_done" type="number" value="0"></div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="card" style="margin-top:16px">
+          <div class="card-h"><span class="ic">🎨</span><h3>Tintas y arte final</h3>
+            <span class="sub">Cuántas tintas lleva la impresión y en qué programa se diseñó el arte</span></div>
+          <div class="card-b">
+            <div class="grid g2">
+              <div>
+                <div class="field"><label>Sistema de color <button class="info-i" data-concept="separacion" type="button">i</button></label>
+                  <select id="f_colorsys">
+                    <option value="cmyk">Cuatricromía CMYK</option>
+                    <option value="cmyk_spot">CMYK + Pantone (tinta especial)</option>
+                    <option value="spot">Solo Pantone / tintas planas</option>
+                  </select></div>
+                <div class="field-row-3">
+                  <div class="field"><label>Tintas · tiro</label><input id="f_inksF" type="number" min="0" max="8" step="1" value="4"></div>
+                  <div class="field"><label>Tintas · retiro</label><input id="f_inksB" type="number" min="0" max="8" step="1" value="0"></div>
+                  <div class="field"><label>Notación</label><div class="ink-note" id="f_inkNote">4/0</div></div>
+                </div>
+                <div class="field"><label>Pantone / tintas especiales <button class="info-i" data-concept="spot" type="button">i</button></label>
+                  <input id="f_spots" list="sepPantoneList" placeholder="p. ej. PANTONE 185 C, PANTONE 300 C" autocomplete="off">
+                  <div class="hint" id="f_inksHint"></div></div>
+              </div>
+              <div>
+                <div class="field"><label>Programa nativo del arte final</label>
+                  <select id="f_soft">
+                    <option value="">— Selecciona el programa —</option>
+                    <option>CorelDRAW</option>
+                    <option>Adobe InDesign</option>
+                    <option>Adobe Illustrator</option>
+                    <option>Affinity</option>
+                    <option>Otro</option>
+                  </select></div>
+                <div class="soft-tip" id="f_softTip"></div>
               </div>
             </div>
           </div>
@@ -668,44 +888,101 @@ table.tech tr.hl td:last-child{color:var(--accent-ink)}
              compara alternativas de montaje y recomienda la mejor.</p>
         </div>
 
-        <div class="grid g-split">
-          <div class="card">
-            <div class="card-h"><span class="ic">🧮</span><h3>Datos de producción</h3></div>
-            <div class="card-b">
+        <div class="grid g-split paper-split">
+          <div class="card prod-card">
+            <div class="card-h"><span class="ic">🧮</span><h3>Datos de producción</h3>
+              <span class="prod-live"><i></i>Se recalcula en vivo</span></div>
+
+            <!-- 1 · PEDIDO -->
+            <div class="pblock">
+              <div class="pblock-h"><span class="pblock-n">1</span><span class="pblock-t">Pedido</span>
+                <span class="pblock-d">Cuántas unidades y cuántas caras se imprimen</span></div>
               <div class="field-row-3">
-                <div class="field"><label>Tiraje</label><input id="c_qty" type="number" value="1000"></div>
-                <div class="field"><label>Páginas / unidad <button class="info-i" data-concept="paginas">i</button></label><input id="c_pages" type="number" value="1"></div>
-                <div class="field"><label>Tipo de impresión</label>
-                  <select id="c_print"><option value="tiro">Solo tiro</option><option value="tiroretiro">Tiro y retiro</option></select></div>
+                <div class="field"><label>Tiraje</label>
+                  <div class="inp"><input id="c_qty" type="number" value="1000"><span class="sfx">unid.</span></div></div>
+                <div class="field"><label>Páginas / unidad <button class="info-i" data-concept="paginas">i</button></label>
+                  <div class="inp"><input id="c_pages" type="number" value="1"><span class="sfx">pág.</span></div></div>
+                <div class="field"><label for="c_print">Tipo de impresión</label>
+                  <select id="c_print" class="sr-only"><option value="tiro">Solo tiro</option><option value="tiroretiro">Tiro y retiro</option></select>
+                  <div class="seg full" id="printSeg">
+                    <button type="button" data-p="tiro" class="on">Tiro</button>
+                    <button type="button" data-p="tiroretiro">Tiro y retiro</button>
+                  </div></div>
               </div>
+            </div>
+
+            <!-- 2 · PAPEL (medidas madre de Lima) -->
+            <div class="pblock paper">
+              <div class="pblock-h"><span class="pblock-n">2</span><span class="pblock-t">Papel · compra en Lima</span>
+                <span class="pblock-d">Sustrato, gramaje y pliego madre comercial</span></div>
+              <div class="field"><label>Tipo de papel <button class="info-i" data-concept="sustrato" type="button">i</button></label>
+                <div class="ptype-grid" id="ptypeGrid"></div></div>
+              <div class="field"><label>Gramaje <button class="info-i" data-concept="gramaje">i</button></label>
+                <div class="gram-row">
+                  <div class="chips" id="gramChips"></div>
+                  <div class="inp"><input id="c_weight" type="number" step="0.1" value="150" aria-label="Gramaje"><span class="sfx">g/m²</span></div>
+                </div></div>
+              <div class="field"><label>Pliego madre · medida comercial <button class="info-i" data-concept="madre" type="button">i</button></label>
+                <div class="madre-grid" id="madreGrid"></div>
+                <div class="madre-hint" id="madreHint"></div></div>
+              <div class="pref" id="paperRef"></div>
+            </div>
+
+            <!-- 3 · COSTO -->
+            <div class="pblock">
+              <div class="pblock-h"><span class="pblock-n">3</span><span class="pblock-t">Costo y moneda</span>
+                <span class="pblock-d">Precio por kilo y conversión a moneda local</span></div>
               <div class="field-row-3">
-                <div class="field"><label>Gramaje (g/m²) <button class="info-i" data-concept="gramaje">i</button></label><input id="c_weight" type="number" value="150"></div>
-                <div class="field"><label>Precio papel (USD/kg)</label><input id="c_price" type="number" step="0.05" value="1.85"></div>
-                <div class="field"><label>Tipo de cambio</label><input id="c_fx" type="number" step="0.01" value="3.75"></div>
-              </div>
-              <div class="field-row-3">
+                <div class="field"><label>Precio papel</label>
+                  <div class="inp"><input id="c_price" type="number" step="0.01" value="1.85"><span class="sfx">USD/kg</span></div></div>
+                <div class="field"><label>Tipo de cambio</label>
+                  <div class="inp"><input id="c_fx" type="number" step="0.01" value="3.75"><span class="sfx" id="fxSfx">S/ por USD</span></div></div>
                 <div class="field"><label>Moneda local</label>
                   <select id="c_cur"><option value="S/">PEN · Soles</option><option value="$">USD · Dólar</option><option value="MXN$">MXN · Peso</option><option value="€">EUR · Euro</option></select></div>
-                <div class="field"><label>Merma producción (%) <button class="info-i" data-concept="merma">i</button></label><input id="c_wastepct" type="number" step="0.5" value="8"></div>
-                <div class="field"><label>Hojas de arranque <button class="info-i" data-concept="arranque">i</button></label><input id="c_setup" type="number" value="50"></div>
               </div>
+            </div>
+
+            <!-- 4 · MERMAS -->
+            <div class="pblock">
+              <div class="pblock-h"><span class="pblock-n">4</span><span class="pblock-t">Mermas</span>
+                <span class="pblock-d" id="mermaHint">Pliegos extra que se compran y no llegan al cliente</span></div>
+              <div class="field-row">
+                <div class="field"><label>Merma de producción <button class="info-i" data-concept="merma">i</button></label>
+                  <div class="inp"><input id="c_wastepct" type="number" step="0.5" value="8"><span class="sfx">%</span></div></div>
+                <div class="field"><label>Hojas de arranque <button class="info-i" data-concept="arranque">i</button></label>
+                  <div class="inp"><input id="c_setup" type="number" value="50"><span class="sfx">pliegos</span></div></div>
+              </div>
+            </div>
+
+            <!-- 5 · MONTAJE -->
+            <div class="pblock">
+              <div class="pblock-h"><span class="pblock-n">5</span><span class="pblock-t">Montaje</span>
+                <span class="pblock-d">Medida de la pieza y cómo se acomoda en el pliego</span></div>
               <div class="field-row-3">
-                <div class="field"><label>Producto ancho <span class="uu">cm</span></label><input id="c_prodW" type="number" step="0.1" value="14.8"></div>
-                <div class="field"><label>Producto alto <span class="uu">cm</span></label><input id="c_prodH" type="number" step="0.1" value="21.0"></div>
-                <div class="field"><label>Separación poses <span class="uu-mm">mm</span> <button class="info-i" data-concept="gap">i</button></label><input id="c_gap" type="number" step="0.5" value="4"></div>
+                <div class="field"><label>Producto ancho</label>
+                  <div class="inp"><input id="c_prodW" type="number" step="0.1" value="14.8"><span class="sfx uu">cm</span></div></div>
+                <div class="field"><label>Producto alto</label>
+                  <div class="inp"><input id="c_prodH" type="number" step="0.1" value="21.0"><span class="sfx uu">cm</span></div></div>
+                <div class="field"><label>Separación poses <button class="info-i" data-concept="gap">i</button></label>
+                  <div class="inp"><input id="c_gap" type="number" step="0.5" value="4"><span class="sfx uu-mm">mm</span></div></div>
               </div>
               <div class="field">
                 <label>Orientación de montaje</label>
-                <div class="seg" id="orientSeg">
-                  <button data-o="auto" class="on">Automática</button>
-                  <button data-o="vertical">Vertical</button>
-                  <button data-o="horizontal">Horizontal</button>
+                <div class="seg full" id="orientSeg">
+                  <button type="button" data-o="auto" class="on"><svg width="18" height="14" viewBox="0 0 18 14" aria-hidden="true"><rect x="1" y="2" width="7" height="10" rx="1" fill="none" stroke="currentColor" stroke-width="1.4"/><rect x="10" y="4" width="7" height="6" rx="1" fill="none" stroke="currentColor" stroke-width="1.4" stroke-dasharray="2 1.5"/></svg>Automática</button>
+                  <button type="button" data-o="vertical"><svg width="12" height="14" viewBox="0 0 12 14" aria-hidden="true"><rect x="1.5" y="1" width="9" height="12" rx="1" fill="none" stroke="currentColor" stroke-width="1.4"/></svg>Vertical</button>
+                  <button type="button" data-o="horizontal"><svg width="16" height="12" viewBox="0 0 16 12" aria-hidden="true"><rect x="1" y="1.5" width="14" height="9" rx="1" fill="none" stroke="currentColor" stroke-width="1.4"/></svg>Horizontal</button>
                 </div>
               </div>
             </div>
+
+            <details class="buy">
+              <summary>📍 ¿Dónde comprar papel en Lima? <span class="bs">Importadoras, emporio gráfico y referencias</span></summary>
+              <div class="buy-list" id="buyList"></div>
+            </details>
           </div>
 
-          <div class="card">
+          <div class="card calc-card">
             <div class="card-h"><span class="ic">📊</span><h3>Cálculo automático</h3>
               <span class="sub" id="c_machineLbl">—</span></div>
             <div class="card-b" style="padding:0">
@@ -753,6 +1030,7 @@ table.tech tr.hl td:last-child{color:var(--accent-ink)}
           <div class="impo-scroll" id="impoScroll">
             <svg id="plateSvg"></svg>
           </div>
+          <div class="sep-chips" id="sepChips"></div>
         </div>
 
         <aside class="impo-side">
@@ -763,7 +1041,7 @@ table.tech tr.hl td:last-child{color:var(--accent-ink)}
               <div class="at">Arrastra tu PDF aquí o haz clic para elegir</div>
               <div class="ah">Producto final, ya con sangrado incluido si aplica.</div>
             </div>
-            <div class="art-note">⚠ El PDF debe ir <b>con sangrado</b> y <b>SIN marcas de impresión</b>: las marcas de corte, registro y control las agrega la imposición sobre la plancha.</div>
+            <div class="art-note">⚠ El PDF debe ir <b>con sangrado de 3 a 5 mm</b> y <b>SIN marcas de impresión</b>: las marcas de corte, registro y control las agrega la imposición sobre la plancha.</div>
             <input type="file" id="artFile" accept="application/pdf,image/*" hidden>
             <div class="art-stage" id="artStage">
               <div class="empty"><div class="ei">📄</div>Sin documento cargado<div class="ah">La vista previa aparecerá aquí</div></div>
@@ -773,6 +1051,49 @@ table.tech tr.hl td:last-child{color:var(--accent-ink)}
             <div class="art-exports">
               <button class="art-xbtn" id="artExpImpo"><span class="xic">📄</span><div><div class="xn">PDF Imposicionado</div><div class="xd">Poses montadas en plancha, listo para CTP.</div></div></button>
               <button class="art-xbtn" id="artExpReport"><span class="xic">📊</span><div><div class="xn">Reporte de producción</div><div class="xd">HTML/imprimible con cálculos y especificaciones.</div></div></button>
+            </div>
+          </div>
+          <div class="isec sep-sec" id="sepSec">
+            <h4>🎨 Separación de tintas</h4>
+            <div class="isec-desc">Cada tinta se graba en <b style="color:#dbe4ee">su propia plancha CTP</b>. Elige cómo separar el arte cargado.<br><span class="en">Ink separations · one plate per ink.</span></div>
+            <div class="seg2b wrap" id="sepMode">
+              <button data-m="cmyk" class="on" title="Cuatricromía: 4 planchas">CMYK</button>
+              <button data-m="cmyk_spot" title="Cuatricromía + Pantone / tintas planas">CMYK + especiales</button>
+              <button data-m="spot" title="Solo tintas planas (p. ej. 1 o 2 Pantone)" style="flex-basis:100%">Solo tintas especiales</button>
+            </div>
+            <div id="sepProcBox">
+              <div class="mt-sub">Perfil de separación (simulado) <button class="info-i" data-concept="tac">i</button></div>
+              <select id="sepProfile" class="sep-sel"></select>
+              <div class="sep-pdesc" id="sepProfDesc"></div>
+              <div class="mt-sub">Generación de negro (GCR) <button class="info-i" data-concept="gcr">i</button></div>
+              <div class="seg2b" id="sepGcr">
+                <button data-g="light">Ligero</button>
+                <button data-g="medium" class="on">Medio</button>
+                <button data-g="heavy">Fuerte</button>
+              </div>
+            </div>
+            <div id="sepSpotBox">
+              <div class="mt-sub">Tintas especiales · Pantone / planas <button class="info-i" data-concept="spot">i</button></div>
+              <div class="sep-inks" id="sepInks"></div>
+              <div class="sep-add">
+                <input id="sepNewName" list="sepPantoneList" placeholder="p. ej. PANTONE 185 C" autocomplete="off">
+                <button class="sep-ib" id="sepAddBtn" title="Añadir tinta especial">＋</button>
+                <button class="sep-ib" id="sepPickNew" title="Cuentagotas: crear la tinta tomando un color del arte">💧</button>
+              </div>
+              <datalist id="sepPantoneList"></datalist>
+              <div class="sep-tol" title="Diferencia de color (ΔE) admitida para asignar un píxel a la tinta especial">
+                <span>Tolerancia ΔE</span><input type="range" id="sepTol" min="3" max="40" step="1" value="12"><b id="sepTolV">12</b>
+              </div>
+            </div>
+            <div id="sepNotes"></div>
+            <div class="sep-prev" id="sepPrev"><div class="empty">Sin separaciones</div></div>
+            <div class="sep-cap"><span id="sepPrevLbl">—</span><div class="sep-pager" id="sepPager"></div></div>
+            <label class="sep-film"><input type="checkbox" id="sepFilm"> Ver como plancha CTP (negro = zona con tinta)</label>
+            <div class="sep-plates" id="sepPlates"></div>
+            <div class="sep-sum" id="sepSum"></div>
+            <div class="sep-status" id="sepStatus"></div>
+            <div class="art-exports">
+              <button class="art-xbtn" id="sepExport"><span class="xic">🟦</span><div><div class="xn">PDF de separaciones · CTP</div><div class="xd">Una página por plancha (tinta), a tamaño real.</div></div></button>
             </div>
           </div>
           <div class="isec">
@@ -970,12 +1291,91 @@ MACHINES.forEach(m=>{
   m.tail=+((m.h-m.gripper-m.printH)).toFixed(2);        // margen de cola inferior
 });
 
+/* ============================================================
+   PAPEL — MEDIDAS MADRE DE LIMA Y PRECIOS DE REFERENCIA
+   El distribuidor vende el papel en "pliego madre" (resma o paquete);
+   en guillotina se corta en partes iguales hasta el pliego de máquina.
+   penKg = S/ por kg con IGV, deducido de listados minoristas de
+   Multiutiles (Lima, oct-2026) ÷ peso del paquete. Couché: presentación
+   confirmada por código (PQT×100H / PQT×250H); resto inferida.
+   ============================================================ */
+const MADRES = {
+  '61x86': {w:61,h:86, tag:'Clásico peruano', note:'Medio pliego ampliado: la medida más vendida en Perú. Rinde 8 hojas oficio peruano (21,5×33) u 8 A4 con refile mínimo.'},
+  '65x90': {w:65,h:90, tag:'Couché importado', note:'Formato intermedio de couché, entre el clásico y el 69×89.'},
+  '69x89': {w:69,h:89, tag:'Volantes · afiches', note:'≈ 70×90. Optimiza A4, A5 y tercio de A4 en máquinas de medio pliego (50×70 o 52×72).'},
+  '70x90': {w:70,h:90, tag:'Cartulina', note:'Medida de cartulina Foldcote / Dúplex para cajas y empaques pequeños.'},
+  '70x100':{w:70,h:100,tag:'Pliego entero', note:'Pliego entero estándar internacional, habitual en Foldcote y Dúplex.'},
+  '71x102':{w:71,h:102,tag:'Pliego entero', note:'Pliego entero para prensas industriales de gran formato (Heidelberg, Komori, Roland).'},
+  '72x102':{w:72,h:102,tag:'Pliego entero', note:'Pliego entero: couché de alto gramaje, cartulinas y bond de exportación en prensas de gran formato.'},
+};
+const PAPER_TYPES = [
+  {id:'bond',     n:'Bond',              s:'Blanco y colores', g:[56,75,80,90,120],             def:75,  sizes:['61x86','69x89','71x102'],
+   penKg:5.35, ref:'Bond Chambrill 75 g 72×102 · S/ 148 la resma', conf:false},
+  {id:'couche',   n:'Couché',            s:'Brillo / mate',    g:[90,115,150,200,250,300,350], def:150, sizes:['61x86','65x90','69x89','72x102'],
+   penKg:4.90, ref:'Couché mate 150 g 72×102 Sumbrite · S/ 136 × 250 pliegos', conf:true},
+  {id:'foldcote', n:'Foldcote / Dúplex', s:'Cartulina C-12 a C-20', g:[205,235,270,295,325],   def:270, sizes:['70x100','72x102','70x90'],
+   gl:{205:'C-12',235:'C-14',270:'C-16',295:'C-18',325:'C-20'},
+   penKg:4.55, ref:'Foldcote C-16 Zenith 270 g 70×100 · S/ 88 el paquete', conf:false},
+  {id:'autocop',  n:'Autocopiativo',     s:'CB / CFB / CF',    g:[50,53,54],                   def:50,  sizes:['61x86','69x89'],
+   penKg:10.20, ref:'Autocopiativo CFB 50 g 61×86 Multicopy · S/ 134', conf:false},
+  {id:'bulky',    n:'Bulky / Periódico', s:'Copia',            g:[35,48.8],                    def:48.8,sizes:['61x86','69x89'],
+   penKg:null, ref:'Sin precio publicado en línea', conf:false},
+  {id:'avena',    n:'Avena / Ecológico', s:'Edición',          g:[70,80],                      def:80,  sizes:['61x86','72x102'],
+   penKg:8.05, ref:'Bond marfileño avena 80 g 61×86 Chambrill · S/ 169', conf:false},
+];
+const PRICE_SRC = {name:'Multiutiles', url:'https://multiutiles.com/en/26-papel-couche-mate', date:'oct-2026'};
+const PEN_PER_USD_REF = 3.75;   // solo si la moneda local no es PEN
+const SUPPLIERS = [
+  {z:'Importadora · palé / tonelada', n:'SCP · Schroth Corporación Papelera', d:'Marcas Gallo y Kero: bond, couché brillo/mate, Foldcote, bulky, autocopiativo y papelería fina.', a:'Jr. Luis Felipe Villarán 315, San Isidro', u:'http://www.scp.com.pe'},
+  {z:'Importadora · palé / tonelada', n:'Papelera Alfa', d:'Pliegos de couché, bond, cartulinas, kraft y autoadhesivos (Fedrigoni / Ritrama).', a:'Av. Nicolás Ayllón 2925, El Agustino', u:'https://www.papeleraalfa.com'},
+  {z:'Importadora · palé / tonelada', n:'Praxis Comercial (Grupo Continental)', d:'Bobinas y pliegos de offset, couché, kraft y cartones industriales.', a:'Av. Mariscal Óscar R. Benavides 865, Cercado de Lima'},
+  {z:'Importadora', n:'Papelera del Sur', d:'Papeles para conversión, cartulinas y offset para edición.'},
+  {z:'Centro de Lima · emporio gráfico', n:'Jr. Puno, Jr. Azángaro y Jr. Inambari (cdras. 4–6)', d:'Resmas cerradas de 500 h., pliegos sueltos 61×86, 69×89 y 71×102 y corte o refilado inmediato a medida. Destaca Papelera Keycam (Jr. Puno 560, int. 31).'},
+  {z:'Breña / Cercado', n:'Papelera Lima', d:'Pliegos y resmillas con delivery para imprentas: bond, autocopiativo, couché y adhesivos.', a:'Jr. Huaraz 303, Breña'},
+  {z:'Zona Este · almacenes', n:'Ate / Santa Anita / El Agustino', d:'Almacenes de importadoras: bobinas, pliego entero y kraft (p. ej. Rotapel, Jr. Manuel González Prada 284, Santa Clara).'},
+  {z:'Precio de referencia en línea', n:'Multiutiles', d:'Tienda con precios publicados por paquete o resma (couché, bond, Foldcote, autocopiativo). Fuente de los precios ref. del simulador.', u:'https://multiutiles.com'},
+];
+function paperType(){ return PAPER_TYPES.find(p=>p.id===state.calc.paperType)||PAPER_TYPES[1]; }
+function refPricePen(){ return paperType().penKg; }
+function penPerUsd(){ return state.calc.cur==='S/'&&state.calc.fx>0?state.calc.fx:PEN_PER_USD_REF; }
+
+/* Corte del pliego madre en a×b partes iguales. El pliego de máquina resultante
+   debe entrar en la máquina (formato máx./mín.) y contener el montaje + pinza.
+   Entre los que sirven, se elige el más pequeño (más cortes = menos kilos). */
+function madreCut(M,m,need){
+  let best=null;
+  const lo=Math.min(m.minW,m.minH), hi=Math.max(m.minW,m.minH);
+  for(let a=1;a<=4;a++)for(let b=1;b<=4;b++){
+    const p1=M.w/a, p2=M.h/b;
+    [[p1,p2],[p2,p1]].forEach(([across,along])=>{
+      if(across>m.paperMaxW+1e-6||along>m.paperMaxH+1e-6) return;
+      if(Math.min(across,along)<lo-1e-6||Math.max(across,along)<hi-1e-6) return;
+      const fits=!need||(across>=need.w-1e-6&&along>=need.h-1e-6);
+      const c={a,b,n:a*b,across,along,fits};
+      if(!best||(c.fits&&!best.fits)||(c.fits===best.fits&&(c.fits?c.n>best.n:c.n<best.n))) best=c;
+    });
+  }
+  return best;
+}
+function madrePurchase(key,m,need,sheets,cc){
+  const M=MADRES[key]; if(!M) return null;
+  const cut=madreCut(M,m,need);
+  const peso=(M.w*M.h*cc.weight)/1e7;                  // kg por pliego madre
+  if(!cut||!cut.fits) return {key,M,cut,need,peso,ok:false};
+  const pliegosMadre=Math.ceil(sheets/cut.n);
+  const kg=pliegosMadre*peso, usd=kg*cc.price;
+  return {key,M,cut,need,peso,ok:true,pliegosMadre,resmas:pliegosMadre/500,
+    sobrantes:pliegosMadre*cut.n-sheets,kg,usd,local:usd*cc.fx};
+}
+
 /* Diccionario educativo: CONCEPTO → DEFINICIÓN → FUNCIÓN → CONSECUENCIA */
 const CONCEPTS = {
   orden:{ic:'📋',t:'Orden de producción',def:'Documento que define el trabajo: producto, cantidad, materiales, ruta y calidad.',fun:'Es la fuente única de verdad; todos los cálculos posteriores parten de sus datos.',con:'Un dato erróneo aquí (medida, tiraje) se arrastra hasta el desperdicio y el costo final.'},
-  sangrado:{ic:'🩸',t:'Sangrado (bleed)',def:'Excedente de imagen que sobrepasa la línea de corte, normalmente 3 mm por lado.',fun:'Absorbe la tolerancia de la guillotina para que no aparezcan filos blancos al cortar.',con:'Sin sangrado, un corte 1 mm desviado deja borde blanco; con sangrado, la pieza sale limpia.'},
+  sangrado:{ic:'🩸',t:'Sangrado (bleed)',def:'Excedente de imagen que sobrepasa la línea de corte. Debe ser de <b>mínimo 3 mm y máximo 5 mm por lado</b>.',fun:'Absorbe la tolerancia de la guillotina para que no aparezcan filos blancos al cortar. Se define en el documento nativo (CorelDRAW, InDesign, Illustrator o Affinity) y se incluye al exportar el PDF.',con:'Menos de 3 mm: un corte desviado deja borde blanco. Más de 5 mm: se desperdicia papel y la imagen puede invadir la pose vecina o la calle de corte.'},
   tiraje:{ic:'🔢',t:'Tiraje',def:'Número total de ejemplares buenos que se deben entregar.',fun:'Determina cuántos pliegos netos se imprimen y, con la merma, cuántos se compran.',con:'Un tiraje alto reparte el costo de arranque; uno bajo lo encarece por unidad.'},
   paginas:{ic:'📄',t:'Páginas por unidad',def:'Cuántas páginas tiene cada ejemplar del producto.',fun:'Junto al tiro/retiro define cuántas poses se necesitan por pliego.',con:'A más páginas, más pliegos o más caras impresas por unidad.'},
+  sustrato:{ic:'🧻',t:'Tipo de papel (sustrato)',def:'Material sobre el que se imprime: bond, couché, cartulina Foldcote/Dúplex, autocopiativo, bulky o papel avena/ecológico.',fun:'Define los gramajes disponibles, las medidas de pliego madre que vende el distribuidor y el precio por kilo.',con:'Cambiar de sustrato cambia el costo y también lo que la máquina puede arrastrar: una cartulina de 300 g no se comporta como un bond de 75 g.'},
+  madre:{ic:'📐',t:'Pliego madre',def:'Medida comercial en la que el distribuidor vende el papel (resma de 500 hojas o paquete). En Lima: 61×86, 69×89 (≈70×90) y 72×102 (≈70×100) cm.',fun:'Se corta en guillotina en partes iguales hasta el pliego que acepta la máquina. Pliegos madre a comprar = pliegos de máquina ÷ cortes por pliego madre.',con:'Si el corte no contiene el montaje más la pinza, el trabajo no entra y hay que cambiar de medida madre. La ★ marca la medida que pide menos kilos para este trabajo.'},
   gramaje:{ic:'⚖️',t:'Gramaje',def:'Masa del papel en gramos por metro cuadrado (g/m²).',fun:'Interviene en el peso del pliego: peso = ancho·alto·gramaje / 10 000 000.',con:'Más gramaje = pliego más pesado y más caro; también afecta rigidez y secado.'},
   merma:{ic:'♻️',t:'Merma de producción',def:'Porcentaje de pliegos que se pierden en el proceso (registro, atascos, control).',fun:'Se suma al tiraje neto para saber cuánto papel comprar realmente.',con:'Subestimar la merma deja el trabajo corto; sobrestimarla encarece el papel.'},
   arranque:{ic:'🚀',t:'Hojas de arranque',def:'Pliegos consumidos hasta lograr registro y densidad de tinta correctos.',fun:'Se compran de más porque nunca sirven como producto final.',con:'Cada cambio de plancha añade arranque; por eso conviene agrupar trabajos.'},
@@ -988,6 +1388,10 @@ const CONCEPTS = {
   registro:{ic:'🎯',t:'Cruces de registro',def:'Marcas que alinean las cuatro planchas de color.',fun:'Permiten superponer C, M, Y y K sin desfase.',con:'Sin registro correcto la imagen sale "movida" o con halos de color.'},
   ctp:{ic:'💿',t:'CTP READY',def:'Estado en que todas las condiciones técnicas están validadas.',fun:'Autoriza el grabado de la plancha y el paso a prensa.',con:'Grabar sin CTP READY arriesga replanchar: tiempo y aluminio perdidos.'},
   encuadernacion:{ic:'📚',t:'Encuadernación / Acabado',def:'Sistema que une las hojas del producto terminado. Opciones: engrampado metálico (grapa a caballete), fresado (lomo encolado con hotmelt), cosido (hilo), termocosido, tapa dura (cartón forrado) y espiral.',fun:'Determina el acabado final y define cómo se pliega, junta y refila el producto.',con:'Cada sistema exige un montaje distinto: el engrampado y el cosido necesitan pliegos y signaturas; el fresado, lomo; la espiral, margen de perforado.'},
+  separacion:{ic:'🎨',t:'Separación de tintas',def:'Descomposición del arte en una imagen por cada tinta: C, M, Y, K y cada tinta especial.',fun:'El CTP graba una plancha por separación; en prensa cada plancha va en su propio cuerpo de impresión.',con:'Más tintas = más planchas, más cuerpos de máquina y más tiempo de arranque. Una tinta declarada y no usada es una plancha desperdiciada.'},
+  tac:{ic:'💧',t:'TAC · carga total de tinta',def:'Suma de los porcentajes de C+M+Y+K en el punto más oscuro (máx. 400%).',fun:'Cada perfil de separación limita la carga: ~330% en couché (FOGRA39), 300% en estucado PSO v3 y sin estucar, ~240% en periódico.',con:'Superar el TAC provoca repinte, secado lento, pliegos pegados y pérdida de detalle en sombras.'},
+  gcr:{ic:'⚫',t:'GCR · generación de negro',def:'Reemplazo del gris neutro formado por C+M+Y por tinta negra (K).',fun:'GCR fuerte: más K y menos color (gris estable, menos tinta). GCR ligero: negro de esqueleto, sombras más ricas.',con:'Un GCR mal elegido cambia el equilibrio de grises y la densidad de las sombras en prensa.'},
+  spot:{ic:'🟥',t:'Tinta especial (Pantone / plana)',def:'Tinta premezclada de un color exacto (p. ej. PANTONE 185 C) que se imprime con su propia plancha, no con puntos CMYK.',fun:'Garantiza el color de marca, metálicos, flúor o barnices que la cuatricromía no reproduce.',con:'Suma una plancha y un cuerpo de impresión por cada tinta. Las separaciones técnicas (troquel, corte, hendido) NO deben grabarse en plancha.'},
 };
 
 /* Ayuda por campo: qué información se ingresa en cada cuadro de texto.
@@ -998,11 +1402,19 @@ const FIELD_HELP = {
   f_desc:{t:'Descripción del producto',d:'Nombre claro de lo que se imprime: "Volante A5", "Tarjeta de visita", "Tríptico".'},
   f_prodW:{t:'Ancho del producto',d:'Medida horizontal de la pieza terminada (después de cortar), en la unidad activa.'},
   f_prodH:{t:'Alto del producto',d:'Medida vertical de la pieza terminada, en la unidad activa.'},
-  f_bleed:{t:'Sangrado',d:'Excedente de imagen fuera del corte, en milímetros. Normalmente 3 mm por lado.'},
+  f_bleed:{t:'Sangrado',d:'Excedente de imagen fuera del corte, en milímetros: mínimo 3 mm y máximo 5 mm por lado.'},
+  f_colorsys:{t:'Sistema de color',d:'Cuatricromía CMYK (4 tintas), CMYK + Pantone (4 + una tinta por cada Pantone) o solo Pantone / tintas planas. Cada tinta es una plancha CTP.'},
+  f_inksF:{t:'Tintas · tiro',d:'Número de tintas de la cara principal del pliego (p. ej. 4 en CMYK, 5 en CMYK + 1 Pantone). Es el número de planchas del tiro.'},
+  f_inksB:{t:'Tintas · retiro',d:'Tintas del reverso. 0 = solo tiro. La notación 4/0 significa 4 tintas tiro y 0 retiro; 4/4, ambas caras a color. Se sincroniza con el tipo de impresión de la Etapa 03.'},
+  f_spots:{t:'Pantone / tintas especiales',d:'Nombres exactos de las tintas planas, separados por comas (p. ej. PANTONE 185 C, PANTONE 300 C). Deben coincidir con las muestras del arte final.'},
+  f_soft:{t:'Programa nativo del arte final',d:'Programa en el que se diseñó el original (CorelDRAW, InDesign, Illustrator o Affinity). Si hay correcciones, preprensa pide el archivo abierto en ese programa.'},
+  f_ptype:{t:'Tipo de papel',d:'Sustrato del trabajo. Es el mismo selector del panel «Papel · compra en Lima» (Etapa 03): cambiarlo aquí lo cambia allá.'},
+  f_gram:{t:'Gramaje',d:'Gramos por metro cuadrado del papel elegido. Vinculado al gramaje de la Etapa 03.'},
+  f_madre:{t:'Pliego madre',d:'Medida comercial en que se compra el papel en Lima. Vinculada al pliego madre de la Etapa 03.'},
   f_qty:{t:'Cantidad a producir (tiraje)',d:'Número de ejemplares buenos a entregar. Determina cuántos pliegos se imprimen.'},
   f_ref:{t:'Referencia del pedido',d:'Código del pedido del cliente o de venta, para trazabilidad.'},
   f_date:{t:'Fecha de producción',d:'Día programado para imprimir el trabajo.'},
-  f_raw:{t:'Materias primas',d:'Papel y tintas a usar: tipo, gramaje y color (p. ej. "Couché 150 g · CMYK").'},
+  f_raw:{t:'Materias primas',d:'Se compone solo con el papel, el gramaje y el pliego madre de la Etapa 03 más las tintas de la orden (p. ej. "Couché 150 g/m² · pliego 61×86 · 4/0 CMYK").'},
   f_route:{t:'Ruta de producción',d:'Secuencia de estaciones por las que pasa el trabajo (Preprensa → CTP → Offset → Acabado).'},
   f_quality:{t:'Especificaciones de calidad',d:'Norma y tolerancias exigidas (p. ej. ISO 12647-2, ΔE ≤ 4, registro ≤ 0,1 mm).'},
   f_binding:{t:'Encuadernación / Acabado',d:'Sistema de unión del producto: engrampado metálico, fresado, cosido, termocosido, tapa dura o espiral. Define el acabado y el tipo de montaje.'},
@@ -1019,7 +1431,7 @@ const FIELD_HELP = {
   c_pages:{t:'Páginas por unidad',d:'Cuántas páginas tiene cada ejemplar. Junto al tiro/retiro define las poses necesarias.'},
   c_print:{t:'Tipo de impresión',d:'Solo tiro (una cara) o tiro y retiro (ambas caras del pliego).'},
   c_weight:{t:'Gramaje',d:'Masa del papel en g/m². Interviene en el peso del pliego.'},
-  c_price:{t:'Precio del papel',d:'Costo del papel en dólares por kilogramo (USD/kg).'},
+  c_price:{t:'Precio del papel',d:'Costo del papel en dólares por kilogramo (USD/kg). Al elegir un tipo de papel se carga el precio de referencia de Lima; reemplázalo por la cotización de tu proveedor.'},
   c_fx:{t:'Tipo de cambio',d:'Cuántas unidades de moneda local equivalen a 1 USD.'},
   c_cur:{t:'Moneda local',d:'Moneda en la que se muestra el costo final.'},
   c_wastepct:{t:'Merma de producción',d:'Porcentaje de pliegos que se pierden en registro, atascos y control.'},
@@ -1036,7 +1448,8 @@ const state = {
   step:1, maxUnlocked:1, unit:'cm',
   order:{}, machine:null,
   prod:{w:14.8,h:21.0,bleed:3,gap:4},
-  calc:{qty:1000,pages:1,print:'tiro',weight:150,price:1.85,fx:3.75,cur:'S/',wastepct:8,setup:50},
+  calc:{qty:1000,pages:1,print:'tiro',weight:150,price:1.85,fx:3.75,cur:'S/',wastepct:8,setup:50,
+        paperType:'couche',madre:'61x86'},
   orient:'auto',
   view:'tecnica', face:'tiro', zoom:'fit',
   marks:{crop:true,reg:true,rules:false,scale:false,color:true,fold:false,plateid:true,barcode:false,smart:false},
@@ -1050,6 +1463,15 @@ const state = {
   signature:'octava',        // esquema de pliego para encuadernado con doblez
   gutters:{Top:false,Bottom:false,Left:false,Right:false,Center:false,Mid:false},
   art:{pages:[], name:'', size:null},  // arte final PDF/imagen cargado
+  // Separación de tintas del arte cargado
+  sep:{mode:'cmyk',            // cmyk | cmyk_spot | spot
+       profile:'fogra39', profileAuto:true, gcr:'medium', tol:12,
+       inks:[],                 // tintas especiales {id,name,hex,src,kind,print,ramp,alt}
+       pdfSpots:[],             // nombres detectados en el PDF
+       tacDoc:null,             // TAC máx. de los vectores CMYK del PDF (operadores k/K)
+       plate:'comp',            // plancha mostrada: comp | C | M | Y | K | id de tinta
+       off:{},                  // planchas apagadas en la vista compuesta
+       film:false, page:0, picking:null, res:null, busy:false, msg:''},
 };
 
 const $=id=>document.getElementById(id);
@@ -1204,10 +1626,19 @@ function calcImposition(){
   cuts.forEach(c=>{ if(!c.valid)return; const sh=Math.ceil(totalUnits/c.poses/sides);
     c.pliegos=sh; c.costoUsd=sh*pesoPliego*cc.price; });
 
+  // Compra en pliego madre: el pliego de máquina debe contener el montaje + pinza de papel
+  const need={w:chosen.cols*chosen.pieceW+(chosen.cols-1)*gap,
+              h:chosen.rows*chosen.pieceH+(chosen.rows-1)*gap+m.pinzaPapel};
+  const madreOpts=paperType().sizes.map(k=>madrePurchase(k,m,need,totalSheets,cc));
+  const okOpts=madreOpts.filter(o=>o&&o.ok);
+  const madreBest=okOpts.length?okOpts.reduce((b,o)=>o.kg<b.kg?o:b).key:null;
+  const madre=madrePurchase(cc.madre,m,need,totalSheets,cc);
+
   return {...chosen,usableW,usableH,mordaza,pieceW,pieceH,
     usePct:chosen.utilPct,despPct:100-chosen.utilPct,
     netSheets,wasteSheets,totalSheets,totalKg,cost,costLocal,sides,
-    pesoPliego,pesoCorte,pesoResma,hojasKg,cuts,plate};
+    pesoPliego,pesoCorte,pesoResma,hojasKg,cuts,plate,
+    need,madre,madreOpts,madreBest};
 }
 
 function isCtpReady(){
@@ -1227,6 +1658,8 @@ function syncFromInputs(){
     labor:$('f_labor').value.trim(), materials:$('f_materials').value.trim(), done:num('f_done'),
     inspect:$('f_inspect').value.trim(), owner:$('f_owner').value.trim(), approval:$('f_approval').value,
     notes:$('f_notes').value.trim(), binding:$('f_binding')?$('f_binding').value:'Sin encuadernación',
+    colorSys:$('f_colorsys').value, inksF:num('f_inksF'), inksB:num('f_inksB'),
+    spots:$('f_spots').value.trim(), software:$('f_soft').value,
   };
   state.prod.w=num('f_prodW'); state.prod.h=num('f_prodH'); state.prod.bleed=num('f_bleed');
   state.calc.qty=num('f_qty');
@@ -1236,7 +1669,10 @@ function syncFromInputs(){
     state.calc.weight=num('c_weight'); state.calc.price=num('c_price'); state.calc.fx=num('c_fx');
     state.calc.cur=$('c_cur').value; state.calc.wastepct=num('c_wastepct'); state.calc.setup=num('c_setup');
     state.prod.w=num('c_prodW'); state.prod.h=num('c_prodH'); state.prod.gap=num('c_gap');
+    const pt=paperType(); state.calc.paperType=pt.id;
+    if(!pt.sizes.includes(state.calc.madre)) state.calc.madre=pt.sizes[0];
   }
+  state.order.raw=rawMaterialsText();   // materias primas = papel de la Etapa 03 + tintas de la orden
 }
 function pushToPaperInputs(){
   $('c_qty').value=state.calc.qty; $('c_prodW').value=state.prod.w; $('c_prodH').value=state.prod.h;
@@ -1244,6 +1680,7 @@ function pushToPaperInputs(){
 }
 function recalc(){
   syncFromInputs();
+  if(syncSepProfile()&&state.art.pages.length) scheduleSep();   // el perfil sigue al papel elegido
   state.result=calcImposition();
   recomputeUnlock();
   renderAll();
@@ -1253,7 +1690,10 @@ function renderAll(){
   renderFlow();
   renderTopbar();
   renderOrderSummary();
+  renderOrderPaper();
+  renderOrderInks();
   renderMachineDetail();
+  renderPaperPanel();
   renderCalcTable();
   renderOptimizer();
   renderSideTech();
@@ -1264,7 +1704,7 @@ function renderAll(){
   renderBindingPanel();
   renderMontageControls();
   renderDock();
-  if(state.step===4){ renderArtStage(); drawPlate(); }
+  if(state.step===4){ renderArtStage(); renderSepPanel(); renderSepChips(); renderArtPicking(); drawPlate(); }
   if(state.step===5){ renderPreflight(); renderProcFlow(); renderDashboard(); }
   updateUnitLabels();
 }
@@ -1285,9 +1725,92 @@ function renderOrderSummary(){
     ['Medida',state.prod.w?`${uDim(state.prod.w)} × ${uDim(state.prod.h)}`:'—'],
     ['Sangrado',uDim(state.prod.bleed/10)],
     ['Tiraje',fmt(o.qty)],['Máquina',state.machine?state.machine.name:'— (Etapa 02)'],
+    ['Tintas',(oi=>`${oi.note} · ${oi.lbl}`)(orderInks())],
+    ['Papel',`${paperType().n} ${fmt(state.calc.weight,state.calc.weight%1?1:0)} g`],
     ['Poses',r&&!r.error?r.poses:'—'],['Aprobación',o.approval||'—'],
   ];
   $('orderSummary').innerHTML=cells.map(([k,v])=>`<div class="os-cell"><div class="k">${k}</div><div class="v">${v}</div></div>`).join('');
+}
+
+/* ---------- Orden: tintas, programa nativo y materias primas vinculadas ---------- */
+const SOFT_TIPS={
+  'CorelDRAW':{ext:'.cdr',t:'<b>Archivo › Publicar en PDF › Configuración</b>: estilo PDF/X-1a o PDF/X-4. En <b>Preimpresión</b> activa el límite de sangrado (3–5 mm) y desactiva marcas de corte y registro. Convierte textos a curvas o incrusta las fuentes. Los Pantone deben venir de la paleta PANTONE como <b>tinta plana</b>, no convertidos a CMYK.'},
+  'Adobe InDesign':{ext:'.indd',t:'<b>Archivo › Exportar › PDF de Adobe (imprimir)</b> con el ajuste PDF/X-1a o PDF/X-4. En <b>Marcas y sangrados</b> marca «Usar configuración de sangrado del documento» (3–5 mm) y deja sin marcar todas las marcas de impresión. En Muestras, el Pantone debe ser tipo <b>Tinta plana</b>; revisa el Administrador de tintas. Entrega también el paquete (vínculos y fuentes).'},
+  'Adobe Illustrator':{ext:'.ai',t:'<b>Archivo › Guardar como › PDF de Adobe</b> con PDF/X-4 (o X-1a). En <b>Marcas y sangrados</b> usa el sangrado de la mesa de trabajo (3–5 mm), sin marcas. Las muestras Pantone deben ser <b>Tinta plana</b>; contornea los textos o incrusta las fuentes.'},
+  'Affinity':{ext:'.afdesign / .afpub / .af',t:'<b>Archivo › Exportar › PDF</b> con el ajuste PDF/X-1a o PDF/X-4. En <b>Más</b> activa «Incluir sangrado» (definido en Configuración del documento, 3–5 mm) y no incluyas marcas. Los Pantone deben ser colores globales marcados como <b>Spot (tinta plana)</b>.'},
+  'Otro':{ext:'—',t:'Entrega un <b>PDF/X-1a o PDF/X-4</b> con sangrado de 3 a 5 mm, sin marcas de impresión, fuentes incrustadas y las tintas especiales como <b>tinta plana</b>.'},
+};
+const SYS_LBL={cmyk:'CMYK',cmyk_spot:'CMYK + Pantone',spot:'Solo Pantone'};
+const splitSpots=s=>String(s||'').split(/[,;\n]+/).map(x=>x.trim()).filter(Boolean);
+function orderInks(){
+  const o=state.order, sys=SYS_LBL[o.colorSys]?o.colorSys:'cmyk';
+  const spots=sys!=='cmyk'?splitSpots(o.spots):[];
+  const expected=sys==='cmyk'?4:sys==='cmyk_spot'?4+spots.length:Math.max(1,spots.length);
+  const front=Number.isFinite(o.inksF)&&o.inksF>0?o.inksF:expected, back=Math.max(0,o.inksB||0);
+  return {sys,spots,expected,front,back,note:`${front}/${back}`,plates:front+back,ok:front===expected,lbl:SYS_LBL[sys],
+    names:[...(sys!=='spot'?['C','M','Y','K']:[]),...spots]};
+}
+function rawMaterialsText(){
+  const pt=paperType(), M=MADRES[state.calc.madre], oi=orderInks(), w=state.calc.weight;
+  return `${pt.n} ${fmt(w,w%1?1:0)} g/m²`+(M?` · pliego ${M.w}×${M.h}`:'')+` · ${oi.note} ${oi.sys==='cmyk'?'CMYK':oi.sys==='cmyk_spot'?'CMYK + '+(oi.spots.join(', ')||'Pantone'):(oi.spots.join(', ')||'tintas planas')}`;
+}
+// Sugerir el n.º de tintas del tiro según el sistema de color y los Pantone declarados
+function autoInkCount(){
+  const old=num('f_inksF'), sys=$('f_colorsys').value, n=splitSpots($('f_spots').value).length;
+  const exp=sys==='cmyk'?4:sys==='cmyk_spot'?4+n:Math.max(1,n);
+  $('f_inksF').value=exp;
+  if(num('f_inksB')>0&&num('f_inksB')===old) $('f_inksB').value=exp;
+}
+function renderOrderPaper(){
+  const sp=$('f_ptype'); if(!sp) return;
+  const pt=paperType(), cc=state.calc, r=state.result, valid=r&&!r.error;
+  const sig1=PAPER_TYPES.map(p=>p.id+p.penKg).join();
+  if(sp.dataset.sig!==sig1){ sp.innerHTML=PAPER_TYPES.map(p=>`<option value="${p.id}" title="${p.s}${p.penKg?` · S/ ${fmt(p.penKg,2)}/kg`:' · cotizar'}">${p.n}</option>`).join(''); sp.dataset.sig=sig1; }
+  sp.value=pt.id;
+  const gs=[...pt.g]; if(!gs.some(g=>Math.abs(g-cc.weight)<0.01)&&cc.weight>0) gs.push(cc.weight);
+  const sg=$('f_gram'), sig2=pt.id+gs.join();
+  if(sg.dataset.sig!==sig2){ sg.innerHTML=gs.map(g=>`<option value="${g}">${fmt(g,g%1?1:0)} g/m²${pt.gl&&pt.gl[g]?` · ${pt.gl[g]}`:''}${pt.g.includes(g)?'':' (otro)'}</option>`).join(''); sg.dataset.sig=sig2; }
+  const gSel=gs.find(g=>Math.abs(g-cc.weight)<0.01); if(gSel!==undefined) sg.value=String(gSel);
+  const sm=$('f_madre'), sig3=pt.sizes.join();
+  if(sm.dataset.sig!==sig3){ sm.innerHTML=pt.sizes.map(k=>`<option value="${k}" title="${MADRES[k].tag}">${MADRES[k].w}×${MADRES[k].h} cm</option>`).join(''); sm.dataset.sig=sig3; }
+  sm.value=cc.madre;
+  $('f_raw').value=rawMaterialsText();
+  const h=$('f_rawHint'), md=valid?r.madre:null;
+  if(md&&!md.ok){ h.className='hint warn'; h.textContent=`✗ El montaje no entra en el pliego madre ${MADRES[cc.madre].w}×${MADRES[cc.madre].h}${r.madreBest?` — prueba ${MADRES[r.madreBest].w}×${MADRES[r.madreBest].h}`:''}.`; }
+  else if(md){ h.className='hint ok'; h.textContent=`${r.madreBest===cc.madre?'★ Menos kilos · ':''}${MADRES[cc.madre].tag} · ${fmt(md.pliegosMadre)} pliegos madre (${fmt(md.resmas,2)} resmas) · ${pt.penKg?`S/ ${fmt(pt.penKg,2)}/kg`:'precio a cotizar'}`; }
+  else{ h.className='hint'; h.textContent='Se completa con la máquina (Etapa 02) y el cálculo de papel (Etapa 03).'; }
+}
+function renderOrderInks(){
+  if(!$('f_inkNote')) return;
+  const dl=$('sepPantoneList'); if(dl&&!dl.options.length) dl.innerHTML=PANTONE_REF.map(([n])=>`<option value="${esc(n)}">`).join('');
+  const oi=orderInks();
+  $('f_inkNote').innerHTML=`${oi.note}<small>${oi.plates} plancha${oi.plates===1?'':'s'}</small>`;
+  $('f_spots').disabled=oi.sys==='cmyk';
+  $('f_spots').placeholder=oi.sys==='cmyk'?'Solo para CMYK + Pantone o solo Pantone':'p. ej. PANTONE 185 C, PANTONE 300 C';
+  const h=$('f_inksHint');
+  if(oi.sys!=='cmyk'&&!oi.spots.length){ h.className='hint warn'; h.textContent='⚠ Escribe el nombre exacto de cada Pantone (separados por comas).'; }
+  else if(!oi.ok){ h.className='hint warn'; h.textContent=`⚠ ${oi.lbl}${oi.spots.length?' ('+oi.spots.length+')':''} suma ${oi.expected} tintas en tiro, pero la orden indica ${oi.front}.`; }
+  else{ h.className='hint ok'; h.textContent=`✓ Tiro: ${oi.names.join(' · ')} → ${oi.front} plancha${oi.front===1?'':'s'}${oi.back?` · retiro ${oi.back}`:''}.`; }
+  const sw=state.order.software, tip=SOFT_TIPS[sw];
+  $('f_softTip').innerHTML=tip?`<span class="ext">${tip.ext}</span><b>${esc(sw)}</b> · cómo exportar el PDF para imposición:<br>${tip.t}`
+    :'Indica el programa en que se diseñó el arte. Si preprensa detecta un error, pedirá el <b>archivo nativo</b> abierto (.cdr, .indd, .ai, .afdesign/.afpub) para corregirlo.';
+  const b=state.prod.bleed, bh=$('f_bleedHint'), ok=b>=3&&b<=5;
+  $('f_bleed').classList.toggle('bad',!ok);
+  bh.className='hint'+(ok?'':' warn'); bh.textContent=ok?'Mín. 3 · máx. 5 mm por lado':b<3?'⚠ Mínimo 3 mm por lado':'⚠ Máximo 5 mm por lado';
+}
+/* Compara lo que pide la orden con lo que separa el arte (Etapa 04) */
+function orderVsSep(){
+  const oi=orderInks(), sm=sepSummary(), issues=[];
+  if(!sm.hasArt||!sm.R) return {oi,sm,issues,checked:false};
+  if(oi.front!==sm.perFace) issues.push(`La orden pide ${oi.front} tinta${oi.front===1?'':'s'} en tiro, pero el arte separa ${sm.perFace} plancha${sm.perFace===1?'':'s'} (${sm.names.join(', ')}).`);
+  if(state.art.pdf){
+    const pdfPrint=state.sep.inks.filter(i=>i.src==='pdf'&&i.kind!=='tech'&&i.kind!=='finish').map(i=>i.name);
+    const kp=new Set(pdfPrint.map(pantoneKey)), ko=new Set(oi.spots.map(pantoneKey));
+    const missing=oi.spots.filter(n=>!kp.has(pantoneKey(n))), extra=pdfPrint.filter(n=>!ko.has(pantoneKey(n)));
+    if(missing.length) issues.push(`La orden declara ${missing.join(', ')}, pero el PDF no ${missing.length>1?'las trae':'la trae'} como tinta plana (¿se diseñó en CMYK?).`);
+    if(extra.length) issues.push(`El PDF trae ${extra.join(', ')}, que no figura${extra.length>1?'n':''} en la orden de trabajo.`);
+  }
+  return {oi,sm,issues,checked:true};
 }
 
 /* ---------- MÁQUINAS ---------- */
@@ -1389,8 +1912,10 @@ function renderCalcTable(){
     t.innerHTML=`<tr><td colspan="2" style="color:var(--err);text-align:center;padding:18px">${r?r.error:'—'}</td></tr>`;
     return;
   }
-  const cc=state.calc;
+  const cc=state.calc, pt=paperType(), md=r.madre;
+  const sec=t=>[t,null,'sec'];
   const rows=[
+    sec('Montaje en el pliego'),
     ['Tamaño útil del pliego',`${uDim(r.usableW)} × ${uDim(r.usableH)}`],
     ['Producto + sangrado',`${uDim(r.pieceW)} × ${uDim(r.pieceH)}`],
     ['Número de poses',`${r.poses}`,true],
@@ -1398,9 +1923,11 @@ function renderCalcTable(){
     ['Orientación',r.rotated?'Horizontal':'Vertical'],
     ['Aprovechamiento',`${r.usePct.toFixed(2)} %`,true],
     ['Desperdicio',`${r.despPct.toFixed(2)} %`],
+    sec('Peso · pliego = plancha'),
     ['Peso por pliego',`${fmt(r.pesoPliego,4)} kg (${fmt(r.pesoPliego*1000,1)} g)`],
     ['Peso de resma (500 h.)',`${fmt(r.pesoResma,2)} kg`],
     ['Hojas por kg',`${fmt(r.hojasKg,2)}`],
+    sec('Pliegos de máquina'),
     ['Pliegos netos',`${fmt(r.netSheets)}`],
     ['Hojas de arranque',`${fmt(cc.setup)}`],
     ['Merma',`${fmt(r.wasteSheets)} (${cc.wastepct}%)`],
@@ -1408,8 +1935,106 @@ function renderCalcTable(){
     ['Peso total',`${fmt(r.totalKg,2)} kg`],
     ['Costo del papel',`USD ${fmt(r.cost,2)}`],
     ['Costo en moneda local',`${cc.cur} ${fmt(r.costLocal,2)}`,true],
+    sec(`Compra en pliego madre · ${pt.n}`),
   ];
-  t.innerHTML=rows.map(([k,v,hl])=>`<tr class="${hl?'hl':''}"><td>${k}</td><td>${v}</td></tr>`).join('');
+  if(md&&md.ok){
+    rows.push(
+      ['Pliego madre',`${md.M.w}×${md.M.h} cm · ${fmt(cc.weight,cc.weight%1?1:0)} g`],
+      ['Corte en guillotina',`${md.cut.n} pliegos de ${uDim(md.cut.across)} × ${uDim(md.cut.along)}`],
+      ['Montaje + pinza',`${uDim(r.need.w)} × ${uDim(r.need.h)}`],
+      ['Pliegos madre a comprar',`${fmt(md.pliegosMadre)}`,true],
+      ['Resmas de 500 h.',`${fmt(md.resmas,2)}`],
+      ['Pliegos de máquina sobrantes',`${fmt(md.sobrantes)}`],
+      ['Peso de compra',`${fmt(md.kg,2)} kg`],
+      ['Costo de compra',`USD ${fmt(md.usd,2)}`],
+      ['Costo de compra local',`${cc.cur} ${fmt(md.local,2)}`,true]);
+  }else if(md){
+    rows.push([`⚠ El pliego madre ${md.M.w}×${md.M.h} no rinde un pliego de máquina que contenga el montaje
+      (${uDim(r.need.w)} × ${uDim(r.need.h)} con pinza).${r.madreBest?` Elige la ★ ${MADRES[r.madreBest].w}×${MADRES[r.madreBest].h}.`:' Prueba otra máquina o un pliego mayor.'}`,null,'alert']);
+  }
+  t.innerHTML=rows.map(([k,v,cls])=>cls==='sec'||cls==='alert'
+    ?`<tr class="${cls}"><td colspan="2">${k}</td></tr>`
+    :`<tr class="${cls?'hl':''}"><td>${k}</td><td>${v}</td></tr>`).join('');
+}
+
+/* ---------- Panel de papel: tipo, gramaje, pliego madre, precio ref. ---------- */
+const cmTxt=v=>fmt(v,Math.abs(v-Math.round(v))<0.05?0:1);
+function madreSvg(M,cut){
+  const box=40, sc=box/Math.max(M.w,M.h), W=M.w*sc, H=M.h*sc, x=(box-W)/2+1, y=(box-H)/2+1;
+  const ok=cut&&cut.fits;
+  let s=`<rect x="${x}" y="${y}" width="${W}" height="${H}" rx="1.5" fill="${ok?'#fdfbf6':'#f1f5f9'}" stroke="${ok?'#d9cfb6':'#cbd5e1'}"/>`;
+  if(cut){
+    for(let i=1;i<cut.a;i++) s+=`<line x1="${x+W*i/cut.a}" y1="${y}" x2="${x+W*i/cut.a}" y2="${y+H}" stroke="${ok?'#ff6b1a':'#94a3b8'}" stroke-width="1" stroke-dasharray="2 1.5"/>`;
+    for(let j=1;j<cut.b;j++) s+=`<line x1="${x}" y1="${y+H*j/cut.b}" x2="${x+W}" y2="${y+H*j/cut.b}" stroke="${ok?'#ff6b1a':'#94a3b8'}" stroke-width="1" stroke-dasharray="2 1.5"/>`;
+  }
+  return `<svg width="${box+2}" height="${box+2}" viewBox="0 0 ${box+2} ${box+2}" aria-hidden="true">${s}</svg>`;
+}
+function renderPaperPanel(){
+  if(!$('ptypeGrid')) return;
+  const cc=state.calc, pt=paperType(), r=state.result, valid=r&&!r.error, m=state.machine;
+  // tiro / retiro
+  $('printSeg').querySelectorAll('button').forEach(b=>b.classList.toggle('on',b.dataset.p===$('c_print').value));
+  // tipos de papel
+  $('ptypeGrid').innerHTML=PAPER_TYPES.map(p=>`
+    <button type="button" class="ptype${p.id===pt.id?' on':''}" data-pt="${p.id}">
+      <span class="pn">${p.n}</span><span class="ps">${p.s}</span>
+      <span class="pp${p.penKg?'':' q'}">${p.penKg?`S/ ${fmt(p.penKg,2)}/kg`:'Cotizar'}</span>
+    </button>`).join('');
+  // gramajes habituales
+  $('gramChips').innerHTML=pt.g.map(g=>`<button type="button" class="gchip${Math.abs(cc.weight-g)<0.01?' on':''}" data-g="${g}">${pt.gl&&pt.gl[g]?`<small>${pt.gl[g]}</small>`:''}${fmt(g,g%1?1:0)}</button>`).join('');
+  // pliegos madre
+  const opts=valid?r.madreOpts:pt.sizes.map(k=>({key:k,M:MADRES[k],cut:m?madreCut(MADRES[k],m,null):null}));
+  $('madreGrid').innerHTML=opts.map(o=>{
+    const k=o.key, M=o.M, on=k===cc.madre, best=valid&&r.madreBest===k&&opts.length>1;
+    let y='';
+    if(!m) y=`<span class="my">Elige máquina en la Etapa 02</span>`;
+    else if(!o.cut) y=`<span class="my bad">No entra en ${m.name.split(' ')[0]}</span>`;
+    else if(valid&&!o.ok) y=`<span class="my bad">✗ Montaje no entra</span>`;
+    else y=`<span class="my">Rinde ${o.cut.n} de ${cmTxt(o.cut.across)}×${cmTxt(o.cut.along)}${valid?` · ${fmt(o.kg,1)} kg`:''}</span>`;
+    return `<button type="button" class="madre${on?' on':''}${valid&&!o.ok?' off':''}" data-m="${k}">
+      ${best?'<span class="star">★ menos kilos</span>':''}${madreSvg(M,o.cut)}
+      <span><span class="mm">${M.w}×${M.h}</span><span class="mt">${M.tag}</span>${y}</span></button>`;
+  }).join('');
+  const Msel=MADRES[cc.madre], md=valid?r.madre:null;
+  const hint=$('madreHint');
+  if(md&&!md.ok){
+    hint.className='madre-hint bad';
+    hint.innerHTML=`El corte de ${Msel.w}×${Msel.h} no contiene el montaje (${fmt(r.need.w,1)} × ${fmt(r.need.h,1)} cm con pinza).${r.madreBest?` <button type="button" data-usebest="${r.madreBest}">Usar ★ ${MADRES[r.madreBest].w}×${MADRES[r.madreBest].h}</button>`:''}`;
+  }else{
+    hint.className='madre-hint';
+    hint.innerHTML=`<b>${Msel.w}×${Msel.h} cm</b> · ${Msel.note}${md?` Se compran <b>${fmt(md.pliegosMadre)}</b> pliegos madre (${fmt(md.resmas,2)} resmas).`:''}`;
+  }
+  // precio de referencia
+  const pen=pt.penKg, fxr=penPerUsd(), usdKg=pen?pen/fxr:null;
+  const pesoMadre=(Msel.w*Msel.h*cc.weight)/1e7;
+  $('paperRef').innerHTML=pen?`
+    <div><div class="pk">Precio ref. Lima</div>
+      <div class="pv">S/ ${fmt(pen,2)}<small>/kg</small></div>
+      <div class="pk" style="margin-top:3px;letter-spacing:.3px;text-transform:none;font-weight:600">≈ USD ${fmt(usdKg,2)}/kg</div></div>
+    <div class="psrc">${pt.n} ${fmt(cc.weight,cc.weight%1?1:0)} g · pliego ${Msel.w}×${Msel.h} = <b>${fmt(pesoMadre*1000,1)} g</b> → <b>S/ ${fmt(pesoMadre*pen,2)}</b> c/u<br>
+      Ref.: ${pt.ref}. <a href="${PRICE_SRC.url}" target="_blank" rel="noopener">${PRICE_SRC.name}</a>, ${PRICE_SRC.date}, con IGV${pt.conf?'':' · presentación inferida'}. Confirma con tu proveedor.</div>
+    <button type="button" class="btn btn-primary" id="btnRefPrice" title="Cargar ${fmt(usdKg,2)} USD/kg en Precio papel">Aplicar</button>`
+    :`<div><div class="pk">Precio ref. Lima</div><div class="pv">Cotizar</div></div>
+    <div class="psrc">${pt.n}: ${pt.ref}. Pide cotización en el emporio del Jr. Puno o en Papelera Lima e ingresa el precio en USD/kg en el bloque 3.</div>`;
+  // ayudas vivas
+  $('fxSfx').textContent=(cc.cur==='$'?'USD':cc.cur)+' por USD';
+  $('mermaHint').innerHTML=valid
+    ?`<b>+${fmt(r.wasteSheets)}</b> por merma · <b>+${fmt(cc.setup)}</b> de arranque = <b>${fmt(r.totalSheets)}</b> pliegos`
+    :'Pliegos extra que se compran y no llegan al cliente';
+}
+function buildBuyList(){
+  $('buyList').innerHTML=SUPPLIERS.map(s=>`<div class="buy-it"><span class="bz">${s.z}</span><b>${s.n}</b><br>${s.d}
+    ${s.a?`<br>📍 ${s.a}`:''}${s.u?`<br><a href="${s.u}" target="_blank" rel="noopener">${s.u.replace(/^https?:\/\/(www\.)?/,'')}</a>`:''}</div>`).join('');
+}
+function choosePaperType(id){
+  const p=PAPER_TYPES.find(x=>x.id===id); if(!p) return;
+  state.calc.paperType=id;
+  if(!p.g.some(g=>Math.abs(g-num('c_weight'))<0.01)) $('c_weight').value=p.def;
+  if(!p.sizes.includes(state.calc.madre)) state.calc.madre=p.sizes[0];
+  if(p.penKg){ $('c_price').value=(p.penKg/penPerUsd()).toFixed(2);
+    toast(`${p.n}: precio ref. S/ ${fmt(p.penKg,2)}/kg aplicado`,'ok'); }
+  else toast(`${p.n}: sin precio publicado — ingresa tu cotización`,'warn');
+  recalc();
 }
 
 function optSvg(cut){
@@ -1545,21 +2170,34 @@ function currentScale(){
   const s=Math.min(availW/g.m.w, availH/g.m.h);
   return Math.max(2,Math.min(s,60))/7; // normalize to px/cm base of 7
 }
-function buildPlateMarkup(g,pxcm){
+function buildPlateMarkup(g,pxcm,opt={}){
   const {m,usableW,usableH,offX,offY,r}=g;
   const PAD=46;
   const W=m.w*pxcm, H=m.h*pxcm;
   const VW=W+PAD*2, VH=H+PAD*2;
   const gap=state.prod.gap/10, bleedPx=(state.prod.bleed/10)*pxcm;
-  const sep=state.view==='separaciones';
+  const sep=state.view==='separaciones'||!!opt.plate;
+  // Separación real del arte: cada pose muestra la plancha elegida (o el compuesto)
+  const sepArt=sep&&!!state.sep.res&&state.sep.res.pages.length>0&&state.art.pages.length>0;
+  const plateK=opt.plate||state.sep.plate;
+  const film=!!opt.film;                                    // salida CTP: plancha blanca, imagen en negro
+  const sepStyle=film||state.sep.film?'film':'ink';
+  const ink=c=>film?'#000':c;
 
   let s='';
   // Plancha
-  s+=`<rect x="${PAD}" y="${PAD}" width="${W}" height="${H}" fill="${sep?'#0b1220':'#1c2531'}" stroke="#000" stroke-width="1" rx="3"/>`;
+  s+=`<rect x="${PAD}" y="${PAD}" width="${W}" height="${H}" fill="${film?'#fff':sep?'#0b1220':'#1c2531'}" stroke="#000" stroke-width="${film?0.6:1}" rx="3"/>`;
   // Área no imprimible superior: blanco de mordaza (parte de la plancha, al extremo)
   // + pinza de papel (área del pliego, debajo, junto al área imprimible)
   const pinzaPx=m.pinzaPapel*pxcm, mordPx=m.mordaza*pxcm, grPx=m.gripper*pxcm;
   const sidePx=m.side*pxcm, tailPx=m.tail*pxcm;
+  if(film){
+    // en la plancha grabada estas zonas no llevan imagen: solo se acotan como referencia
+    const zone=(x,y,w,h,t,fs)=>`<rect x="${x}" y="${y}" width="${w}" height="${h}" fill="none" stroke="#9ca3af" stroke-width="0.4" stroke-dasharray="3 2"/>`+(t?`<text x="${x+w/2}" y="${y+h/2+fs/3}" text-anchor="middle" font-size="${fs}" fill="#9ca3af" font-weight="700" letter-spacing="1">${t}</text>`:'');
+    s+=zone(PAD,PAD,W,mordPx,`BLANCO DE MORDAZA ${uDim(m.mordaza)}`,8);
+    s+=zone(PAD,PAD+mordPx,W,pinzaPx,`PINZA DE PAPEL ${uDim(m.pinzaPapel)}`,8);
+    s+=zone(PAD,PAD+H-tailPx,W,tailPx,`COLA ${uDim(m.tail)}`,7);
+  }else{
   // blanco de mordaza (banda extrema — pertenece a la plancha)
   s+=`<rect x="${PAD}" y="${PAD}" width="${W}" height="${mordPx}" fill="#f59e0b" opacity=".85"/>`;
   s+=`<text x="${PAD+W/2}" y="${PAD+mordPx/2+3.5}" text-anchor="middle" font-size="9" fill="#3b2600" font-weight="800" letter-spacing="1">BLANCO DE MORDAZA ${uDim(m.mordaza)}</text>`;
@@ -1572,6 +2210,7 @@ function buildPlateMarkup(g,pxcm){
   // Márgenes laterales
   s+=`<rect x="${PAD}" y="${PAD+grPx}" width="${sidePx}" height="${H-grPx-tailPx}" fill="#64748b" opacity=".35"/>`;
   s+=`<rect x="${PAD+W-sidePx}" y="${PAD+grPx}" width="${sidePx}" height="${H-grPx-tailPx}" fill="#64748b" opacity=".35"/>`;
+  }
   // Área imprimible
   if(state.view==='tecnica'){
     s+=`<rect x="${PAD+sidePx}" y="${PAD+grPx}" width="${W-2*sidePx}" height="${H-grPx-tailPx}" fill="#1e293b" stroke="#3b82f6" stroke-dasharray="6 4" stroke-width="1" opacity=".5"/>`;
@@ -1599,11 +2238,18 @@ function buildPlateMarkup(g,pxcm){
     const w=r.pieceW*pxcm, h=r.pieceH*pxcm;
     const nEl=row*r.cols+col+1;
     const pn=poseNum(nEl-1);
-    const isSel=state.selectedPose===nEl;
-    const fill=sep?CMYK[(nEl-1)%4]:'var(--paper)';
-    const op=sep?0.35:1;
+    const isSel=state.selectedPose===nEl&&!film;
+    const fill=sepArt?'#fff':sep?CMYK[(nEl-1)%4]:'var(--paper)';
+    const op=sep&&!sepArt?0.35:1;
     s+=`<g class="pose" data-pose="${nEl}" style="cursor:pointer">
-      <rect x="${x}" y="${y}" width="${w}" height="${h}" fill="${fill}" fill-opacity="${op}" stroke="${isSel?'#ff6b1a':(state.face==='retiro'?'#8b5cf6':'#0ea5e9')}" stroke-width="${isSel?2.4:1}" rx="1.5"/>`;
+      <rect x="${x}" y="${y}" width="${w}" height="${h}" fill="${fill}" fill-opacity="${op}" stroke="${film?'#d1d5db':isSel?'#ff6b1a':(state.face==='retiro'?'#8b5cf6':'#0ea5e9')}" stroke-width="${film?0.3:isSel?2.4:1}" rx="${film?0:1.5}"/>`;
+    if(sepArt){
+      // Separación: la misma página que en la vista de arte, pero solo la tinta de esta plancha
+      const pgI=(nEl-1)%state.art.pages.length;
+      const u=pgI<state.sep.res.pages.length?sepUrl(pgI,plateK,sepStyle):null;
+      if(u) s+=`<image x="${x}" y="${y}" width="${w}" height="${h}" href="${u}" preserveAspectRatio="xMidYMid slice"/>`;
+      if(!film) s+=`<rect x="${x}" y="${y}" width="${bdFold?22:15}" height="12" fill="#0d1117" opacity=".8"/><text x="${x+(bdFold?11:7.5)}" y="${y+9}" text-anchor="middle" font-size="8" font-weight="800" fill="${bdFold?'#4ade80':'#fff'}">${bdFold?'p'+pn.n:pn.n}</text>`;
+    }
     if(!sep){
       const hasArt=state.art.pages.length>0;
       if(hasArt){
@@ -1619,7 +2265,7 @@ function buildPlateMarkup(g,pxcm){
       }
     }
     // Marcas de corte por pose
-    if(state.marks.crop&&(state.view==='marcas'||state.view==='tecnica'||state.view==='imposicion')){
+    if(state.marks.crop&&(state.view==='marcas'||state.view==='tecnica'||state.view==='imposicion'||sepArt)){
       const L=10;
       s+=`<g stroke="#000" stroke-width="1">
         <line x1="${x-3}" y1="${y+bleedPx}" x2="${x-3-L}" y2="${y+bleedPx}"/>
@@ -1670,7 +2316,7 @@ function buildPlateMarkup(g,pxcm){
   // Cruces de registro
   if(state.marks.reg){
     const cross=(cx,cy)=>`<circle cx="${cx}" cy="${cy}" r="3.4" fill="none"/><line x1="${cx-6}" y1="${cy}" x2="${cx+6}" y2="${cy}"/><line x1="${cx}" y1="${cy-6}" x2="${cx}" y2="${cy+6}"/>`;
-    s+=`<g stroke="#a78bfa" stroke-width="0.8" fill="none">
+    s+=`<g stroke="${ink('#a78bfa')}" stroke-width="0.8" fill="none">
       ${cross(PAD+W/2,PAD+grPx-6)}${cross(PAD+W/2,PAD+H-tailPx+6)}
       ${cross(PAD+sidePx-6,PAD+H/2)}${cross(PAD+W-sidePx+6,PAD+H/2)}</g>`;
   }
@@ -1683,11 +2329,16 @@ function buildPlateMarkup(g,pxcm){
       s+=`<image x="${bx0}" y="${by}" width="${cbW}" height="${cbH}" href="${state.customColorBar.url}" preserveAspectRatio="xMidYMid meet"/>`;
       s+=`<text x="${bx0}" y="${by-3}" font-size="6.5" fill="#22c55e" font-weight="700">★ TIRA DE CONTROL PROPIA</text>`;
     }else{
-      const bars=getColorBarSwatches(state.colorBarPreset);
-      const sw=Math.max(8,W/(bars.length+2)), sh=9; let bx=PAD+sidePx+2+cbDx; const by=PAD+H-tailPx-sh-3+cbDy;
+      const bars=colorBarSwatches();
+      const sw=Math.min(Math.max(8,W/(bars.length+2)),(W-2*sidePx-8)/Math.max(1,bars.length)), sh=9; let bx=PAD+sidePx+2+cbDx; const by=PAD+H-tailPx-sh-3+cbDy;
       const label={cmyk:'CMYK','4color':'4-COLOR','6color':'6-COLOR','5spot':'5-SPOT'}[state.colorBarPreset]||'CMYK';
-      s+=`<text x="${PAD+sidePx+2+cbDx}" y="${by-3}" font-size="6.5" fill="#94a3b8" font-weight="700">▦ SMARTMARKS · ${label}</text>`;
-      bars.forEach(([c,l])=>{ s+=`<rect x="${bx}" y="${by}" width="${sw}" height="${sh}" fill="${c}" stroke="#000" stroke-width="0.3"/><text x="${bx+sw/2}" y="${by+sh+6}" font-size="5" fill="#94a3b8" text-anchor="middle">${l}</text>`; bx+=sw; });
+      const oneP=sepArt&&plateK!=='comp';      // en una plancha solo se graban los parches de su tinta
+      const grayBar=film;                      // en pantalla el fondo de plancha es oscuro: se mantiene el color de la tinta
+      s+=`<text x="${PAD+sidePx+2+cbDx}" y="${by-3}" font-size="6.5" fill="${film?'#6b7280':'#94a3b8'}" font-weight="700">▦ SMARTMARKS · ${state.sep.mode!=='cmyk'&&sepSummary().hasArt?sepSummary().tag.toUpperCase():label}</text>`;
+      bars.forEach(([c,l,k])=>{
+        const show=!oneP||k===plateK;
+        const fc=!show?'none':grayBar?(/50/.test(l)?'#808080':'#000'):c;
+        s+=`<rect x="${bx}" y="${by}" width="${sw}" height="${sh}" fill="${fc}" stroke="${film?'#9ca3af':'#000'}" stroke-width="0.3"/><text x="${bx+sw/2}" y="${by+sh+6}" font-size="5" fill="${film?'#6b7280':'#94a3b8'}" text-anchor="middle">${l}</text>`; bx+=sw; });
     }
   }
   // Reglas
@@ -1705,12 +2356,19 @@ function buildPlateMarkup(g,pxcm){
   // Plate ID
   if(state.marks.plateid){
     const bTag=state.order.binding&&state.order.binding!=='Sin encuadernación'?' · '+state.order.binding:'';
-    s+=`<text x="${PAD+4}" y="${PAD-16}" font-size="9" fill="#e2e8f0" font-weight="700" font-family="monospace">${(state.order.job||'JOB')} · ${state.machine?state.machine.name:''} · ${sep?'SEP':'CMYK'} · ${state.face.toUpperCase()}${bTag}</text>`;
+    const cTag=sepArt?'PLANCHA '+plateLabel(plateK):sep?'SEP':sepSummary().tag.toUpperCase();
+    s+=`<text x="${PAD+4}" y="${PAD-16}" font-size="9" fill="${ink('#e2e8f0')}" font-weight="700" font-family="monospace">${esc(state.order.job||'JOB')} · ${state.machine?state.machine.name:''} · ${esc(cTag)} · ${state.face.toUpperCase()}${bTag}</text>`;
+  }
+  // Rótulo de la separación (siempre en la salida CTP: el operador identifica cada plancha)
+  if(film&&sepArt){
+    const pi=plateInfo(plateK);
+    s+=`<text x="${PAD+4}" y="${PAD+H+16}" font-size="10" fill="#000" font-weight="800" font-family="monospace">SEPARACIÓN: ${esc(plateLabel(plateK))} · ${state.face.toUpperCase()} · ${esc(state.order.job||'JOB')} · ${state.machine?state.machine.w+'×'+state.machine.h+' cm':''}</text>`;
+    s+=`<rect x="${PAD+W-60}" y="${PAD+H+6}" width="56" height="12" fill="${pi.hex}" stroke="#000" stroke-width="0.4"/><text x="${PAD+W-32}" y="${PAD+H+30}" text-anchor="middle" font-size="6" fill="#6b7280">ref. visual</text>`;
   }
   // Código de barras
   if(state.marks.barcode){
     let bx=PAD+W-90,by=PAD-14,bar='';
-    for(let i=0;i<40;i++){ if(Math.random()>.5)bar+=`<rect x="${bx+i*2}" y="${by}" width="1.2" height="10" fill="#e2e8f0"/>`; }
+    for(let i=0;i<40;i++){ if(Math.random()>.5)bar+=`<rect x="${bx+i*2}" y="${by}" width="1.2" height="10" fill="${ink('#e2e8f0')}"/>`; }
     s+=bar;
   }
   // SmartMarks / Gutters (posiciones ancla)
@@ -1723,7 +2381,7 @@ function buildPlateMarkup(g,pxcm){
   GUTTER_KEYS.forEach(k=>{
     if(!(state.gutters[k]||(showG&&(k==='Top'||k==='Center'))))return;
     const [cx,cy]=anchors[k];
-    s+=`<g fill="#22c55e" font-size="6" font-weight="700"><circle cx="${cx}" cy="${cy}" r="2.2"/><text x="${cx+5}" y="${cy+2}">${k}</text></g>`;
+    s+=`<g fill="${ink('#22c55e')}" font-size="6" font-weight="700"><circle cx="${cx}" cy="${cy}" r="2.2"/><text x="${cx+5}" y="${cy+2}">${k}</text></g>`;
   });
 
   return {s,VW,VH};
@@ -1842,12 +2500,14 @@ function toggleRotate90(){
 async function loadArt(file){
   if(!file)return;
   const isPdf=file.type==='application/pdf'||/\.pdf$/i.test(file.name);
+  let raw=null;   // copia de los bytes para leer las tintas especiales (PDF.js transfiere el original al worker)
   try{
     if(isPdf){
       if(typeof pdfjsLib==='undefined'){ toast('PDF.js no disponible (sin conexión). Carga una imagen PNG/JPG.','warn'); return; }
       pdfjsLib.GlobalWorkerOptions.workerSrc='https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js';
       toast('Procesando PDF…');
       const buf=await file.arrayBuffer();
+      raw=buf.slice(0);
       const doc=await pdfjsLib.getDocument({data:buf}).promise;
       const pages=[]; let size=null; const max=Math.min(doc.numPages,32);
       for(let i=1;i<=max;i++){
@@ -1858,7 +2518,7 @@ async function loadArt(file){
         pages.push(c.toDataURL('image/png'));
         if(i===1){ const v1=pg.getViewport({scale:1}); size={w:v1.width/28.3465,h:v1.height/28.3465}; }
       }
-      state.art={pages,name:file.name,size,count:doc.numPages};
+      state.art={pages,name:file.name,size,count:doc.numPages,pdf:true};
       toast('Arte cargado · '+doc.numPages+' pág.','ok');
     }else if(/^image\//.test(file.type)||/\.(png|jpe?g|svg|webp)$/i.test(file.name)){
       const url=await new Promise((res,rej)=>{const r=new FileReader();r.onload=()=>res(r.result);r.onerror=rej;r.readAsDataURL(file);});
@@ -1866,9 +2526,10 @@ async function loadArt(file){
       toast('Imagen cargada como arte final','ok');
     }else{ toast('Formato no soportado: usa PDF o imagen','err'); return; }
     renderArtStage(); drawPlate();
-  }catch(e){ toast('No se pudo leer el archivo','err'); }
+  }catch(e){ toast('No se pudo leer el archivo','err'); return; }
+  sepOnArt(raw);
 }
-function clearArt(){ state.art={pages:[],name:'',size:null}; renderArtStage(); drawPlate(); toast('Arte quitado — vuelve al esquema','ok'); }
+function clearArt(){ state.art={pages:[],name:'',size:null}; sepOnArtCleared(); renderArtStage(); drawPlate(); toast('Arte quitado — vuelve al esquema','ok'); }
 /* Arte demo: tarjeta personal 9×5 cm (SVG → dataURL) */
 function makeCardArt(){
   const W=900,H=500;
@@ -1889,15 +2550,19 @@ function loadDemo(){
   const set=(id,v)=>{ if($(id))$(id).value=v; };
   set('f_job','JOB-DEMO-95'); set('f_piece','TARJETA-01'); set('f_desc','Tarjeta personal');
   set('f_prodW','9'); set('f_prodH','5'); set('f_bleed','3'); set('f_qty','1000');
-  set('f_ref','DEMO-TARJETA'); set('f_raw','Couché mate 300 g/m² · CMYK');
+  set('f_ref','DEMO-TARJETA');
   if($('f_binding'))$('f_binding').value='Sin encuadernación';
+  // la franja naranja de la tarjeta va en tinta especial: 5/0 = CMYK + PANTONE 1585 C
+  $('f_colorsys').value='cmyk_spot'; set('f_spots','PANTONE 1585 C'); set('f_inksF','5'); set('f_inksB','0');
+  $('f_soft').value='Adobe Illustrator';
   set('c_qty','1000'); set('c_pages','1'); $('c_print').value='tiro';
   set('c_weight','300'); set('c_prodW','9'); set('c_prodH','5'); set('c_gap','4');
+  state.calc.paperType='couche'; state.calc.madre='72x102';   // 72×102 ÷ 4 = 36×51, entra en la GTO 52
   state.orient='auto';
   $('orientSeg').querySelectorAll('button').forEach(b=>b.classList.toggle('on',b.dataset.o==='auto'));
   selectMachine('gto52');
   state.art={pages:[makeCardArt()],name:'tarjeta-personal.svg',size:{w:9,h:5},count:1};
-  renderArtStage(); recalc(); goStep(4);
+  renderArtStage(); recalc(); goStep(4); sepOnArt(null);
   toast('DEMO · Tarjeta personal 9×5 cm montada en GTO 52','ok');
 }
 function renderSideAlert(){
@@ -1926,6 +2591,831 @@ function renderArtStage(){
     meta.style.display='none'; clr.style.display='none';
   }
 }
+/* ============================================================
+   SEPARACIÓN DE TINTAS · CMYK + TINTAS ESPECIALES
+   Simulación didáctica: el arte se rasteriza (PDF.js) y cada píxel se
+   descompone en tintas. Las especiales se leen del PDF (/Separation y
+   /DeviceN) y se calibran con el mismo motor de render; también se pueden
+   declarar a mano (Pantone) o tomar del arte con el cuentagotas.
+   No sustituye un RIP ni una conversión ICC de producción.
+   ============================================================ */
+const SEP_PROFILES={
+  fogra39:{n:'ISO Coated v2 · FOGRA39',d:'couché brillo / mate',tac:330},
+  fogra51:{n:'PSO Coated v3 · FOGRA51',d:'couché (norma actual)',tac:300},
+  fogra52:{n:'PSO Uncoated v3 · FOGRA52',d:'bond / offset sin estucar',tac:300},
+  news:{n:'ISOnewspaper26v4',d:'papel periódico',tac:240},
+};
+const SEP_PROFILE_BY_PAPER={couche:'fogra39',foldcote:'fogra39',bond:'fogra52',avena:'fogra52',autocop:'fogra52',bulky:'news'};
+// GCR: el negro empieza a sustituir al gris CMY desde "start" y llega a "amt" en el negro máximo
+const SEP_GCR={light:{n:'Ligero',start:.5,amt:.7},medium:{n:'Medio',start:.25,amt:.9},heavy:{n:'Fuerte',start:0,amt:1}};
+const SEP_MAX=560;               // lado mayor (px) de cada imagen de separación
+const SEP_MODES={cmyk:'Cuatricromía CMYK',cmyk_spot:'CMYK + tintas especiales',spot:'Solo tintas especiales'};
+const PROC=[{k:'C',n:'Cian',rgb:[0,174,239]},{k:'M',n:'Magenta',rgb:[236,0,140]},{k:'Y',n:'Amarillo',rgb:[255,236,0]},{k:'K',n:'Negro',rgb:[35,31,32]}];
+// Referencia aproximada sRGB de guías Pantone (solo para visualizar; el color real lo da la guía impresa)
+const PANTONE_REF=[
+  ['PANTONE Yellow C','#FEDD00'],['PANTONE 109 C','#FFD100'],['PANTONE 116 C','#FFCD00'],['PANTONE 123 C','#FFC72C'],
+  ['PANTONE 130 C','#F2A900'],['PANTONE 137 C','#FFA300'],['PANTONE 151 C','#FF8200'],['PANTONE 1585 C','#FF6A14'],
+  ['PANTONE 165 C','#FF6720'],['PANTONE Orange 021 C','#FE5000'],['PANTONE Warm Red C','#F9423A'],['PANTONE 485 C','#DA291C'],
+  ['PANTONE Red 032 C','#EF3340'],['PANTONE 185 C','#E4002B'],['PANTONE 186 C','#C8102E'],['PANTONE 199 C','#D50032'],
+  ['PANTONE 200 C','#BA0C2F'],['PANTONE 1795 C','#D22630'],['PANTONE 202 C','#862633'],['PANTONE Rubine Red C','#CE0058'],
+  ['PANTONE Rhodamine Red C','#E10098'],['PANTONE Purple C','#BB29BB'],['PANTONE Violet C','#440099'],['PANTONE 2685 C','#330072'],
+  ['PANTONE Blue 072 C','#10069F'],['PANTONE Reflex Blue C','#001489'],['PANTONE 280 C','#012169'],['PANTONE 286 C','#0033A0'],
+  ['PANTONE 293 C','#003DA5'],['PANTONE 2935 C','#0057B8'],['PANTONE 300 C','#005EB8'],['PANTONE Process Blue C','#0085CA'],
+  ['PANTONE 299 C','#00A3E0'],['PANTONE 312 C','#00A9CE'],['PANTONE 320 C','#009CA6'],['PANTONE 3272 C','#00A499'],
+  ['PANTONE Green C','#00AB84'],['PANTONE 347 C','#009A44'],['PANTONE 348 C','#00843D'],['PANTONE 354 C','#00B140'],
+  ['PANTONE 361 C','#43B02A'],['PANTONE 375 C','#97D700'],['PANTONE 376 C','#84BD00'],['PANTONE 4625 C','#4F2C1D'],
+  ['PANTONE Cool Gray 7 C','#97999B'],['PANTONE Cool Gray 11 C','#53565A'],['PANTONE Black C','#2D2926'],
+  ['PANTONE 871 C (oro metálico)','#84754E'],['PANTONE 877 C (plata metálica)','#8A8D8F'],
+  ['Barniz UV sectorizado','#BFE3EE'],['Blanco opaco','#F2F2F2'],['Troquel (dieline)','#FF2DA6'],
+];
+const pantoneKey=n=>String(n).toUpperCase().replace(/\(.*?\)/g,'').replace(/PANTONE|PMS/g,'').replace(/[^A-Z0-9]/g,'').replace(/(CVC|CVU|CV|CP|UP|C|U|M)$/,'');
+const PANTONE_MAP=new Map();
+PANTONE_REF.forEach(([n,h])=>{ const k=pantoneKey(n); PANTONE_MAP.set(k,h); const d=/^[A-Z]+(\d{3})$/.exec(k); if(d) PANTONE_MAP.set(d[1],h); });
+const pantoneHex=n=>PANTONE_MAP.get(pantoneKey(n))||null;
+const SEP_PAL=['#E4002B','#0085CA','#00AB84','#FF8200','#BB29BB','#FFCD00','#53565A'];
+const INK_KIND_LBL={spot:'Pantone · plana',varnish:'Barniz · plancha',white:'Blanco',tech:'Técnica · no imprime',finish:'Acabado · no imprime'};
+function inkKind(name){
+  const n=String(name||'').toLowerCase();
+  if(/troquel|dieline|die ?cut|(^|[^a-z])die([^a-z]|$)|(^|[^a-z])cut|corte|crease|hendid|plegad|(^|[^a-z])fold|perfor|t[eé]cnic/.test(n)) return 'tech';
+  if(/foil|hot ?stamp|stamping|estampad|relieve|emboss|braille/.test(n)) return 'finish';
+  if(/barniz|varnish|(^|[^a-z])uv([^a-z]|$)|laca|coating|reserva/.test(n)) return 'varnish';
+  if(/blanco|white/.test(n)) return 'white';
+  return 'spot';
+}
+const esc=s=>String(s==null?'':s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+const hex2rgb=h=>{ const m=/^#?([0-9a-f]{6})$/i.exec(h||''); if(!m) return [128,128,128]; const n=parseInt(m[1],16); return [n>>16&255,n>>8&255,n&255]; };
+const rgb2hex=(r,g,b)=>'#'+[r,g,b].map(v=>Math.max(0,Math.min(255,Math.round(v))).toString(16).padStart(2,'0')).join('');
+const mixWhite=(hex,t)=>{ const [r,g,b]=hex2rgb(hex); return rgb2hex(255-t*(255-r),255-t*(255-g),255-t*(255-b)); };
+const SRGB_LIN=Array.from({length:256},(_,i)=>{ const c=i/255; return c<=0.04045?c/12.92:Math.pow((c+0.055)/1.055,2.4); });
+function rgb2lab(r,g,b){
+  const L=v=>SRGB_LIN[v<0?0:v>255?255:Math.round(v)];
+  const R=L(r),G=L(g),B=L(b);
+  const f=t=>t>0.008856?Math.cbrt(t):7.787*t+16/116;
+  const x=f((R*0.4124+G*0.3576+B*0.1805)/0.95047), y=f(R*0.2126+G*0.7152+B*0.0722), z=f((R*0.0193+G*0.1192+B*0.9505)/1.08883);
+  return [116*y-16,500*(x-y),200*(y-z)];
+}
+const deltaE=(a,b)=>Math.sqrt((a[0]-b[0])**2+(a[1]-b[1])**2+(a[2]-b[2])**2);
+function lab2rgb(L,a,b,wp){
+  const w=wp||[0.9505,1,1.089], fy=(L+16)/116, fx=fy+a/500, fz=fy-b/200;
+  const f=t=>t>0.206893?t*t*t:(t-16/116)/7.787;
+  const X=w[0]*f(fx), Y=w[1]*f(fy), Z=w[2]*f(fz);
+  const gm=c=>{ c=Math.max(0,Math.min(1,c)); return 255*(c<=0.0031308?12.92*c:1.055*Math.pow(c,1/2.4)-0.055); };
+  return [gm(3.2406*X-1.5372*Y-0.4986*Z),gm(-0.9689*X+1.8758*Y+0.0415*Z),gm(0.0557*X-0.2040*Y+1.0570*Z)];
+}
+function nearestPantone(hex){
+  const lab=rgb2lab(...hex2rgb(hex)); let best={name:'PANTONE',de:Infinity};
+  PANTONE_REF.forEach(([n,h])=>{ if(!/^PANTONE/.test(n)) return; const de=deltaE(lab,rgb2lab(...hex2rgb(h))); if(de<best.de) best={name:n.replace(/\s*\(.*\)$/,''),de}; });
+  return best;
+}
+const sleep0=()=>new Promise(r=>setTimeout(r,0));
+const loadImage=src=>new Promise((res,rej)=>{ const im=new Image(); im.onload=()=>res(im); im.onerror=rej; im.src=src; });
+
+/* ---------- Lectura mínima de objetos PDF (para encontrar tintas especiales) ---------- */
+const latin1=u8=>{ let s=''; for(let i=0;i<u8.length;i+=0x8000) s+=String.fromCharCode.apply(null,u8.subarray(i,i+0x8000)); return s; };
+async function inflateBytes(u8){
+  if(typeof DecompressionStream==='undefined') return null;
+  try{
+    const rd=new Blob([u8]).stream().pipeThrough(new DecompressionStream('deflate')).getReader();
+    const parts=[]; let len=0;
+    try{ for(;;){ const {done,value}=await rd.read(); if(done) break; parts.push(value); len+=value.length; } }
+    catch(e){ /* bytes sobrantes tras el final del flujo: se conserva lo ya leído */ }
+    if(!len) return null;
+    const out=new Uint8Array(len); let o=0; parts.forEach(p=>{ out.set(p,o); o+=p.length; }); return out;
+  }catch(e){ return null; }
+}
+function pdfName(raw){
+  const s=raw.indexOf('#')>=0?raw.replace(/#([0-9a-fA-F]{2})/g,(_,h)=>String.fromCharCode(parseInt(h,16))):raw;
+  if(!/[\x80-\xff]/.test(s)) return s;
+  try{ return new TextDecoder('utf-8',{fatal:true}).decode(Uint8Array.from(s,ch=>ch.charCodeAt(0)&255)); }catch(e){ return s; }
+}
+function pdfSkip(s,i){
+  const n=s.length;
+  for(;;){
+    while(i<n){ const c=s.charCodeAt(i); if(c===32||c===10||c===13||c===9||c===12||c===0) i++; else break; }
+    if(s.charCodeAt(i)===37){ while(i<n&&s.charCodeAt(i)!==10&&s.charCodeAt(i)!==13) i++; continue; }
+    return i;
+  }
+}
+const PDF_DEL=/[\s()<>\[\]{}\/%]/;
+function pdfParse(s,i,d=0){
+  i=pdfSkip(s,i); const n=s.length; if(i>=n||d>32) return null;
+  const c=s[i];
+  if(c==='/'){ let j=i+1; while(j<n&&!PDF_DEL.test(s[j])) j++; return {v:{t:'n',v:pdfName(s.slice(i+1,j))},i:j}; }
+  if(c==='['){ const a=[]; i++;
+    for(let g=0;g<5000;g++){ i=pdfSkip(s,i); if(i>=n||s[i]===']') return {v:{t:'a',v:a},i:i+1};
+      const r=pdfParse(s,i,d+1); if(!r) break; if(r.v.t!=='x') a.push(r.v); i=r.i; }
+    return {v:{t:'a',v:a},i}; }
+  if(c==='<'&&s[i+1]==='<'){ const o={}; i+=2;
+    for(let g=0;g<5000;g++){ i=pdfSkip(s,i); if(i>=n) break; if(s[i]==='>'&&s[i+1]==='>') return {v:{t:'d',v:o},i:i+2};
+      const k=pdfParse(s,i,d+1); if(!k) break; i=k.i; if(k.v.t!=='n') continue;
+      const val=pdfParse(s,i,d+1); if(!val) break; o[k.v.v]=val.v; i=val.i; }
+    return {v:{t:'d',v:o},i}; }
+  if(c==='<'){ const j=s.indexOf('>',i); return {v:{t:'s'},i:j<0?n:j+1}; }
+  if(c==='('){ let j=i+1,lv=1; while(j<n&&lv>0){ const ch=s[j]; if(ch==='\\'){ j+=2; continue; } if(ch==='(')lv++; else if(ch===')')lv--; j++; } return {v:{t:'s'},i:j}; }
+  const m=/^[+-]?(?:\d+\.?\d*|\.\d+)/.exec(s.substr(i,32));
+  if(m){ const j=i+m[0].length, num=parseFloat(m[0]);
+    if(/^\d+$/.test(m[0])){ const r=/^\s+(\d+)\s+R(?![A-Za-z0-9])/.exec(s.substr(j,24)); if(r) return {v:{t:'r',v:num,g:+r[1]},i:j+r[0].length}; }
+    return {v:{t:'#',v:num},i:j}; }
+  const w=/^[A-Za-z]+/.exec(s.substr(i,16)); if(w) return {v:{t:'w',v:w[0]},i:i+w[0].length};
+  return {v:{t:'x'},i:i+1};
+}
+function pdfGet(ix,v){
+  for(let d=0;v&&v.t==='r'&&d<10;d++){
+    let s,p;
+    if(ix.inStm.has(v.v)){ s=ix.inStm.get(v.v); p=0; }
+    else{ p=ix.top.get(v.v); if(p===undefined) return null; s=ix.txt; }
+    const r=pdfParse(s,p); v=r?r.v:null;
+  }
+  return v;
+}
+const pdfNum=(ix,v)=>{ v=pdfGet(ix,v); return v&&v.t==='#'?v.v:NaN; };
+const pdfArr=(ix,v)=>{ v=pdfGet(ix,v); return v&&v.t==='a'?v.v.map(e=>pdfNum(ix,e)):null; };
+async function pdfStream(ix,ref){
+  if(!ref||ref.t!=='r'||ix.inStm.has(ref.v)) return null;
+  const p=ix.top.get(ref.v); if(p===undefined) return null;
+  const r=pdfParse(ix.txt,p); if(!r||r.v.t!=='d') return null;
+  const dict=r.v.v; let k=ix.txt.indexOf('stream',r.i); if(k<0||k-r.i>64) return null;
+  k+=6; if(ix.txt.charCodeAt(k)===13) k++; if(ix.txt.charCodeAt(k)===10) k++;
+  const L=pdfNum(ix,dict.Length);
+  const end=(L>0&&k+L<=ix.bytes.length)?k+L:ix.txt.indexOf('endstream',k);
+  if(end<0) return null;
+  let data=ix.bytes.subarray(k,end);
+  const f=pdfGet(ix,dict.Filter); const fl=!f?[]:f.t==='a'?f.v.map(x=>(pdfGet(ix,x)||{}).v):[f.v];
+  for(const fn of fl){
+    if(fn==='FlateDecode'||fn==='Fl'){ data=await inflateBytes(data); if(!data) return null; }
+    else if(fn==='ASCIIHexDecode'||fn==='AHx'){ const h=latin1(data).replace(/[^0-9a-fA-F]/g,''); const o=new Uint8Array(h.length>>1); for(let q=0;q<o.length;q++) o[q]=parseInt(h.substr(2*q,2),16); data=o; }
+    else return null;
+  }
+  return {dict,data};
+}
+function pdfAltSpace(ix,v){
+  v=pdfGet(ix,v); if(!v) return null;
+  const dev={DeviceCMYK:{s:'cmyk',n:4},DeviceRGB:{s:'rgb',n:3},DeviceGray:{s:'gray',n:1},CMYK:{s:'cmyk',n:4},RGB:{s:'rgb',n:3},G:{s:'gray',n:1}};
+  if(v.t==='n') return dev[v.v]||null;
+  if(v.t!=='a'||!v.v.length) return null;
+  const h=pdfGet(ix,v.v[0]); const nm=h&&h.t==='n'?h.v:'';
+  if(nm==='Lab'){ const d=pdfGet(ix,v.v[1]); const o=d&&d.t==='d'?d.v:{};
+    return {s:'lab',n:3,wp:pdfArr(ix,o.WhitePoint)||[0.9642,1,0.8249],rg:pdfArr(ix,o.Range)||[-100,100,-100,100]}; }
+  if(nm==='ICCBased'){ const d=pdfGet(ix,v.v[1]); const N=d&&d.t==='d'?pdfNum(ix,d.v.N):NaN; return N===4?dev.DeviceCMYK:N===3?dev.DeviceRGB:N===1?dev.DeviceGray:null; }
+  if(nm==='CalRGB') return dev.DeviceRGB;
+  if(nm==='CalGray') return dev.DeviceGray;
+  return null;
+}
+/* Calculadora PostScript (funciones tipo 4) */
+function psCompile(code){
+  const toks=code.replace(/%[^\r\n]*/g,' ').match(/[{}]|[^\s{}]+/g); if(!toks) return null;
+  let p=0;
+  const blk=()=>{ const out=[]; while(p<toks.length){ const t=toks[p++]; if(t==='{') out.push(blk()); else if(t==='}') return out; else { const n=Number(t); out.push(Number.isFinite(n)?n:t); } } return out; };
+  const top=blk(); return Array.isArray(top[0])?top[0]:top;
+}
+function psRun(prog,ins){
+  const st=ins.slice(); let guard=0;
+  const run=pr=>{ for(const t of pr){
+    if(++guard>200000) throw new Error('ps');
+    if(typeof t==='number'||Array.isArray(t)){ st.push(t); continue; }
+    let a,b,c;
+    switch(t){
+      case 'add': b=st.pop();a=st.pop();st.push(a+b);break;
+      case 'sub': b=st.pop();a=st.pop();st.push(a-b);break;
+      case 'mul': b=st.pop();a=st.pop();st.push(a*b);break;
+      case 'div': b=st.pop();a=st.pop();st.push(b?a/b:0);break;
+      case 'idiv': b=st.pop();a=st.pop();st.push(b?Math.trunc(a/b):0);break;
+      case 'mod': b=st.pop();a=st.pop();st.push(b?a%b:0);break;
+      case 'neg': st.push(-st.pop());break;
+      case 'abs': st.push(Math.abs(st.pop()));break;
+      case 'ceiling': st.push(Math.ceil(st.pop()));break;
+      case 'floor': st.push(Math.floor(st.pop()));break;
+      case 'round': st.push(Math.round(st.pop()));break;
+      case 'truncate': case 'cvi': st.push(Math.trunc(st.pop()));break;
+      case 'cvr': break;
+      case 'sqrt': st.push(Math.sqrt(st.pop()));break;
+      case 'sin': st.push(Math.sin(st.pop()*Math.PI/180));break;
+      case 'cos': st.push(Math.cos(st.pop()*Math.PI/180));break;
+      case 'atan': b=st.pop();a=st.pop();{ let r=Math.atan2(a,b)*180/Math.PI; if(r<0) r+=360; st.push(r); } break;
+      case 'exp': b=st.pop();a=st.pop();st.push(Math.pow(a,b));break;
+      case 'ln': st.push(Math.log(st.pop()));break;
+      case 'log': st.push(Math.log10(st.pop()));break;
+      case 'eq': b=st.pop();a=st.pop();st.push(a===b);break;
+      case 'ne': b=st.pop();a=st.pop();st.push(a!==b);break;
+      case 'gt': b=st.pop();a=st.pop();st.push(a>b);break;
+      case 'ge': b=st.pop();a=st.pop();st.push(a>=b);break;
+      case 'lt': b=st.pop();a=st.pop();st.push(a<b);break;
+      case 'le': b=st.pop();a=st.pop();st.push(a<=b);break;
+      case 'and': b=st.pop();a=st.pop();st.push(typeof a==='boolean'?(a&&b):(a&b));break;
+      case 'or': b=st.pop();a=st.pop();st.push(typeof a==='boolean'?(a||b):(a|b));break;
+      case 'xor': b=st.pop();a=st.pop();st.push(typeof a==='boolean'?(a!==b):(a^b));break;
+      case 'not': a=st.pop();st.push(typeof a==='boolean'?!a:~a);break;
+      case 'bitshift': b=st.pop();a=st.pop();st.push(b>=0?a<<b:a>>-b);break;
+      case 'true': st.push(true);break;
+      case 'false': st.push(false);break;
+      case 'if': b=st.pop();a=st.pop(); if(a) run(b); break;
+      case 'ifelse': c=st.pop();b=st.pop();a=st.pop(); run(a?b:c); break;
+      case 'pop': st.pop();break;
+      case 'exch': b=st.pop();a=st.pop();st.push(b,a);break;
+      case 'dup': st.push(st[st.length-1]);break;
+      case 'copy': a=st.pop(); st.push(...st.slice(st.length-a)); break;
+      case 'index': a=st.pop(); st.push(st[st.length-1-a]); break;
+      case 'roll': b=st.pop();a=st.pop(); if(a>0){ const arr=st.splice(st.length-a,a), k=((b%a)+a)%a; st.push(...arr.slice(a-k),...arr.slice(0,a-k)); } break;
+      default: throw new Error('op '+t);
+    } } };
+  run(prog);
+  return st.map(Number);
+}
+/* Función de transformación de tinta (tipos 0, 2, 3 y 4 del estándar PDF) */
+async function pdfFunc(ix,ref,d=0){
+  const f=pdfGet(ix,ref); if(!f||d>4) return null;
+  if(f.t==='a'){ const fs=[]; for(const x of f.v){ const g=await pdfFunc(ix,x,d+1); if(!g) return null; fs.push(g); } return ins=>fs.map(g=>g(ins)[0]); }
+  if(f.t!=='d') return null;
+  const o=f.v, type=pdfNum(ix,o.FunctionType);
+  const dom=pdfArr(ix,o.Domain)||[0,1], rng=pdfArr(ix,o.Range);
+  const cl=(x,a,b)=>Math.min(b,Math.max(a,x));
+  const clip=out=>rng?out.map((v,j)=>rng[2*j]!==undefined?cl(v,rng[2*j],rng[2*j+1]):v):out;
+  if(type===2){ const C0=pdfArr(ix,o.C0)||[0], C1=pdfArr(ix,o.C1)||[1], N=pdfNum(ix,o.N), e=Number.isFinite(N)?N:1;
+    return ins=>{ const p=Math.pow(cl(ins[0],dom[0],dom[1]),e); return clip(C0.map((c,j)=>c+p*((C1[j]!==undefined?C1[j]:c)-c))); }; }
+  if(type===3){ const fl=pdfGet(ix,o.Functions); if(!fl||fl.t!=='a') return null;
+    const fs=[]; for(const x of fl.v){ const g=await pdfFunc(ix,x,d+1); if(!g) return null; fs.push(g); }
+    const bd=pdfArr(ix,o.Bounds)||[], en=pdfArr(ix,o.Encode)||[];
+    return ins=>{ const x=cl(ins[0],dom[0],dom[1]); let k=0; while(k<bd.length&&x>=bd[k]) k++;
+      const lo=k===0?dom[0]:bd[k-1], hi=k===bd.length?dom[1]:bd[k], e0=en[2*k]!==undefined?en[2*k]:0, e1=en[2*k+1]!==undefined?en[2*k+1]:1;
+      return clip(fs[Math.min(k,fs.length-1)]([hi===lo?e0:e0+(x-lo)*(e1-e0)/(hi-lo)])); }; }
+  if(type===4){ const st=await pdfStream(ix,ref); if(!st) return null; const prog=psCompile(latin1(st.data)); if(!prog) return null;
+    return ins=>clip(psRun(prog,ins.map((x,j)=>cl(x,dom[2*j]!==undefined?dom[2*j]:0,dom[2*j+1]!==undefined?dom[2*j+1]:1)))); }
+  if(type===0){ const size=pdfArr(ix,o.Size), bps=pdfNum(ix,o.BitsPerSample); if(!size||size.length!==1||!rng||!(bps>0)) return null;
+    const st=await pdfStream(ix,ref); if(!st) return null;
+    const m=rng.length/2, n=size[0], S=st.data, enc=pdfArr(ix,o.Encode)||[0,n-1], dec=pdfArr(ix,o.Decode)||rng, mx=Math.pow(2,bps)-1;
+    const smp=(i,j)=>{ let v=0; const b0=(i*m+j)*bps; for(let b=0;b<bps;b++){ const bo=b0+b; v=v*2+((S[bo>>3]>>(7-(bo&7)))&1); } return v; };
+    return ins=>{ let e=enc[0]+(cl(ins[0],dom[0],dom[1])-dom[0])*(enc[1]-enc[0])/((dom[1]-dom[0])||1); e=cl(e,0,n-1);
+      const i0=Math.floor(e), i1=Math.min(n-1,i0+1), fr=e-i0, out=[];
+      for(let j=0;j<m;j++){ const s=smp(i0,j)*(1-fr)+smp(i1,j)*fr; out.push(dec[2*j]+s*(dec[2*j+1]-dec[2*j])/mx); }
+      return clip(out); }; }
+  return null;
+}
+function altNaiveRgb(sp,v){
+  if(sp.s==='cmyk'){ const [c,m,y,k]=v; return [255*(1-c)*(1-k),255*(1-m)*(1-k),255*(1-y)*(1-k)]; }
+  if(sp.s==='rgb') return v.map(x=>255*x);
+  if(sp.s==='gray') return [255*v[0],255*v[0],255*v[0]];
+  if(sp.s==='lab') return lab2rgb(v[0],v[1],v[2],sp.wp);
+  return [128,128,128];
+}
+function altDesc(sp,v){
+  const p=x=>Math.round(x*100);
+  if(sp.s==='cmyk') return `alt. CMYK ${v.map(p).join('/')}`;
+  if(sp.s==='rgb') return `alt. RGB ${v.map(x=>Math.round(x*255)).join('/')}`;
+  if(sp.s==='gray') return `alt. gris ${p(v[0])}%`;
+  if(sp.s==='lab') return `alt. Lab ${v.map(x=>Math.round(x)).join('/')}`;
+  return '';
+}
+/* PDF mínimo en memoria: rampa de tintes 0–100 % de cada tinta, renderizada con PDF.js
+   para obtener exactamente el mismo RGB con que se dibujó el arte. */
+function miniPdf(W,H,content,res){
+  const objs=['<< /Type /Catalog /Pages 2 0 R >>','<< /Type /Pages /Kids [3 0 R] /Count 1 >>',
+    `<< /Type /Page /Parent 2 0 R /MediaBox [0 0 ${W} ${H}] /Resources << ${res} >> /Contents 4 0 R >>`,
+    `<< /Length ${content.length} >>\nstream\n${content}\nendstream`];
+  let s='%PDF-1.4\n'; const off=[];
+  objs.forEach((o,i)=>{ off.push(s.length); s+=`${i+1} 0 obj\n${o}\nendobj\n`; });
+  const x=s.length;
+  s+=`xref\n0 ${objs.length+1}\n0000000000 65535 f \n`+off.map(o=>String(o).padStart(10,'0')+' 00000 n \n').join('')
+    +`trailer\n<< /Size ${objs.length+1} /Root 1 0 R >>\nstartxref\n${x}\n%%EOF\n`;
+  return new TextEncoder().encode(s);
+}
+async function calibrateSpots(rows){
+  rows=rows.filter(o=>o.vals);
+  if(!rows.length) return;
+  rows.forEach(o=>o.ramp=o.vals.map(v=>altNaiveRgb(o.sp,v)));     // respaldo si PDF.js falla
+  if(typeof pdfjsLib==='undefined') return;
+  try{
+    const S=4, sc=3; let content='q\n', res='';
+    rows.forEach((o,ri)=>{
+      const y=(rows.length-1-ri)*S;
+      if(o.sp.s==='lab') res+=`/L${ri} [/Lab << /WhitePoint [${o.sp.wp.join(' ')}] /Range [${o.sp.rg.join(' ')}] >>] `;
+      o.vals.forEach((v,ti)=>{
+        const vs=v.map(x=>(+x).toFixed(4)).join(' ');
+        const op=o.sp.s==='cmyk'?`${vs} k`:o.sp.s==='rgb'?`${vs} rg`:o.sp.s==='gray'?`${vs} g`:`/L${ri} cs ${vs} scn`;
+        content+=`${op} ${ti*S} ${y} ${S} ${S} re f\n`;
+      });
+    });
+    content+='Q';
+    const doc=await pdfjsLib.getDocument({data:miniPdf(11*S,rows.length*S,content,res?`/ColorSpace << ${res}>>`:'')}).promise;
+    const pg=await doc.getPage(1), vp=pg.getViewport({scale:sc});
+    const cv=document.createElement('canvas'); cv.width=Math.ceil(vp.width); cv.height=Math.ceil(vp.height);
+    const c2=cv.getContext('2d',{willReadFrequently:true}); c2.fillStyle='#fff'; c2.fillRect(0,0,cv.width,cv.height);
+    await pg.render({canvasContext:c2,viewport:vp}).promise;
+    const d=c2.getImageData(0,0,cv.width,cv.height).data;
+    rows.forEach((o,ri)=>{ o.ramp=o.vals.map((_,ti)=>{ const px=Math.floor((ti*S+S/2)*sc), py=Math.floor((ri*S+S/2)*sc), q=(py*cv.width+px)*4; return [d[q],d[q+1],d[q+2]]; }); });
+    if(doc.destroy) doc.destroy();
+  }catch(e){ console.warn('Calibración de tintas especiales',e); }
+}
+/* Busca /Separation y /DeviceN (también dentro de object streams comprimidos) */
+async function detectPdfSpots(buf){
+  const bytes=new Uint8Array(buf), txt=latin1(bytes);
+  const ix={txt,bytes,top:new Map(),inStm:new Map()};
+  const re=/(\d+)\s+(\d+)\s+obj\b/g; let m;
+  while((m=re.exec(txt))) ix.top.set(+m[1],m.index+m[0].length);
+  let nStm=0;
+  for(const [num,p] of ix.top){
+    if(txt.substr(p,500).indexOf('/ObjStm')<0) continue;
+    if(++nStm>3000) break;
+    const st=await pdfStream(ix,{t:'r',v:num}); if(!st) continue;
+    const N=pdfNum(ix,st.dict.N), first=pdfNum(ix,st.dict.First); if(!(N>0)||!(first>=0)) continue;
+    const s=latin1(st.data), head=s.slice(0,first).trim().split(/\s+/).map(Number);
+    for(let j=0;j<N;j++){
+      const on=head[2*j], off=head[2*j+1]; if(!Number.isFinite(on)||!Number.isFinite(off)) break;
+      const nx=j+1<N&&Number.isFinite(head[2*j+3])?head[2*j+3]:s.length-first;
+      ix.inStm.set(on,s.slice(first+off,first+nx));
+    }
+  }
+  const SKIP=new Set(['All','None','Cyan','Magenta','Yellow','Black']);
+  const found=new Map();
+  const scan=async s=>{
+    const rs=/\/Separation(?![A-Za-z0-9#])/g; let h;
+    while((h=rs.exec(s))){
+      const a=pdfParse(s,h.index+11); if(!a||a.v.t!=='n') continue;
+      const name=a.v.v; if(SKIP.has(name)||(found.has(name)&&found.get(name).fn)) continue;
+      const b=pdfParse(s,a.i), c=b?pdfParse(s,b.i):null;
+      const sp=b?pdfAltSpace(ix,b.v):null; let fn=null;
+      if(sp&&c){ try{ fn=await pdfFunc(ix,c.v); }catch(e){ fn=null; } }
+      found.set(name,{name,sp,fn:fn?(t=>fn([t])):null});
+    }
+    const rd=/\/DeviceN(?![A-Za-z0-9#])/g;
+    while((h=rd.exec(s))){
+      const a=pdfParse(s,h.index+8); if(!a) continue;
+      const arr=pdfGet(ix,a.v); if(!arr||arr.t!=='a') continue;
+      const names=arr.v.map(x=>pdfGet(ix,x)).filter(x=>x&&x.t==='n').map(x=>x.v);
+      const todo=names.filter(nm=>!SKIP.has(nm)&&!(found.has(nm)&&found.get(nm).fn)); if(!todo.length) continue;
+      const b=pdfParse(s,a.i), c=b?pdfParse(s,b.i):null;
+      const sp=b?pdfAltSpace(ix,b.v):null; let fn=null;
+      if(sp&&c){ try{ fn=await pdfFunc(ix,c.v); }catch(e){ fn=null; } }
+      todo.forEach(nm=>{ const fi=names.indexOf(nm), nn=names.length;
+        found.set(nm,{name:nm,sp,fn:fn?(t=>{ const v=new Array(nn).fill(0); v[fi]=t; return fn(v); }):null}); });
+    }
+  };
+  await scan(txt);
+  for(const s of ix.inStm.values()) await scan(s);
+  // TAC real de los objetos vectoriales CMYK (operadores k / K de páginas y formularios)
+  const contents=new Set();
+  const checkDict=(s,p,num)=>{
+    const chunk=s.substr(p,4000); if(chunk.indexOf('/Page')<0&&chunk.indexOf('/Form')<0) return;
+    const r=pdfParse(s,p); if(!r||r.v.t!=='d') return;
+    const o=r.v.v, ty=pdfGet(ix,o.Type), st=pdfGet(ix,o.Subtype);
+    if(ty&&ty.v==='Page'&&o.Contents){
+      const cv=pdfGet(ix,o.Contents);
+      if(cv&&cv.t==='a') cv.v.forEach(x=>{ if(x.t==='r') contents.add(x.v); });
+      else if(o.Contents.t==='r') contents.add(o.Contents.v);
+    }
+    if(st&&st.v==='Form'&&num!=null) contents.add(num);
+  };
+  for(const [num,p] of ix.top) checkDict(txt,p,num);
+  for(const s of ix.inStm.values()) checkDict(s,0,null);
+  let tacDoc=0, budget=40e6, nC=0;
+  const reK=/(?:^|[^\w.\-])(-?\d*\.?\d+)\s+(-?\d*\.?\d+)\s+(-?\d*\.?\d+)\s+(-?\d*\.?\d+)\s+[kK](?![\w])/g;
+  for(const num of contents){
+    if(budget<=0||++nC>4000) break;
+    const st=await pdfStream(ix,{t:'r',v:num}); if(!st) continue;
+    budget-=st.data.length;
+    const s=latin1(st.data); let k;
+    while((k=reK.exec(s))){ const t=(+k[1])+(+k[2])+(+k[3])+(+k[4]); if(t>tacDoc&&t<=4.0001) tacDoc=t; }
+  }
+  const rows=[...found.values()].map(f=>{
+    let vals=null;
+    if(f.sp&&f.fn){ try{ vals=[]; for(let i=0;i<=10;i++){ const v=f.fn(i/10); if(!v||v.length<f.sp.n||v.slice(0,f.sp.n).some(x=>!Number.isFinite(x))) throw 0; vals.push(v.slice(0,f.sp.n)); } }catch(e){ vals=null; } }
+    return {name:f.name,sp:f.sp,vals,ramp:null};
+  });
+  await calibrateSpots(rows);
+  return {tacDoc:tacDoc*100,
+    spots:rows.map(o=>({name:o.name,ramp:o.ramp,hex:o.ramp?rgb2hex(...o.ramp[10]):null,alt:o.vals?altDesc(o.sp,o.vals[10]):'alt. no legible'}))};
+}
+/* Rampa del negro puro (0-100 % K) tal como la dibuja PDF.js: en un PDF CMYK el texto
+   100 % K debe quedar solo en la plancha K, como haría el RIP (sin reconvertir a 4 colores). */
+let SEP_KRAMP=null;
+async function ensureKRamp(){
+  if(SEP_KRAMP||typeof pdfjsLib==='undefined') return SEP_KRAMP;
+  const row={sp:{s:'cmyk',n:4},vals:Array.from({length:11},(_,i)=>[0,0,0,i/10]),ramp:null};
+  await calibrateSpots([row]);
+  if(row.ramp) SEP_KRAMP=row.ramp;
+  return SEP_KRAMP;
+}
+
+/* ---------- Tintas ---------- */
+let sepInkSeq=0, sepRunId=0, sepTimer=null, sepRedrawT=null;
+function makeInk(name,o={}){
+  const kind=inkKind(name);
+  const hex=o.hex||pantoneHex(name)||SEP_PAL[state.sep.inks.length%SEP_PAL.length];
+  return {id:'s'+(++sepInkSeq),name,hex,src:o.src||'manual',kind,print:!(kind==='tech'||kind==='finish'),ramp:o.ramp||null,alt:o.alt||''};
+}
+function addInk(ink){ state.sep.inks.push(ink); state.sep.off[ink.id]=!ink.print; return ink; }
+const linRamp=hex=>{ const [r,g,b]=hex2rgb(hex); return Array.from({length:11},(_,i)=>{ const t=i/10; return [255-t*(255-r),255-t*(255-g),255-t*(255-b)]; }); };
+const sepUsesCmyk=()=>state.sep.mode!=='spot';
+const sepUsesSpot=()=>state.sep.mode!=='cmyk';
+const sepActiveInks=()=>sepUsesSpot()?state.sep.inks:[];
+const sepKeys=()=>[...(sepUsesCmyk()?PROC.map(p=>p.k):[]),...sepActiveInks().map(i=>i.id)];
+const sepPlateOn=k=>!state.sep.off[k];
+function plateInfo(k){
+  const p=PROC.find(x=>x.k===k);
+  if(p) return {k,n:p.n,short:p.k,rgb:p.rgb,hex:rgb2hex(...p.rgb),print:true,proc:true};
+  const i=state.sep.inks.find(x=>x.id===k);
+  if(!i) return {k,n:k,short:k,rgb:[128,128,128],hex:'#808080',print:false,proc:false};
+  return {k,n:i.name,short:i.name,rgb:hex2rgb(i.hex),hex:i.hex,print:i.print,proc:false,ink:i};
+}
+function plateLabel(k){ if(k==='comp') return 'COMPUESTO'; const p=plateInfo(k); return (p.proc?p.k+' · '+p.n:p.n).toUpperCase(); }
+function inkTag(i){
+  const tech=i.kind==='tech'||i.kind==='finish';
+  if(tech&&i.print) return '<span class="sep-tag np">⚠ técnica impresa</span>';
+  if(!i.print) return `<span class="sep-tag np">${tech?INK_KIND_LBL[i.kind]:'No imprime'}</span>`;
+  return `<span class="sep-tag">${INK_KIND_LBL[i.kind]}</span>`;
+}
+function syncSepProfile(){
+  const S=state.sep; if(!S.profileAuto) return false;
+  const p=SEP_PROFILE_BY_PAPER[state.calc.paperType]||'fogra39';
+  if(p!==S.profile){ S.profile=p; return true; }
+  return false;
+}
+function sepSummary(){
+  const S=state.sep, hasArt=state.art.pages.length>0, sides=state.calc.print==='tiroretiro'?2:1;
+  if(!hasArt) return {hasArt,mode:'cmyk',cm:true,inks:[],printInks:[],names:['C','M','Y','K'],perFace:4,sides,total:4*sides,
+    tech:[],techPrinting:[],unused:[],R:null,tag:'CMYK',modeLbl:SEP_MODES.cmyk};
+  const cm=sepUsesCmyk(), inks=sepActiveInks(), printInks=inks.filter(i=>i.print), R=S.res;
+  const names=[...(cm?['C','M','Y','K']:[]),...printInks.map(i=>i.name)];
+  return {hasArt,mode:S.mode,cm,inks,printInks,names,perFace:names.length,sides,total:names.length*sides,
+    tech:inks.filter(i=>!i.print).map(i=>i.name),
+    techPrinting:inks.filter(i=>(i.kind==='tech'||i.kind==='finish')&&i.print),
+    unused:R?printInks.filter(i=>R.keys.includes(i.id)&&(R.cov[i.id]||0)<0.05):[],R,
+    tag:S.mode==='cmyk'?'CMYK':S.mode==='cmyk_spot'?(printInks.length?`CMYK + ${printInks.length} esp.`:'CMYK'):`${printInks.length} tinta${printInks.length===1?'':'s'} esp.`,
+    modeLbl:SEP_MODES[S.mode]};
+}
+
+/* ---------- Motor de separación ---------- */
+function sepContext(){
+  const S=state.sep;
+  return {useCmyk:sepUsesCmyk(), nC:sepUsesCmyk()?4:0, keys:sepKeys(),
+    spots:sepActiveInks().map(i=>({R:i.ramp||linRamp(i.hex)})),
+    kR:state.art.pdf&&SEP_KRAMP?SEP_KRAMP:null,
+    tac:(SEP_PROFILES[S.profile]||SEP_PROFILES.fogra39).tac/100, gcr:SEP_GCR[S.gcr]||SEP_GCR.medium, tol:S.tol};
+}
+// fl: 1 = carga limitada por TAC · 2 = color sin tinta que lo reproduzca (fuera de gama)
+// Punto más cercano de una rampa de tintes (11 muestras, 0–100 %) al color r,g,b
+function rampNearest(R,r,g,b){
+  let best=Infinity, t=0, qx=0, qy=0, qz=0;
+  for(let i=0;i<10;i++){ const P=R[i], Q=R[i+1], dx=Q[0]-P[0], dy=Q[1]-P[1], dz=Q[2]-P[2], dd=dx*dx+dy*dy+dz*dz;
+    let u=dd>0?((r-P[0])*dx+(g-P[1])*dy+(b-P[2])*dz)/dd:0; u=u<0?0:u>1?1:u;
+    const x=P[0]+u*dx, y=P[1]+u*dy, z=P[2]+u*dz, e=(r-x)*(r-x)+(g-y)*(g-y)+(b-z)*(b-z);
+    if(e<best){ best=e; t=(i+u)/10; qx=x; qy=y; qz=z; } }
+  return {d:best,t,x:qx,y:qy,z:qz};
+}
+function sepPixel(r,g,b,cx){
+  const out=new Uint8Array(cx.keys.length); let fl=0, tac=0, raw=0, si=-1, st=0;
+  const white=r>=250&&g>=250&&b>=250;
+  if(cx.spots.length&&!white){
+    let bn=null, bi=-1;
+    for(let s=0;s<cx.spots.length;s++){ const n=rampNearest(cx.spots[s].R,r,g,b); if(!bn||n.d<bn.d){ bn=n; bi=s; } }
+    if(bi>=0&&bn.t>=0.02){
+      const de=deltaE(rgb2lab(r,g,b),rgb2lab(bn.x,bn.y,bn.z));
+      const lim=cx.tol*Math.min(1,Math.max(0.3,bn.t*1.6));   // tintes claros: tolerancia más estricta
+      if(de<=lim){ si=bi; st=bn.t; }
+      else if(!cx.useCmyk){ si=bi; st=bn.t; fl|=2; }
+    }
+  }
+  let kOnly=-1;
+  if(si<0&&cx.useCmyk&&cx.kR&&!white){
+    const n=rampNearest(cx.kR,r,g,b);
+    if(n.t>=0.02&&deltaE(rgb2lab(r,g,b),rgb2lab(n.x,n.y,n.z))<=2.5) kOnly=n.t;
+  }
+  if(si>=0){ out[cx.nC+si]=Math.round(st*255); tac=raw=st; }
+  else if(kOnly>=0){ out[3]=Math.round(kOnly*255); tac=raw=kOnly; }
+  else if(cx.useCmyk){
+    const R=r/255, G=g/255, B=b/255, kf=1-Math.max(R,G,B);
+    let k=cx.gcr.amt*Math.max(0,(kf-cx.gcr.start)/(1-cx.gcr.start)), c=0, m=0, y=0;
+    if(k<0.999){ const d=1-k; c=Math.max(0,(1-R-k)/d); m=Math.max(0,(1-G-k)/d); y=Math.max(0,(1-B-k)/d); } else k=1;
+    raw=c+m+y+k;
+    if(raw>cx.tac&&c+m+y>0){ const f=Math.max(0,(cx.tac-k)/(c+m+y)); c*=f; m*=f; y*=f; fl|=1; }
+    out[0]=Math.round(c*255); out[1]=Math.round(m*255); out[2]=Math.round(y*255); out[3]=Math.round(k*255);
+    tac=c+m+y+k;
+  }else if(!white&&(765-r-g-b)>30) fl|=2;
+  return {v:out,tac,raw,fl};
+}
+function scheduleSep(delay=160){ clearTimeout(sepTimer); sepTimer=setTimeout(runSeparation,delay); }
+function sepDropRes(){
+  const R=state.sep.res;
+  if(R&&R.urls) R.urls.forEach(u=>{ if(u&&u!=='pending') URL.revokeObjectURL(u); });
+  state.sep.res=null;
+}
+async function runSeparation(){
+  const S=state.sep;
+  if(!state.art.pages.length){ sepDropRes(); S.busy=false; renderSepPanel(); renderSepChips(); return; }
+  const id=++sepRunId; S.busy=true; S.msg='Separando…'; renderSepStatus();
+  const cx=sepContext(), keys=cx.keys, pages=[], cov={};
+  keys.forEach(k=>cov[k]=0);
+  let px=0, clip=0, oog=0, tacMax=0, rawMax=0; const t0=performance.now();
+  for(let pi=0;pi<state.art.pages.length;pi++){
+    let img; try{ img=await loadImage(state.art.pages[pi]); }catch(e){ continue; }
+    if(id!==sepRunId) return;
+    const iw=img.naturalWidth||SEP_MAX, ih=img.naturalHeight||SEP_MAX, k0=Math.min(1,SEP_MAX/Math.max(iw,ih));
+    const w=Math.max(1,Math.round(iw*k0)), h=Math.max(1,Math.round(ih*k0));
+    const cv=document.createElement('canvas'); cv.width=w; cv.height=h;
+    const c2=cv.getContext('2d',{willReadFrequently:true}); c2.fillStyle='#fff'; c2.fillRect(0,0,w,h); c2.drawImage(img,0,0,w,h);
+    let data; try{ data=c2.getImageData(0,0,w,h).data; }
+    catch(e){ S.busy=false; S.msg='El navegador bloqueó la lectura de píxeles del arte.'; renderSepPanel(); return; }
+    const n=w*h, planes={}; keys.forEach(k=>planes[k]=new Uint8Array(n));
+    const pl=keys.map(k=>planes[k]), sums=new Float64Array(keys.length), cache=new Map();
+    for(let p=0,o=0;p<n;p++,o+=4){
+      const r=data[o], g=data[o+1], b=data[o+2], key=(r<<16)|(g<<8)|b;
+      let v=cache.get(key); if(v===undefined){ v=sepPixel(r,g,b,cx); if(cache.size<150000) cache.set(key,v); }
+      const vv=v.v; for(let j=0;j<vv.length;j++){ if(vv[j]){ pl[j][p]=vv[j]; sums[j]+=vv[j]; } }
+      if(v.fl&1) clip++; if(v.fl&2) oog++;
+      if(v.tac>tacMax) tacMax=v.tac; if(v.raw>rawMax) rawMax=v.raw;
+      if((p&0x3ffff)===0x3ffff){ await sleep0(); if(id!==sepRunId) return; }
+    }
+    keys.forEach((k,j)=>cov[k]+=sums[j]/255);
+    px+=n; pages.push({w,h,planes});
+    S.msg=`Separando pág. ${pi+1}/${state.art.pages.length}…`; renderSepStatus();
+    await sleep0(); if(id!==sepRunId) return;
+  }
+  keys.forEach(k=>cov[k]=px?cov[k]/px*100:0);
+  sepDropRes();
+  S.res={keys,pages,cov,tacMax:tacMax*100,rawMax:rawMax*100,clipPct:px?clip/px*100:0,oogPct:px?oog/px*100:0,
+    tacLimit:(SEP_PROFILES[S.profile]||SEP_PROFILES.fogra39).tac,urls:new Map(),wait:new Map(),ms:performance.now()-t0,mode:S.mode};
+  if(S.plate!=='comp'&&!keys.includes(S.plate)) S.plate='comp';
+  if(S.page>=pages.length) S.page=0;
+  S.busy=false; S.msg=pages.length?'':'No se pudo leer el arte para separar.';
+  renderSepPanel(); renderSepChips(); renderJobPanel();
+  if(state.step===4) drawPlate();
+  if(state.step===5){ renderPreflight(); renderDashboard(); }
+}
+/* Imagen de una separación: ink = color de la tinta · film = plancha CTP (negro) · comp = simulación impresa */
+function sepCanvas(pi,key,style){
+  const R=state.sep.res, pg=R&&R.pages[pi]; if(!pg) return null;
+  const cv=document.createElement('canvas'); cv.width=pg.w; cv.height=pg.h;
+  const c2=cv.getContext('2d'), im=c2.createImageData(pg.w,pg.h), d=im.data, n=pg.w*pg.h;
+  if(key==='comp'){
+    const ks=R.keys.filter(sepPlateOn), pls=ks.map(k=>pg.planes[k]), fs=ks.map(k=>plateInfo(k).rgb.map(c=>1-c/255));
+    for(let p=0,o=0;p<n;p++,o+=4){ let r=255,g=255,b=255;
+      for(let j=0;j<pls.length;j++){ const t=pls[j][p]; if(!t) continue; const tt=t/255, f=fs[j]; r*=1-tt*f[0]; g*=1-tt*f[1]; b*=1-tt*f[2]; }
+      d[o]=r; d[o+1]=g; d[o+2]=b; d[o+3]=255; }
+  }else{
+    const pl=pg.planes[key]; if(!pl) return null;
+    const c=style==='film'?[0,0,0]:plateInfo(key).rgb;
+    for(let p=0,o=0;p<n;p++,o+=4){ const t=pl[p]/255; d[o]=255-t*(255-c[0]); d[o+1]=255-t*(255-c[1]); d[o+2]=255-t*(255-c[2]); d[o+3]=255; }
+  }
+  c2.putImageData(im,0,0); return cv;
+}
+const sepUrlKey=(pi,key,style)=>pi+'|'+key+'|'+(key==='comp'?'c|'+state.sep.res.keys.filter(k=>!sepPlateOn(k)).join(','):style);
+function sepUrl(pi,key,style,cb){
+  const R=state.sep.res; if(!R){ if(cb) cb(null); return null; }
+  const ck=sepUrlKey(pi,key,style), u=R.urls.get(ck);
+  if(u&&u!=='pending'){ if(cb) cb(u); return u; }
+  if(cb){ const w=R.wait.get(ck)||[]; w.push(cb); R.wait.set(ck,w); }
+  if(u==='pending') return null;
+  const cv=sepCanvas(pi,key,style); if(!cv){ if(cb) cb(null); return null; }
+  R.urls.set(ck,'pending');
+  cv.toBlob(b=>{
+    if(state.sep.res!==R) return;
+    const url=b?URL.createObjectURL(b):null; if(url) R.urls.set(ck,url); else R.urls.delete(ck);
+    (R.wait.get(ck)||[]).forEach(f=>f(url)); R.wait.delete(ck);
+    sepRedraw();
+  },'image/png');
+  return null;
+}
+const sepUrlAsync=(pi,key,style)=>new Promise(res=>sepUrl(pi,key,style,res));
+function sepRedraw(){ clearTimeout(sepRedrawT); sepRedrawT=setTimeout(()=>{ if(state.step===4) drawPlate(); renderSepPlates(); },40); }
+
+/* ---------- Al cargar / quitar arte ---------- */
+async function sepOnArt(raw){
+  const S=state.sep; sepRunId++; sepDropRes();
+  S.page=0; S.plate='comp'; S.picking=null; S.msg='';
+  S.inks.filter(i=>i.src==='pdf'||i.src==='order').forEach(i=>delete S.off[i.id]);
+  S.inks=S.inks.filter(i=>i.src!=='pdf'&&i.src!=='order'); S.pdfSpots=[];
+  syncSepProfile(); renderSepPanel(); renderArtPicking();
+  const sec=$('sepSec'); if(sec){ sec.classList.remove('flash'); void sec.offsetWidth; sec.classList.add('flash'); }
+  S.tacDoc=null;
+  if(raw){
+    S.busy=true; S.msg='Buscando tintas especiales en el PDF…'; renderSepStatus();
+    let spots=[];
+    try{ const d=await detectPdfSpots(raw); spots=d.spots; S.tacDoc=d.tacDoc>0?d.tacDoc:null; }catch(e){ console.warn('Lectura de tintas del PDF',e); }
+    try{ await ensureKRamp(); }catch(e){}
+    S.pdfSpots=spots.map(s=>s.name);
+    spots.forEach(sp=>{ if(!S.inks.some(i=>i.name===sp.name)) addInk(makeInk(sp.name,{src:'pdf',hex:sp.hex||undefined,ramp:sp.ramp,alt:sp.alt})); });
+    if(spots.length){
+      S.mode=orderInks().sys==='spot'?'spot':(S.mode==='cmyk'?'cmyk_spot':S.mode);
+      toast(`🎨 El PDF trae ${spots.length} tinta${spots.length>1?'s':''} especial${spots.length>1?'es':''}: ${spots.map(s=>s.name).join(', ')}`,'ok');
+    }
+  }else{
+    // arte en imagen: no trae tintas declaradas → se usan los Pantone de la orden (separación por color)
+    const oi=orderInks();
+    if(oi.spots.length){
+      oi.spots.forEach(n=>{ if(!S.inks.some(i=>pantoneKey(i.name)===pantoneKey(n))) addInk(makeInk(n,{src:'order',alt:'declarada en la orden de trabajo'})); });
+      S.mode=oi.sys;
+    }
+  }
+  if(!S.inks.length&&S.mode==='cmyk_spot') S.mode='cmyk';
+  renderSepPanel(); scheduleSep(0);
+}
+function sepOnArtCleared(){
+  const S=state.sep; sepRunId++; sepDropRes();
+  S.inks.filter(i=>i.src==='pdf'||i.src==='order').forEach(i=>delete S.off[i.id]);
+  S.inks=S.inks.filter(i=>i.src!=='pdf'&&i.src!=='order'); S.pdfSpots=[]; S.tacDoc=null; S.picking=null; S.busy=false; S.msg=''; S.plate='comp';
+  renderSepPanel(); renderSepChips(); renderArtPicking(); renderJobPanel();
+}
+
+/* ---------- Panel lateral de separación ---------- */
+function renderSepPanel(){
+  const sec=$('sepSec'); if(!sec) return;
+  const S=state.sep, has=state.art.pages.length>0;
+  sec.classList.toggle('on',has);
+  if(!has) return;
+  $('sepMode').querySelectorAll('button').forEach(b=>b.classList.toggle('on',b.dataset.m===S.mode));
+  $('sepProcBox').style.display=sepUsesCmyk()?'':'none';
+  $('sepSpotBox').style.display=sepUsesSpot()?'':'none';
+  const sel=$('sepProfile');
+  if(!sel.options.length) sel.innerHTML=Object.entries(SEP_PROFILES).map(([k,p])=>`<option value="${k}">${p.n} — ${p.d} · TAC ${p.tac}%</option>`).join('');
+  sel.value=S.profile;
+  const pf=SEP_PROFILES[S.profile]||SEP_PROFILES.fogra39;
+  $('sepProfDesc').textContent=`Límite TAC ${pf.tac} % · ${pf.d}`+(S.profileAuto?` · elegido según el papel (${paperType().n})`:' · elegido a mano');
+  $('sepGcr').querySelectorAll('button').forEach(b=>b.classList.toggle('on',b.dataset.g===S.gcr));
+  $('sepTol').value=S.tol; $('sepTolV').textContent=S.tol;
+  $('sepFilm').checked=S.film;
+  $('sepPickNew').classList.toggle('on',S.picking==='new');
+  const dl=$('sepPantoneList'); if(dl&&!dl.options.length) dl.innerHTML=PANTONE_REF.map(([n])=>`<option value="${esc(n)}">`).join('');
+  renderSepInks(); renderSepNotes(); renderSepPreview(); renderSepPlates(); renderSepSummary(); renderSepStatus();
+}
+function renderSepInks(){
+  const S=state.sep, R=S.res, el=$('sepInks'); if(!el) return;
+  if(!S.inks.length){ el.innerHTML='<div class="sep-note">Sin tintas especiales. Escribe un Pantone y pulsa ＋, o usa 💧 para tomar un color del arte.</div>'; return; }
+  el.innerHTML=S.inks.map(i=>{
+    const cov=R&&R.cov[i.id]!==undefined?fmt(R.cov[i.id],1)+' % cobertura':'';
+    return `<div class="sep-ink${S.picking===i.id?' picking':''}" data-id="${i.id}">
+      <input type="color" value="${i.hex}" data-act="hex" title="Color de visualización de la tinta">
+      <input class="nm" value="${esc(i.name)}" data-act="name" title="Nombre de la tinta (como en el PDF / guía Pantone)">
+      <div class="im" title="${esc(i.alt)}">${i.src==='pdf'?'<span class="sep-tag pdf">PDF</span>':i.src==='order'?'<span class="sep-tag pdf">OT</span>':''}${inkTag(i)}${cov}${i.alt?' · '+esc(i.alt):''}</div>
+      <div class="acts">
+        <button class="sep-ib${S.picking===i.id?' on':''}" data-act="pick" title="Cuentagotas: tomar el color del arte">💧</button>
+        <button class="sep-ib${i.print?' on':''}" data-act="print" title="${i.print?'Imprime: se graba su plancha':'No imprime: no se graba plancha'}">🖨</button>
+        <button class="sep-ib" data-act="del" title="Quitar tinta">✕</button>
+      </div>
+    </div>`; }).join('');
+}
+function renderSepNotes(){
+  const S=state.sep, R=S.res, el=$('sepNotes'); if(!el) return;
+  const n=[];
+  const ov=orderVsSep();
+  n.push(`<div class="sep-note${ov.issues.length||!ov.oi.ok?' warn':''}">📋 <b>Orden de trabajo: ${ov.oi.note}</b> · ${esc(ov.oi.lbl)}${ov.oi.spots.length?' ('+esc(ov.oi.spots.join(', '))+')':''}${state.order.software?' · arte en '+esc(state.order.software):''}.`
+    +(ov.issues.length?'<br>⚠ '+ov.issues.map(esc).join('<br>⚠ '):ov.checked?' ✓ Coincide con la separación.':'')+'</div>');
+  const pdfInks=S.inks.filter(i=>i.src==='pdf');
+  if(S.mode==='cmyk'&&pdfInks.length)
+    n.push(`<div class="sep-note warn">⚠ El PDF trae <b>${pdfInks.length} tinta${pdfInks.length>1?'s':''} especial${pdfInks.length>1?'es':''}</b> (${pdfInks.map(i=>esc(i.name)).join(', ')}). En modo CMYK se convierte${pdfInks.length>1?'n':''} a cuatricromía y el color de marca puede variar. <button class="lnk" data-setmode="cmyk_spot">Separar como especiales</button></div>`);
+  if(S.mode==='spot'&&!S.inks.length) n.push('<div class="sep-note warn">⚠ En «solo tintas especiales» debes declarar al menos una tinta (p. ej. PANTONE 185 C + PANTONE Black C).</div>');
+  if(S.mode==='spot'&&R&&R.oogPct>2) n.push(`<div class="sep-note warn">⚠ El <b>${fmt(R.oogPct,1)} %</b> del arte no se reproduce bien con las tintas elegidas: añade otra tinta o cambia a CMYK + especiales.</div>`);
+  if(sepUsesSpot()&&S.inks.length&&!S.pdfSpots.length) n.push('<div class="sep-note">Las tintas declaradas a mano se separan por <b>similitud de color (ΔE)</b> con el arte. Ajusta la tolerancia si quedan restos en CMYK.</div>');
+  if(S.msg&&!S.busy) n.push(`<div class="sep-note warn">${esc(S.msg)}</div>`);
+  n.push('<div class="sep-note">Simulación didáctica: el arte se rasteriza y se separa píxel a píxel. No reemplaza al RIP ni a un perfil ICC de producción.</div>');
+  el.innerHTML=n.join('');
+}
+function renderSepPreview(){
+  const S=state.sep, R=S.res, box=$('sepPrev'); if(!box) return;
+  if(!R||!R.pages.length){
+    box.innerHTML=`<div class="empty">${S.busy?'⏳ Separando…':'Sin separaciones'}</div>`;
+    $('sepPrevLbl').textContent='—'; $('sepPager').innerHTML=''; return; }
+  const pi=Math.min(S.page,R.pages.length-1);
+  const cv=sepCanvas(pi,S.plate,S.film?'film':'ink'); box.innerHTML=''; if(cv) box.appendChild(cv);
+  const on=R.keys.filter(sepPlateOn).length;
+  $('sepPrevLbl').innerHTML=S.plate==='comp'?`<b>Compuesto</b> · ${on}/${R.keys.length} tintas`:`<b>${esc(plateInfo(S.plate).n)}</b> · ${fmt(R.cov[S.plate]||0,1)} %`;
+  $('sepPager').innerHTML=R.pages.length>1?`<button data-pg="-1">◀</button><span>pág. ${pi+1}/${R.pages.length}</span><button data-pg="1">▶</button>`:'';
+}
+function renderSepPlates(){
+  const S=state.sep, R=S.res, el=$('sepPlates'); if(!el) return;
+  if(!R||!R.pages.length){ el.innerHTML=''; return; }
+  const pi=Math.min(S.page,R.pages.length-1), st=S.film?'film':'ink';
+  const card=(k,name,bg,cov,np)=>{
+    const u=sepUrl(pi,k,st), on=k==='comp'||sepPlateOn(k);
+    return `<div class="sep-pl${S.plate===k?' cur':''}${on?'':' off'}${np?' np':''}" data-k="${k}" title="${esc(name)}${np?' — no imprime (sin plancha)':''}">
+      ${u?`<img class="pimg" src="${u}" alt="">`:'<div class="pimg ph"></div>'}
+      <div class="pn"><i style="background:${bg}"></i><span>${esc(name)}</span></div>
+      <div class="pc">${cov}</div>
+      ${k!=='comp'?`<button class="eye" data-eye="${k}" title="Mostrar / ocultar en el compuesto">${on?'👁':'–'}</button>`:''}
+    </div>`; };
+  el.innerHTML=card('comp','Compuesto','linear-gradient(135deg,#00aeef,#ec008c,#ffec00)','simulación',false)
+    +R.keys.map(k=>{ const p=plateInfo(k); return card(k,p.proc?p.k+' · '+p.n:p.n,p.hex,fmt(R.cov[k]||0,1)+' %',!p.print); }).join('');
+}
+function renderSepSummary(){
+  const el=$('sepSum'); if(!el) return; const R=state.sep.res;
+  if(!R){ el.innerHTML=''; return; }
+  const sm=sepSummary(), rows=[['Planchas por cara',String(sm.perFace)]];
+  if(sm.sides>1) rows.push(['Planchas tiro + retiro',String(sm.total)]);
+  rows.push(['Tintas que imprimen',esc(sm.names.join(' · '))||'—']);
+  if(sm.cm){
+    const td=state.sep.tacDoc;
+    if(td!=null) rows.push(['TAC en el PDF (vectores)',`${Math.round(td)} %`,td<=R.tacLimit+0.5?'ok':'warn']);
+    rows.push(['TAC separado / límite',`${Math.round(R.tacMax)} % / ${R.tacLimit} %`,R.tacMax<=R.tacLimit+0.5?'ok':'warn']);
+    if(R.clipPct>=0.05) rows.push(['Área ajustada por TAC',fmt(R.clipPct,1)+' % (arte: '+Math.round(R.rawMax)+' %)','warn']);
+  }
+  if(sm.tech.length) rows.push(['Sin plancha',esc(sm.tech.join(' · '))]);
+  if(sm.unused.length) rows.push(['Tinta sin uso',esc(sm.unused.map(i=>i.name).join(' · ')),'warn']);
+  if(state.sep.mode==='spot') rows.push(['Fuera de gama',fmt(R.oogPct,1)+' %',R.oogPct>2?'warn':'ok']);
+  el.innerHTML=rows.map(([k,v,c])=>`<div class="row"><span>${k}</span><b class="${c||''}">${v}</b></div>`).join('');
+}
+function renderSepStatus(){
+  const el=$('sepStatus'); if(!el) return; const S=state.sep;
+  el.classList.toggle('busy',S.busy);
+  el.textContent=S.busy?'⏳ '+(S.msg||'Separando…'):(S.res?`✓ ${S.res.keys.length} separaciones · ${S.res.pages.length} pág. · ${Math.round(S.res.ms)} ms`:'');
+}
+function renderSepChips(){
+  const el=$('sepChips'); if(!el) return;
+  const show=state.view==='separaciones'; el.classList.toggle('on',show); if(!show) return;
+  const S=state.sep, R=S.res;
+  if(!state.art.pages.length){ el.innerHTML='<span class="msg">⬆ Carga el PDF del arte final para ver la plancha real de cada tinta.</span>'; return; }
+  if(!R){ el.innerHTML='<span class="msg">⏳ Separando tintas…</span>'; if(!S.busy) scheduleSep(0); return; }
+  el.innerHTML='<span class="lab">Plancha</span>'+[['comp','Compuesto','linear-gradient(135deg,#00aeef,#ec008c,#ffec00)',true],
+    ...R.keys.map(k=>{ const p=plateInfo(k); return [k,p.proc?p.k:p.n,p.hex,p.print]; })]
+    .map(([k,n,c,pr])=>`<button class="sep-chip${S.plate===k?' on':''}${pr?'':' np'}" data-k="${k}" title="${pr?'':'No imprime · '}${esc(n)}"><i style="background:${c}"></i>${esc(n)}</button>`).join('');
+}
+function setSepPlate(k){
+  state.sep.plate=k;
+  if(state.view!=='separaciones'){
+    state.view='separaciones';
+    $('viewSeg').querySelectorAll('button').forEach(x=>x.classList.toggle('on',x.dataset.v==='separaciones'));
+  }
+  renderSepPreview(); renderSepPlates(); renderSepChips(); drawPlate();
+}
+function renderArtPicking(){
+  const st=$('artStage'); if(st) st.classList.toggle('picking',!!state.sep.picking);
+  const b=$('sepPickNew'); if(b) b.classList.toggle('on',state.sep.picking==='new');
+}
+function sepStartPick(target){
+  const S=state.sep;
+  S.picking=S.picking===target?null:target;
+  renderArtPicking(); renderSepInks();
+  if(S.picking) toast('💧 Haz clic sobre el color en la vista previa del arte (arriba)');
+}
+function sepPickAt(ev){
+  const S=state.sep; if(!S.picking) return;
+  const img=ev.target.closest('img'); if(!img) return;
+  const rc=img.getBoundingClientRect(), w=img.naturalWidth||300, h=img.naturalHeight||150;
+  const cv=document.createElement('canvas'); cv.width=w; cv.height=h;
+  const c2=cv.getContext('2d',{willReadFrequently:true}); c2.fillStyle='#fff'; c2.fillRect(0,0,w,h); c2.drawImage(img,0,0,w,h);
+  const x=Math.round((ev.clientX-rc.left)/rc.width*(w-1)), y=Math.round((ev.clientY-rc.top)/rc.height*(h-1));
+  let d; try{ d=c2.getImageData(Math.max(0,x-1),Math.max(0,y-1),3,3).data; }catch(e){ toast('No se pudo leer el color del arte','err'); return; }
+  let r=0,g=0,b=0; for(let i=0;i<d.length;i+=4){ r+=d[i]; g+=d[i+1]; b+=d[i+2]; }
+  const q=d.length/4, hex=rgb2hex(r/q,g/q,b/q);
+  if(r/q>248&&g/q>248&&b/q>248){ toast('Ese punto es papel (blanco): elige una zona con color','warn'); return; }
+  const near=nearestPantone(hex);
+  if(S.picking==='new'){
+    const ink=addInk(makeInk(near.name,{hex,alt:`muestreado · ≈ ${near.name} (ΔE ${near.de.toFixed(1)})`}));
+    if(S.mode==='cmyk') S.mode='cmyk_spot';
+    toast(`Tinta ${ink.name} creada desde el arte (${hex.toUpperCase()})`,'ok');
+  }else{
+    const ink=S.inks.find(i=>i.id===S.picking);
+    if(ink){ ink.hex=hex; ink.ramp=null; ink.alt=`muestreado · ≈ ${near.name} (ΔE ${near.de.toFixed(1)})`; toast(`Color de ${ink.name} tomado del arte`,'ok'); }
+  }
+  S.picking=null; renderArtPicking(); renderSepPanel(); scheduleSep(0); saveState();
+}
+function sepAddFromInput(){
+  const inp=$('sepNewName'), name=inp.value.trim();
+  if(!name){ inp.focus(); toast('Escribe el nombre de la tinta (p. ej. PANTONE 185 C)','warn'); return; }
+  if(state.sep.inks.some(i=>i.name.toLowerCase()===name.toLowerCase())){ toast('Esa tinta ya está en la lista','warn'); return; }
+  const known=pantoneHex(name), ink=addInk(makeInk(name));
+  if(state.sep.mode==='cmyk') state.sep.mode='cmyk_spot';
+  inp.value='';
+  renderSepPanel(); scheduleSep(0); saveState();
+  toast(known?`${ink.name} añadida (color de referencia aprox.)`:`${ink.name} añadida — ajusta su color con el selector o el 💧`,known?'ok':'warn');
+}
+/* Barra de control: añade parches de las tintas especiales que imprimen */
+function colorBarSwatches(){
+  let bars=getColorBarSwatches(state.colorBarPreset).map(([c,l])=>[c,l,/^[CMYK]/.test(l)?l[0]:null]);
+  const sm=sepSummary();
+  if(sm.hasArt&&sm.mode!=='cmyk'){
+    const sp=sm.printInks.flatMap((i,ix)=>[[i.hex,'S'+(ix+1),i.id],[mixWhite(i.hex,.5),'S'+(ix+1)+'·50',i.id]]);
+    bars=sm.mode==='spot'?sp:bars.filter(b=>!/^S\d/.test(b[1])).concat(sp);
+  }
+  return bars;
+}
+async function waitSvgImages(root,ms=6000){
+  const imgs=[...root.querySelectorAll('image')];
+  await Promise.race([Promise.all(imgs.map(im=>new Promise(r=>{ im.addEventListener('load',r,{once:true}); im.addEventListener('error',r,{once:true}); }))),new Promise(r=>setTimeout(r,ms))]);
+}
+/* PDF de separaciones: una página por plancha (y por cara si es tiro y retiro), a tamaño real */
+async function exportSeparations(){
+  const g=computeGeom();
+  if(!g||!(state.result&&!state.result.error)){ toast('Genera una imposición válida primero (Etapa 04)','warn'); return; }
+  if(!state.art.pages.length){ toast('Carga el PDF del arte final para separar tintas','warn'); return; }
+  if(!state.sep.res||state.sep.busy){ toast('Las separaciones aún se están calculando…','warn'); if(!state.sep.busy) scheduleSep(0); return; }
+  const R=state.sep.res, keys=R.keys.filter(k=>plateInfo(k).print);
+  if(!keys.length){ toast('No hay tintas que impriman','warn'); return; }
+  const faces=state.calc.print==='tiroretiro'?['tiro','retiro']:['tiro'];
+  toast(`Preparando ${keys.length*faces.length} planchas…`);
+  await Promise.all(keys.flatMap(k=>R.pages.map((_,pi)=>sepUrlAsync(pi,k,'film'))));
+  if(state.sep.res!==R) return;
+  const prevFace=state.face; let html='', VW=0, VH=0;
+  faces.forEach(f=>{ state.face=f; keys.forEach(k=>{ const o=buildPlateMarkup(g,10,{plate:k,film:true}); VW=o.VW; VH=o.VH;
+    html+=`<div class="print-plate sep-page"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 ${o.VW} ${o.VH}" width="${o.VW}mm" height="${o.VH}mm">${o.s}</svg></div>`; }); });
+  state.face=prevFace;
+  const pa=$('printArea');
+  pa.style.cssText='display:block;position:fixed;left:-100000px;top:0';   // fuera de pantalla para que carguen las imágenes
+  pa.innerHTML=html;
+  await waitSvgImages(pa);
+  pa.style.cssText='';
+  setPrintPage(`size:${VW}mm ${VH}mm; margin:0;`);
+  toast(`${keys.length*faces.length} planchas (${keys.map(plateLabel).join(', ')}) — usa "Guardar como PDF"`,'ok');
+  window.print();
+}
+
 function renderJobPanel(){
   const r=state.result;
   $('jobPanel').innerHTML=[
@@ -1934,7 +3424,10 @@ function renderJobPanel(){
     ['PRESS',state.machine?state.machine.name:'—'],
     ['SIZE',state.machine?`${state.machine.w}×${state.machine.h} cm`:'—'],
     ['PAPER',`${state.calc.weight} g/m²`],
-    ['COLOR','CMYK'],
+    ['TINTAS OT',(oi=>`${oi.note} · ${oi.lbl}`)(orderInks())],
+    ['ARTE NATIVO',state.order.software||'—'],
+    ['COLOR',(sm=>sm.tag)(sepSummary())],
+    ['PLANCHAS',(sm=>sm.perFace+' / cara'+(sm.sides>1?` · ${sm.total} total`:''))(sepSummary())],
     ['PINZA NORMAL',state.machine?`${uDim(state.machine.gripper)} (${state.machine.mordaza}+${state.machine.pinzaPapel})`:'—'],
     ['· Blanco mordaza',state.machine?uDim(state.machine.mordaza):'—'],
     ['· Pinza papel',state.machine?uDim(state.machine.pinzaPapel):'—'],
@@ -1966,11 +3459,30 @@ function buildPreflight(){
     'Coincide con el producto; páginas por unidad = '+cc.pages+'.',
     'Corrige las dimensiones del producto.');
   // Sangrado
-  add('Sangrado', state.prod.bleed>=2?'ok':state.prod.bleed>0?'warn':'err',
-    `${state.prod.bleed} mm`,
-    'Excedente para corte seguro.',
-    state.prod.bleed>=2?'Cumple el mínimo de 2–3 mm.':'Sangrado insuficiente para la tolerancia de guillotina.',
-    'Usa 3 mm de sangrado por lado en la orden.');
+  const bl=state.prod.bleed;
+  add('Sangrado', bl<3?'err':bl>5?'warn':'ok',
+    `${bl} mm por lado · norma 3–5 mm`,
+    'Excedente para corte seguro: mínimo 3 mm y máximo 5 mm por lado.',
+    bl<3?'Sangrado insuficiente para la tolerancia de la guillotina: aparecerán filos blancos.'
+      :bl>5?'Sangrado excesivo: desperdicia papel y puede invadir la pose vecina o la calle de corte.'
+      :'Cumple la norma de 3 a 5 mm por lado.',
+    'Define 3 a 5 mm de sangrado en la orden y en el documento nativo antes de exportar el PDF.');
+  // Sangrado real del PDF cargado (tamaño de página − producto terminado)
+  if(state.art.pdf&&state.art.size&&state.prod.w>0&&state.prod.h>0){
+    const a=state.art.size, p=state.prod;
+    const mm=x=>Math.abs(x)<0.05?0:x;
+    const n=[mm((a.w-p.w)*5),mm((a.h-p.h)*5)], rt=[mm((a.w-p.h)*5),mm((a.h-p.w)*5)];   // mm por lado (cm → mm ÷ 2)
+    const [bx,by]=Math.abs(n[0]-n[1])<=Math.abs(rt[0]-rt[1])?n:rt;
+    const bmin=Math.min(bx,by), bmax=Math.max(bx,by);
+    add('Sangrado en el PDF', bmin<2.9?'err':bmax>5.1?'warn':'ok',
+      `página ${a.w.toFixed(1)}×${a.h.toFixed(1)} cm → ${fmt(bx,1)} / ${fmt(by,1)} mm por lado`,
+      'Lo que realmente trae el archivo: (tamaño de página − producto) ÷ 2.',
+      bmin<-0.5?'La página del PDF es más chica que el producto: medidas equivocadas.'
+        :bmin<2.9?'El PDF no trae el sangrado mínimo de 3 mm (¿se exportó sin «usar sangrado del documento»?).'
+        :bmax>5.1?'El PDF trae más de 5 mm por lado: probablemente incluye marcas de impresión o un sangrado excesivo.'
+        :'El PDF trae un sangrado de 3 a 5 mm, sin marcas.',
+      'Vuelve a exportar desde el programa nativo con sangrado de 3–5 mm y sin marcas de corte ni registro.');
+  }
   // Área segura
   add('Área segura', state.prod.bleed>0?'ok':'warn',
     `margen ${Math.max(0,state.prod.bleed)} mm`,
@@ -2002,21 +3514,73 @@ function buildPreflight(){
     'Marcas técnicas para corte, registro y control.',
     anyMark?'Hay marcas activas.':'Sin marcas, el acabado no tiene guías.',
     'Activa al menos corte y registro en la Etapa 04.');
-  // Separaciones
-  add('Separaciones', 'ok', 'CMYK · 4 planchas',
-    'Cada tinta se graba en su propia plancha.',
-    'Trabajo definido como CMYK (proceso).',
-    'Añade tintas especiales si el diseño lo requiere.');
-  // CMYK
-  add('CMYK', 'ok', 'C M Y K',
-    'Modo de color de proceso.',
-    'Coherente con impresión offset estándar.',
-    'Convierte imágenes RGB a CMYK antes del CTP.');
+  // Separaciones (desde el arte cargado en la Etapa 04)
+  const sm=sepSummary(), SR=sm.R;
+  const sepPending=sm.hasArt&&(!SR||state.sep.busy);
+  add('Separaciones', !sm.hasArt?'ok':sepPending?'warn':(sm.perFace?'ok':'err'),
+    `${sm.modeLbl} · ${sm.perFace} plancha${sm.perFace===1?'':'s'} por cara${sm.sides>1?` · ${sm.total} en total (tiro y retiro)`:''}`,
+    'Cada tinta se graba en su propia plancha y se imprime en su propio cuerpo de la máquina.',
+    !sm.hasArt?'Sin arte cargado: se asume cuatricromía CMYK (4 planchas).'
+      :sepPending?'Las separaciones aún se están calculando.'
+      :`Planchas: ${sm.names.join(', ')||'ninguna'}. La prensa necesita ${sm.perFace} cuerpos de impresión (o ${Math.max(1,Math.ceil(sm.perFace/4))} pasada(s) en una máquina de 4 colores).`,
+    sm.hasArt?'Revisa cada plancha en la vista «Separaciones» de la Etapa 04 antes de grabar.':'Carga el PDF del arte final en la Etapa 04 para separar las tintas.');
+  // Tintas pedidas en la orden de trabajo frente a lo que separa el arte
+  const ov=orderVsSep(), oi=ov.oi;
+  add('Tintas de la orden', (!oi.ok||ov.issues.length||(oi.sys!=='cmyk'&&!oi.spots.length))?'warn':'ok',
+    `${oi.note} · ${oi.lbl}${oi.spots.length?' ('+oi.spots.join(', ')+')':''} · ${oi.plates} plancha${oi.plates===1?'':'s'}`,
+    'Número de tintas por cara que pide el cliente (notación tiro/retiro).',
+    oi.sys!=='cmyk'&&!oi.spots.length?'La orden indica Pantone pero no dice cuál.'
+      :!oi.ok?`${oi.lbl}${oi.spots.length?' con '+oi.spots.length+' Pantone':''} suma ${oi.expected} tintas en tiro, pero la orden indica ${oi.front}.`
+      :ov.issues.length?ov.issues.join(' ')
+      :ov.checked?`La orden coincide con el arte: ${oi.names.join(', ')}.`:`Se grabarán ${oi.front} planchas en tiro${oi.back?` y ${oi.back} en retiro`:''}.`,
+    'Corrige la orden o el arte final para que coincidan antes de grabar planchas.');
+  // Programa nativo del arte final
+  const sw=state.order.software, swt=SOFT_TIPS[sw];
+  add('Arte final · programa nativo', sw?'ok':'warn',
+    sw?`${sw} · archivo ${swt?swt.ext:'—'}`:'no indicado',
+    'Programa en el que se diseñó el original.',
+    sw?'Preprensa sabe qué archivo abierto pedir si hay que corregir.':'Sin el programa nativo, cualquier corrección obliga a rehacer el arte.',
+    'Indica CorelDRAW, InDesign, Illustrator o Affinity en la orden (Etapa 01).');
+  // CMYK · carga total de tinta
+  if(!sm.cm){
+    add('CMYK', 'ok', 'no se usa',
+      'Trabajo solo con tintas especiales (planas).',
+      'No se graban planchas de cuatricromía.',
+      'Si el arte tiene fotos o degradados de color, vuelve a CMYK + especiales.');
+  }else if(!sm.hasArt||!SR){
+    add('CMYK', 'ok', 'C M Y K',
+      'Modo de color de proceso.',
+      'Coherente con impresión offset estándar.',
+      'Convierte imágenes RGB a CMYK antes del CTP.');
+  }else{
+    const prof=SEP_PROFILES[state.sep.profile]||SEP_PROFILES.fogra39, td=state.sep.tacDoc;
+    const docOver=td!=null&&td>SR.tacLimit+0.5;
+    add('CMYK · carga de tinta (TAC)', (SR.tacMax<=SR.tacLimit+0.5&&!docOver)?'ok':'warn',
+      `${td!=null?`PDF ${Math.round(td)} % · `:''}separado ${Math.round(SR.tacMax)} % / límite ${SR.tacLimit} % · ${prof.n} · GCR ${SEP_GCR[state.sep.gcr].n.toLowerCase()}`,
+      'Suma de C+M+Y+K en la zona más oscura del arte.',
+      docOver?`El PDF tiene objetos CMYK con ${Math.round(td)} % de tinta (p. ej. «negro de registro» 100/100/100/100). El RIP no reconvierte el CMYK nativo: saldría así a prensa, con repinte y secado lento.`
+        :SR.clipPct>=0.05?`El perfil limitó la carga en el ${fmt(SR.clipPct,1)} % del área (el arte llegaba a ${Math.round(SR.rawMax)} %): evita repinte y secado lento.`:'La carga de tinta queda dentro del límite del perfil.',
+      docOver?`Corrige en el archivo: negro enriquecido ≈ 60/40/40/100 (240 %) y textos en 100 % K; nunca uses el color «Registro» para diseñar.`
+        :'Usa el perfil del papel real (couché, bond, periódico) y un GCR medio o fuerte para bajar la carga.');
+  }
   // Tintas especiales
-  add('Tintas especiales', 'ok', 'ninguna',
-    'Pantone / spot adicionales.',
-    'No se detectaron tintas especiales.',
-    'Declara los Pantone si existen para sumar planchas.');
+  if(!sm.hasArt){
+    add('Tintas especiales', 'ok', 'ninguna',
+      'Pantone / spot adicionales.',
+      'No se detectaron tintas especiales.',
+      'Declara los Pantone si existen para sumar planchas.');
+  }else{
+    const pdfN=state.sep.pdfSpots.length;
+    let lvl='ok', why=sm.printInks.length?`Cada tinta especial suma una plancha: ${sm.printInks.map(i=>i.name).join(', ')}.`:'El trabajo no usa tintas especiales.', fix='Declara los Pantone si existen para sumar planchas.';
+    if(state.sep.mode==='cmyk'&&pdfN){ lvl='warn'; why=`El PDF trae ${pdfN} tinta(s) especial(es) (${state.sep.pdfSpots.join(', ')}) y se están convirtiendo a CMYK: el color de marca puede variar.`; fix='Elige «CMYK + especiales» en Separación de tintas si el cliente pagó tinta Pantone.'; }
+    if(sm.unused.length){ lvl='warn'; why=`Tinta declarada sin uso en el arte: ${sm.unused.map(i=>i.name).join(', ')}. Sería una plancha y un lavado de tintero innecesarios.`; fix='Quita la tinta o revisa su color / tolerancia ΔE.'; }
+    if(state.sep.mode==='spot'&&SR&&SR.oogPct>2){ lvl='warn'; why=`El ${fmt(SR.oogPct,1)} % del arte no se reproduce con las tintas elegidas.`; fix='Añade otra tinta o cambia a CMYK + especiales.'; }
+    if(state.sep.mode==='spot'&&!sm.inks.length){ lvl='err'; why='Modo «solo tintas especiales» sin tintas declaradas: no hay planchas.'; fix='Declara al menos una tinta especial o vuelve a CMYK.'; }
+    if(sm.techPrinting.length){ lvl='err'; why=`Separación técnica marcada para imprimir: ${sm.techPrinting.map(i=>i.name).join(', ')}. La línea de troquel/corte saldría impresa en el producto.`; fix='Desactiva 🖨 en esa tinta: las tintas técnicas no se graban en plancha.'; }
+    add('Tintas especiales', lvl,
+      (sm.inks.length?sm.inks.map(i=>i.name+(i.print?'':' (no imprime)')).join(', '):'ninguna')+(pdfN?` · ${pdfN} en el PDF`:''),
+      'Pantone / tintas planas, barnices y separaciones técnicas del PDF.', why, fix);
+  }
   // Resolución
   add('Resolución', 'ok', '300 dpi',
     'Densidad de la imagen a grabar.',
@@ -2122,7 +3686,8 @@ function renderDashboard(){
     ['Utilización',valid?r.usePct.toFixed(2)+'%':'—','ok'],
     ['Desperdicio',valid?r.despPct.toFixed(2)+'%':'—'],
     ['Pliegos',valid?fmt(r.totalSheets):'—'],
-    ['Color','CMYK'],
+    ['Color',sepSummary().tag],
+    ['Planchas',(sm=>sm.total+(sm.sides>1?` (${sm.perFace}×2)`:''))(sepSummary())],
     ['Peso total',valid?fmt(r.totalKg,1)+' kg':'—'],
     ['Encuadernación',o.binding||'Sin encuadernación'],
     ['Costo',valid?cc.cur+' '+fmt(r.costLocal,2):'—','accent'],
@@ -2229,6 +3794,8 @@ function injectFieldHelp(){
    ============================================================ */
 function reportHTML(){
   const r=state.result,o=state.order,m=state.machine,cc=state.calc,valid=r&&!r.error;
+  const sm=sepSummary(), SR=sm.R;
+  const covTxt=SR?SR.keys.map(k=>`${plateInfo(k).proc?k:plateInfo(k).n} ${fmt(SR.cov[k]||0,1)}%`).join(' · '):'—';
   return `<div style="font-family:Inter,sans-serif;max-width:720px;margin:0 auto;padding:30px;color:#0f1720">
     <h1 style="margin:0 0 4px">Reporte de Producción</h1>
     <div style="color:#475766;font-size:13px;margin-bottom:18px">${o.job||''} · ${new Date().toLocaleString('es-PE')}</div>
@@ -2238,13 +3805,27 @@ function reportHTML(){
       ['Dimensiones',`${state.prod.w}×${state.prod.h} cm + ${state.prod.bleed} mm sangrado`],
       ['Tiraje',fmt(o.qty)+' unidades'],['Máquina',m?m.name:'—'],
       ['Plancha',m?`${m.w}×${m.h} cm · pinza ${m.gripper} cm`:'—'],
-      ['Gramaje',cc.weight+' g/m²'],['Tipo impresión',cc.print==='tiroretiro'?'Tiro y retiro':'Solo tiro'],
+      ['Materias primas',esc(o.raw)],
+      ['Tintas (orden)',(oi=>`${oi.note} · ${oi.lbl}${oi.spots.length?' · '+esc(oi.spots.join(', ')):''} · ${oi.plates} planchas`)(orderInks())],
+      ['Programa nativo del arte',o.software?`${esc(o.software)} (${SOFT_TIPS[o.software]?SOFT_TIPS[o.software].ext:'—'})`:'—'],
+      ['Papel',`${paperType().n} · ${cc.weight} g/m²`],['Tipo impresión',cc.print==='tiroretiro'?'Tiro y retiro':'Solo tiro'],
+      ['Separación de tintas',sm.modeLbl+(sm.hasArt?'':' (sin arte cargado)')],
+      ['Tintas / planchas por cara',`${esc(sm.names.join(', '))} · ${sm.perFace}`],
+      ['Planchas CTP totales',sm.total+(sm.sides>1?' (tiro y retiro)':'')],
+      ...(sm.tech.length?[['Separaciones sin plancha',esc(sm.tech.join(', '))]]:[]),
+      ...(sm.hasArt&&sm.cm?[['Perfil · GCR',`${(SEP_PROFILES[state.sep.profile]||SEP_PROFILES.fogra39).n} · GCR ${SEP_GCR[state.sep.gcr].n.toLowerCase()}`],
+        ...(state.sep.tacDoc!=null?[['TAC en el PDF (vectores CMYK)',Math.round(state.sep.tacDoc)+' %']]:[]),
+        ['TAC separado / límite',SR?`${Math.round(SR.tacMax)} % / ${SR.tacLimit} %`:'—']]:[]),
+      ...(SR?[['Cobertura por tinta',covTxt]]:[]),
       ['Distribución',valid?`${r.cols}×${r.rows}`:'—'],['Poses',valid?r.poses:'—'],
       ['Aprovechamiento',valid?r.usePct.toFixed(2)+'%':'—'],['Desperdicio',valid?r.despPct.toFixed(2)+'%':'—'],
       ['Pliegos netos',valid?fmt(r.netSheets):'—'],['Merma',valid?fmt(r.wasteSheets)+` (${cc.wastepct}%)`:'—'],
       ['Hojas de arranque',fmt(cc.setup)],['Pliegos a comprar',valid?fmt(r.totalSheets):'—'],
       ['Peso total',valid?fmt(r.totalKg,2)+' kg':'—'],
       ['Costo papel (USD)',valid?fmt(r.cost,2):'—'],['Costo local',valid?cc.cur+' '+fmt(r.costLocal,2):'—'],
+      ['Pliego madre',`${MADRES[cc.madre].w}×${MADRES[cc.madre].h} cm`+(valid&&r.madre&&r.madre.ok?` · corte en ${r.madre.cut.n}`:' · no contiene el montaje')],
+      ['Pliegos madre a comprar',valid&&r.madre&&r.madre.ok?`${fmt(r.madre.pliegosMadre)} (${fmt(r.madre.resmas,2)} resmas)`:'—'],
+      ['Costo de compra',valid&&r.madre&&r.madre.ok?`USD ${fmt(r.madre.usd,2)} · ${cc.cur} ${fmt(r.madre.local,2)}`:'—'],
       ['Encuadernación',o.binding],['Ruta',o.route],['Calidad',o.quality],['Responsable',o.owner],['Aprobación',o.approval],
       ['Estado',isCtpReady()?'CTP READY':'EN PROCESO'],
     ].map(([k,v])=>`<tr><td style="padding:7px 10px;border-bottom:1px solid #eef2f6;color:#475766;font-weight:600">${k}</td><td style="padding:7px 10px;border-bottom:1px solid #eef2f6;text-align:right;font-weight:600">${v||'—'}</td></tr>`).join('')}
@@ -2306,7 +3887,9 @@ function saveState(){
     calc:state.calc,orient:state.orient,marks:state.marks,step:state.step,unit:state.unit,
     alignPinza:state.alignPinza,nudge:state.nudge,
     colorBarPreset:state.colorBarPreset,gutters:state.gutters,cbarNudge:state.cbarNudge,
-    signature:state.signature
+    signature:state.signature,
+    sep:{mode:state.sep.mode,profile:state.sep.profile,profileAuto:state.sep.profileAuto,gcr:state.sep.gcr,tol:state.sep.tol,
+         inks:state.sep.inks.filter(i=>i.src==='manual').map(i=>({name:i.name,hex:i.hex,print:i.print,alt:i.alt}))}
   })); }catch(e){}
 }
 function loadState(){
@@ -2321,6 +3904,12 @@ function loadState(){
     if(s.cbarNudge&&typeof s.cbarNudge.x==='number')state.cbarNudge=s.cbarNudge;
     if(s.signature&&SIGNATURES[s.signature])state.signature=s.signature;
     if(s.gutters)Object.assign(state.gutters,s.gutters);
+    if(s.sep){ const S=state.sep, q=s.sep;
+      if(SEP_MODES[q.mode]) S.mode=q.mode; if(SEP_PROFILES[q.profile]) S.profile=q.profile;
+      if(typeof q.profileAuto==='boolean') S.profileAuto=q.profileAuto; if(SEP_GCR[q.gcr]) S.gcr=q.gcr;
+      if(q.tol>=3&&q.tol<=40) S.tol=q.tol;
+      (q.inks||[]).forEach(i=>{ if(!i||!i.name) return; const ink=addInk(makeInk(i.name,{hex:i.hex,alt:i.alt})); if(typeof i.print==='boolean'){ ink.print=i.print; S.off[ink.id]=!i.print; } });
+    }
     if(s.machineId) state.machine=MACHINES.find(m=>m.id===s.machineId)||null;
     // repoblar inputs
     const o=state.order;
@@ -2331,6 +3920,9 @@ function loadState(){
     set('f_owner',o.owner);set('f_notes',o.notes);
     if(o.approval)$('f_approval').value=o.approval;
     if(o.binding&&$('f_binding'))$('f_binding').value=o.binding;
+    if(SYS_LBL[o.colorSys]) $('f_colorsys').value=o.colorSys;
+    set('f_inksF',o.inksF); set('f_inksB',o.inksB); set('f_spots',o.spots);
+    if(typeof o.software==='string') $('f_soft').value=o.software;
     buildGutters();
     set('f_prodW',state.prod.w);set('f_prodH',state.prod.h);set('f_bleed',state.prod.bleed);set('f_qty',o.qty);
     set('c_qty',state.calc.qty);set('c_pages',state.calc.pages);$('c_print').value=state.calc.print;
@@ -2356,6 +3948,7 @@ function bindEvents(){
   // inputs orden + papel → recalc
   ['f_job','f_piece','f_desc','f_ref','f_date','f_raw','f_route','f_quality','f_time','f_labor',
    'f_materials','f_done','f_inspect','f_owner','f_approval','f_notes','f_binding','f_prodW','f_prodH','f_bleed','f_qty',
+   'f_colorsys','f_inksF','f_inksB','f_spots','f_soft',
    'c_qty','c_pages','c_print','c_weight','c_price','c_fx','c_cur','c_wastepct','c_setup','c_prodW','c_prodH','c_gap']
    .forEach(id=>{ const el=$(id); if(el){ el.addEventListener('input',recalc); el.addEventListener('change',recalc);} });
 
@@ -2369,6 +3962,36 @@ function bindEvents(){
     $('orientSeg').querySelectorAll('button').forEach(x=>x.classList.remove('on')); b.classList.add('on');
     state.orient=b.dataset.o; recalc();
   }));
+
+  // panel de papel (tiro/retiro, tipo, gramaje, pliego madre, precio ref.)
+  $('printSeg').addEventListener('click',e=>{ const b=e.target.closest('button[data-p]'); if(!b)return;
+    $('c_print').value=b.dataset.p;
+    // la notación de tintas de la orden sigue al tipo de impresión: tiro → x/0 · tiro y retiro → x/x
+    if(b.dataset.p==='tiro') $('f_inksB').value=0; else if(num('f_inksB')===0) $('f_inksB').value=num('f_inksF')||4;
+    recalc(); });
+
+  // Orden: materias primas vinculadas al panel de papel (Etapa 03)
+  $('f_ptype').addEventListener('change',e=>choosePaperType(e.target.value));
+  $('f_gram').addEventListener('change',e=>{ $('c_weight').value=e.target.value; recalc(); });
+  $('f_madre').addEventListener('change',e=>{ state.calc.madre=e.target.value; recalc(); toast('Pliego madre '+e.target.value.replace('x','×')+' · también en la Etapa 03','ok'); });
+  // Orden: tintas
+  $('f_colorsys').addEventListener('change',()=>{ autoInkCount(); recalc(); });
+  $('f_spots').addEventListener('change',()=>{ autoInkCount(); recalc(); });
+  $('f_inksB').addEventListener('change',()=>{ const b=num('f_inksB');
+    $('c_print').value=b>0?'tiroretiro':'tiro'; recalc();
+    toast(b>0?`Retiro con ${b} tinta${b>1?'s':''} → «Tiro y retiro» en la Etapa 03`:'Sin retiro → «Solo tiro» en la Etapa 03','ok'); });
+  $('f_bleed').addEventListener('change',()=>{ const b=num('f_bleed');
+    if(b<3||b>5) toast(`Sangrado ${b} mm fuera de norma: debe ser de 3 a 5 mm por lado`,'warn'); });
+  $('ptypeGrid').addEventListener('click',e=>{ const b=e.target.closest('[data-pt]'); if(b) choosePaperType(b.dataset.pt); });
+  $('gramChips').addEventListener('click',e=>{ const b=e.target.closest('[data-g]'); if(!b)return;
+    $('c_weight').value=b.dataset.g; recalc(); });
+  $('madreGrid').addEventListener('click',e=>{ const b=e.target.closest('[data-m]'); if(!b)return;
+    state.calc.madre=b.dataset.m; recalc(); });
+  $('madreHint').addEventListener('click',e=>{ const b=e.target.closest('[data-usebest]'); if(!b)return;
+    state.calc.madre=b.dataset.usebest; recalc(); toast('Pliego madre '+b.dataset.usebest.replace('x','×')+' seleccionado','ok'); });
+  $('paperRef').addEventListener('click',e=>{ if(!e.target.closest('#btnRefPrice'))return;
+    const pen=refPricePen(); if(!pen)return;
+    $('c_price').value=(pen/penPerUsd()).toFixed(2); recalc(); toast('Precio de referencia aplicado','ok'); });
 
   // unidades
   $('unitSeg').querySelectorAll('button').forEach(b=>b.addEventListener('click',()=>{
@@ -2385,7 +4008,7 @@ function bindEvents(){
   // vista imposición
   $('viewSeg').querySelectorAll('button').forEach(b=>b.addEventListener('click',()=>{
     $('viewSeg').querySelectorAll('button').forEach(x=>x.classList.remove('on')); b.classList.add('on');
-    state.view=b.dataset.v; drawPlate();
+    state.view=b.dataset.v; renderSepChips(); drawPlate();
   }));
   $('faceSeg').querySelectorAll('button').forEach(b=>b.addEventListener('click',()=>{
     $('faceSeg').querySelectorAll('button').forEach(x=>x.classList.remove('on')); b.classList.add('on');
@@ -2459,19 +4082,67 @@ function bindEvents(){
   $('artClear').addEventListener('click',clearArt);
   $('artExpImpo').addEventListener('click',printImposition);
   $('artExpReport').addEventListener('click',printReport);
+  $('artStage').addEventListener('click',sepPickAt);
+
+  // Separación de tintas
+  const sepChanged=(delay=0)=>{ renderSepPanel(); renderSepChips(); scheduleSep(delay); saveState(); };
+  $('sepMode').querySelectorAll('button').forEach(b=>b.addEventListener('click',()=>{
+    if(state.sep.mode===b.dataset.m) return;
+    state.sep.mode=b.dataset.m; state.sep.plate='comp'; sepChanged();
+  }));
+  $('sepProfile').addEventListener('change',e=>{ state.sep.profile=e.target.value; state.sep.profileAuto=false; sepChanged(); });
+  $('sepGcr').querySelectorAll('button').forEach(b=>b.addEventListener('click',()=>{ state.sep.gcr=b.dataset.g; sepChanged(); }));
+  $('sepTol').addEventListener('input',e=>{ state.sep.tol=+e.target.value; $('sepTolV').textContent=e.target.value; scheduleSep(300); });
+  $('sepTol').addEventListener('change',saveState);
+  $('sepFilm').addEventListener('change',e=>{ state.sep.film=e.target.checked; renderSepPreview(); renderSepPlates(); drawPlate(); });
+  $('sepAddBtn').addEventListener('click',sepAddFromInput);
+  $('sepNewName').addEventListener('keydown',e=>{ if(e.key==='Enter'){ e.preventDefault(); sepAddFromInput(); } });
+  $('sepPickNew').addEventListener('click',()=>sepStartPick('new'));
+  $('sepInks').addEventListener('click',e=>{
+    const b=e.target.closest('button[data-act]'); if(!b) return;
+    const S=state.sep, id=b.closest('.sep-ink').dataset.id, ink=S.inks.find(i=>i.id===id); if(!ink) return;
+    if(b.dataset.act==='pick') sepStartPick(id);
+    else if(b.dataset.act==='print'){ ink.print=!ink.print; S.off[id]=!ink.print;
+      renderSepPanel(); renderSepChips(); renderJobPanel(); drawPlate(); saveState();
+      toast(ink.print?`${ink.name}: se grabará su plancha`:`${ink.name}: no imprime (sin plancha)`,ink.print&&(ink.kind==='tech'||ink.kind==='finish')?'warn':'ok'); }
+    else if(b.dataset.act==='del'){ S.inks=S.inks.filter(i=>i.id!==id); delete S.off[id];
+      if(S.plate===id) S.plate='comp'; if(S.picking===id) S.picking=null;
+      if(!S.inks.length&&S.mode==='cmyk_spot') S.mode='cmyk';
+      renderArtPicking(); sepChanged(); }
+  });
+  $('sepInks').addEventListener('change',e=>{
+    const t=e.target, row=t.closest('.sep-ink'); if(!row) return;
+    const ink=state.sep.inks.find(i=>i.id===row.dataset.id); if(!ink) return;
+    if(t.dataset.act==='hex'){ ink.hex=t.value; ink.ramp=null; ink.alt='color ajustado a mano'; sepChanged(120); }
+    else if(t.dataset.act==='name'){ const v=t.value.trim(); if(!v){ t.value=ink.name; return; }
+      ink.name=v; const k=inkKind(v); if(k!==ink.kind){ ink.kind=k; ink.print=!(k==='tech'||k==='finish'); state.sep.off[ink.id]=!ink.print; }
+      renderSepPanel(); renderSepChips(); renderJobPanel(); drawPlate(); saveState(); }
+  });
+  $('sepPlates').addEventListener('click',e=>{
+    const eye=e.target.closest('[data-eye]');
+    if(eye){ const k=eye.dataset.eye; state.sep.off[k]=!state.sep.off[k]; renderSepPreview(); renderSepPlates(); if(state.sep.plate==='comp') drawPlate(); return; }
+    const c=e.target.closest('.sep-pl'); if(c) setSepPlate(c.dataset.k);
+  });
+  $('sepPager').addEventListener('click',e=>{ const b=e.target.closest('[data-pg]'), R=state.sep.res; if(!b||!R) return;
+    state.sep.page=(state.sep.page+(+b.dataset.pg)+R.pages.length)%R.pages.length; renderSepPreview(); renderSepPlates(); });
+  $('sepChips').addEventListener('click',e=>{ const b=e.target.closest('[data-k]'); if(b) setSepPlate(b.dataset.k); });
+  $('sepNotes').addEventListener('click',e=>{ const b=e.target.closest('[data-setmode]'); if(!b) return; state.sep.mode=b.dataset.setmode; sepChanged(); });
+  $('sepExport').addEventListener('click',exportSeparations);
 
   // modal
   $('mClose').addEventListener('click',()=>$('modalBg').classList.remove('on'));
   $('modalBg').addEventListener('click',e=>{ if(e.target===$('modalBg'))$('modalBg').classList.remove('on'); });
   document.addEventListener('click',e=>{ const i=e.target.closest('.info-i'); if(i){ if(i.dataset.fhelp)openFieldHelp(i.dataset.fhelp); else openConcept(i.dataset.concept); } });
-  document.addEventListener('keydown',e=>{ if(e.key==='Escape')$('modalBg').classList.remove('on'); });
+  document.addEventListener('keydown',e=>{ if(e.key==='Escape'){ $('modalBg').classList.remove('on'); if(state.sep.picking){ state.sep.picking=null; renderArtPicking(); renderSepInks(); } } });
 
   // exportaciones
   $('expReport').addEventListener('click',printReport);
   $('expImpo').addEventListener('click',()=>{ goStep(4); setTimeout(printImposition,300); });
   $('expSpreads').addEventListener('click',()=>toast('Printer spreads: reorganización didáctica (ver documentación v2)','ok'));
   $('expJpg').addEventListener('click',exportSvgJpg);
-  $('expCtp').addEventListener('click',()=>{ goStep(4); $('viewSeg').querySelectorAll('button').forEach(x=>x.classList.toggle('on',x.dataset.v==='separaciones')); state.view='separaciones'; drawPlate(); toast('Vista de plancha CTP (separaciones)','ok'); });
+  $('expCtp').addEventListener('click',()=>{
+    if(state.art.pages.length&&state.sep.res){ goStep(4); setTimeout(exportSeparations,300); return; }
+    goStep(4); $('viewSeg').querySelectorAll('button').forEach(x=>x.classList.toggle('on',x.dataset.v==='separaciones')); state.view='separaciones'; drawPlate(); toast('Vista de plancha CTP (separaciones)','ok'); });
 
   // resize redibuja plancha si en fit
   window.addEventListener('resize',()=>{ if(state.step===4&&state.zoom==='fit')drawPlate(); });
@@ -2482,7 +4153,7 @@ function bindEvents(){
    ============================================================ */
 document.addEventListener('DOMContentLoaded',()=>{
   $('f_date').value=new Date().toISOString().slice(0,10);
-  buildFlow(); buildMachines(); buildMarks(); buildGutters(); injectFieldHelp();
+  buildFlow(); buildMachines(); buildMarks(); buildGutters(); buildBuyList(); injectFieldHelp();
   const restored=loadState();
   bindEvents();
   recalc();
