@@ -1,0 +1,2493 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Simulador Offset · Imposición Digital Industrial</title>
+<meta name="description" content="Simulador educativo interactivo de producción industrial offset e imposición digital, desde la orden de trabajo hasta la plancha CTP." />
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<script defer src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
+<style>
+/* ============================================================
+   TOKENS DE DISEÑO — estética de software técnico de preprensa
+   ============================================================ */
+:root{
+  --bg:#0d1117; --bg-2:#161b22; --bg-3:#1c232c; --bg-4:#232c37;
+  --panel:#ffffff; --panel-soft:#f4f6f9; --panel-2:#eef2f6;
+  --ink:#0f1720; --ink-soft:#475766; --ink-muted:#8a98a6;
+  --line:#e2e8ef; --line-soft:#eef2f6; --line-strong:#cdd6e0;
+  --accent:#ff6b1a; --accent-soft:#ffe9dd; --accent-ink:#7a2f00;
+  --primary:#2563eb; --primary-soft:#dbe7ff; --primary-ink:#12336e;
+  --ok:#16a34a; --ok-soft:#dcfce7; --warn:#d97706; --warn-soft:#fef3c7;
+  --err:#dc2626; --err-soft:#fee2e2;
+  --plate:#1c2531; --plate-edge:#0b0f14;
+  --paper:#fdfbf6; --paper-edge:#d9cfb6;
+  --gripper:#e11d48; --gripper-soft:#ffe4e6;
+  --usable:#dbeafe;
+  --mono:'JetBrains Mono','SFMono-Regular',ui-monospace,Menlo,Consolas,monospace;
+  --shadow-sm:0 1px 3px rgba(15,23,42,.09);
+  --shadow-md:0 6px 18px rgba(15,23,42,.10);
+  --shadow-lg:0 18px 40px rgba(15,23,42,.16);
+  --r-sm:6px; --r-md:10px; --r-lg:14px; --r-xl:20px;
+}
+*{box-sizing:border-box}
+html,body{margin:0;padding:0;height:100%}
+body{
+  font-family:'Inter',system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;
+  color:var(--ink); background:var(--panel-soft);
+  font-size:14px; line-height:1.45; overflow:hidden;
+}
+button,input,select,textarea{font-family:inherit}
+input,select,textarea{font-size:13.5px}
+.mono{font-family:var(--mono);font-variant-numeric:tabular-nums}
+::-webkit-scrollbar{width:10px;height:10px}
+::-webkit-scrollbar-thumb{background:#c7d0da;border-radius:20px;border:2px solid transparent;background-clip:padding-box}
+::-webkit-scrollbar-thumb:hover{background:#a9b5c2;background-clip:padding-box}
+
+/* ============================================================
+   ESTRUCTURA GENERAL
+   ============================================================ */
+.app{
+  display:grid;
+  grid-template-columns:1fr 320px;
+  grid-template-rows:52px 46px 1fr;
+  grid-template-areas:
+    "top top"
+    "flow flow"
+    "main side";
+  height:100vh;
+}
+
+/* TOPBAR */
+.topbar{
+  grid-area:top; background:var(--bg); color:#fff;
+  display:flex; align-items:center; gap:14px; padding:0 18px;
+  border-bottom:1px solid #000;
+}
+.brand{display:flex;align-items:center;gap:11px;font-weight:700;letter-spacing:.2px}
+.brand-mark{
+  width:30px;height:30px;border-radius:8px;
+  background:linear-gradient(135deg,var(--accent),#ff9540);
+  display:grid;place-items:center;color:#fff;font-weight:800;font-size:15px;
+  box-shadow:0 0 0 3px rgba(255,107,26,.22);
+}
+.brand .t1{font-size:14.5px;line-height:1.05}
+.brand .t2{font-size:10.5px;color:#8b96a4;font-weight:500;letter-spacing:.4px}
+.topbar .spacer{flex:1}
+.chip{
+  display:inline-flex;align-items:center;gap:7px;background:#00000038;
+  padding:6px 12px;border-radius:999px;font-size:12px;color:#c2ccd8;
+}
+.chip b{color:#fff;font-weight:600}
+.topbar .status-chip{background:#0b2a17;color:#4ade80;border:1px solid #14532d}
+.topbar .status-chip.warn{background:#2a1e05;color:#fbbf24;border-color:#78350f}
+.topbar .status-chip.err{background:#2a0d0d;color:#f87171;border-color:#7f1d1d}
+.topbar button.tb{
+  background:transparent;color:#c8d3df;border:1px solid #2a3543;
+  padding:6px 11px;border-radius:8px;cursor:pointer;font-size:12.5px;font-weight:500;
+  display:inline-flex;align-items:center;gap:6px;
+}
+.topbar button.tb:hover{background:#1c2531;color:#fff}
+.unit-seg{display:inline-flex;background:#00000038;border-radius:8px;padding:3px}
+.unit-seg button{
+  background:transparent;border:0;color:#9aa6b3;font-size:11.5px;font-weight:600;
+  padding:4px 9px;border-radius:6px;cursor:pointer;
+}
+.unit-seg button.on{background:var(--accent);color:#fff}
+
+/* FLOW STEPPER (indicador horizontal de estados) */
+.flowbar{
+  grid-area:flow; background:var(--bg-2); border-bottom:1px solid #0a0e13;
+  display:flex; align-items:stretch; overflow-x:auto;
+}
+.flow-step{
+  flex:1 1 0; min-width:150px; display:flex; align-items:center; gap:9px;
+  padding:0 16px; cursor:pointer; position:relative; color:#8895a3;
+  border-right:1px solid #0a0e13; user-select:none; transition:background .15s;
+}
+.flow-step:hover{background:#1c232c}
+.flow-step.locked{cursor:not-allowed; opacity:.5}
+.flow-step.active{background:#0d1117}
+.flow-step .fnum{
+  width:24px;height:24px;border-radius:50%;flex:none;
+  display:grid;place-items:center;font-size:11px;font-weight:800;
+  background:#2a3543;color:#aab6c3; border:2px solid transparent;
+}
+.flow-step.active .fnum{background:var(--accent);color:#fff;box-shadow:0 0 0 3px rgba(255,107,26,.2)}
+.flow-step.done .fnum{background:var(--ok);color:#fff}
+.flow-step.warn .fnum{background:var(--warn);color:#fff}
+.flow-step.err .fnum{background:var(--err);color:#fff}
+.flow-step .flab{font-size:12px;font-weight:700;letter-spacing:.2px;white-space:nowrap;color:#c7d0da}
+.flow-step.active .flab{color:#fff}
+.flow-step .fsub{display:block;font-size:9.5px;font-weight:500;color:#6b7887;margin-top:1px}
+.flow-step .fdot{margin-left:auto;font-size:10px}
+.flow-ctp{
+  flex:0 0 118px; display:flex;align-items:center;justify-content:center;gap:7px;
+  background:#0a0e13;color:#4b5563;font-weight:800;font-size:12px;letter-spacing:1px;
+}
+.flow-ctp.ready{background:linear-gradient(135deg,#052e16,#064e3b);color:#4ade80}
+.flow-ctp .rd{width:9px;height:9px;border-radius:50%;background:currentColor;box-shadow:0 0 8px currentColor}
+
+/* MAIN */
+.main{grid-area:main; overflow-y:auto; background:var(--panel-soft); position:relative}
+.pane{display:none; animation:fade .25s ease}
+.pane.on{display:block}
+@keyframes fade{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:none}}
+.pane-inner{max-width:1180px;margin:0 auto;padding:22px 26px 90px}
+
+/* SIDE PANEL TÉCNICO */
+.side{
+  grid-area:side; background:var(--bg); color:#cdd6e0; overflow-y:auto;
+  border-left:1px solid #000; display:flex; flex-direction:column;
+}
+.side-h{
+  padding:13px 16px 10px; font-size:10.5px; font-weight:800; letter-spacing:1.4px;
+  color:#6b7887; text-transform:uppercase; border-bottom:1px solid #1c232c;
+  display:flex;align-items:center;justify-content:space-between;
+}
+.side-h .live{display:flex;align-items:center;gap:5px;color:#4ade80;font-size:9px;letter-spacing:.5px}
+.side-h .live i{width:6px;height:6px;border-radius:50%;background:#4ade80;box-shadow:0 0 6px #4ade80}
+.tech-grid{padding:6px 10px}
+.tech-row{
+  display:flex;align-items:baseline;justify-content:space-between;gap:10px;
+  padding:8px 8px; border-radius:8px; border-bottom:1px solid #161b22;
+}
+.tech-row:hover{background:#131922}
+.tech-row .k{font-size:10px;font-weight:800;letter-spacing:.8px;color:#7a8797;text-transform:uppercase;flex:none}
+.tech-row .v{font-size:13px;font-weight:600;color:#eef3f8;text-align:right;font-family:var(--mono)}
+.tech-row .v small{color:#7a8797;font-weight:500}
+.side-status{margin:12px 12px 18px;padding:14px;border-radius:12px;text-align:center;
+  background:#0a0e13;border:1px solid #1c232c}
+.side-status .lab{font-size:10px;letter-spacing:1.5px;color:#6b7887;font-weight:800}
+.side-status .big{font-size:19px;font-weight:800;margin-top:4px;color:#f87171}
+.side-status.ready .big{color:#4ade80}
+.side-status.warn .big{color:#fbbf24}
+.side-status .sub{font-size:11px;color:#8895a3;margin-top:5px;line-height:1.4}
+.mini-plate{margin:4px 12px 10px;background:#0a0e13;border:1px solid #1c232c;border-radius:12px;padding:12px}
+.mini-plate .cap{font-size:10px;letter-spacing:1px;color:#6b7887;font-weight:800;margin-bottom:8px;text-transform:uppercase}
+.side-credit{margin-top:auto;padding:14px 16px;text-align:center;font-size:10.5px;color:#6b7887;line-height:1.5;border-top:1px solid #161b22}
+.side-credit b{color:#aab6c3}
+
+/* ============================================================
+   COMPONENTES
+   ============================================================ */
+.page-head{margin-bottom:18px}
+.page-head .kicker{font-size:11px;font-weight:800;letter-spacing:2px;color:var(--accent);text-transform:uppercase}
+.page-head h1{font-size:24px;font-weight:800;margin:4px 0 6px;letter-spacing:-.3px}
+.page-head p{color:var(--ink-soft);font-size:13.5px;max-width:760px;margin:0}
+
+.card{background:var(--panel);border:1px solid var(--line);border-radius:var(--r-lg);box-shadow:var(--shadow-sm)}
+.card-h{padding:13px 16px;border-bottom:1px solid var(--line-soft);display:flex;align-items:center;gap:9px}
+.card-h .ic{width:26px;height:26px;border-radius:7px;display:grid;place-items:center;font-size:14px;background:var(--panel-2)}
+.card-h h3{font-size:14px;font-weight:700;margin:0}
+.card-h .sub{font-size:11.5px;color:var(--ink-muted);margin-left:auto}
+.card-b{padding:16px}
+
+.grid{display:grid;gap:16px}
+.g2{grid-template-columns:1fr 1fr}
+.g3{grid-template-columns:1fr 1fr 1fr}
+.g-split{grid-template-columns:1.15fr .85fr}
+@media(max-width:900px){.g2,.g3,.g-split{grid-template-columns:1fr}}
+
+.field{margin-bottom:12px}
+.field:last-child{margin-bottom:0}
+.field label{display:flex;align-items:center;gap:6px;font-size:11.5px;font-weight:700;color:var(--ink-soft);margin-bottom:5px;letter-spacing:.2px}
+.field input,.field select,.field textarea{
+  width:100%;padding:8px 10px;border:1px solid var(--line-strong);border-radius:8px;
+  background:#fff;color:var(--ink);transition:border .15s,box-shadow .15s;
+}
+.field input:focus,.field select:focus,.field textarea:focus{outline:0;border-color:var(--primary);box-shadow:0 0 0 3px var(--primary-soft)}
+.field textarea{resize:vertical;min-height:60px}
+.field .hint{font-size:10.5px;color:var(--ink-muted);margin-top:3px}
+.field-row{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.field-row-3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px}
+
+.info-i{
+  width:15px;height:15px;border-radius:50%;background:var(--primary-soft);color:var(--primary);
+  display:inline-grid;place-items:center;font-size:10px;font-weight:800;cursor:pointer;
+  border:0;flex:none;transition:transform .12s;
+}
+.info-i:hover{transform:scale(1.18);background:var(--primary);color:#fff}
+
+.seg{display:inline-flex;background:var(--panel-2);border-radius:9px;padding:3px;gap:2px;flex-wrap:wrap}
+.seg button{background:transparent;border:0;color:var(--ink-soft);font-size:12px;font-weight:600;padding:6px 12px;border-radius:7px;cursor:pointer}
+.seg button.on{background:#fff;color:var(--ink);box-shadow:var(--shadow-sm)}
+
+.btn{border:0;border-radius:9px;padding:9px 15px;font-size:13px;font-weight:600;cursor:pointer;display:inline-flex;align-items:center;gap:7px;transition:filter .15s,transform .05s}
+.btn:active{transform:translateY(1px)}
+.btn-primary{background:var(--accent);color:#fff}
+.btn-primary:hover{filter:brightness(1.06)}
+.btn-primary:disabled{background:#e6c4ac;cursor:not-allowed;filter:none}
+.btn-blue{background:var(--primary);color:#fff}
+.btn-blue:hover{filter:brightness(1.06)}
+.btn-ghost{background:#fff;color:var(--ink-soft);border:1px solid var(--line-strong)}
+.btn-ghost:hover{background:var(--panel-2)}
+.btn-dark{background:var(--bg-3);color:#e6edf3;border:1px solid #2a3543}
+.btn-dark:hover{background:var(--bg-4)}
+
+.badge{display:inline-flex;align-items:center;gap:5px;padding:3px 9px;border-radius:999px;font-size:10.5px;font-weight:800;letter-spacing:.3px}
+.badge.ok{background:var(--ok-soft);color:#166534}
+.badge.warn{background:var(--warn-soft);color:#92400e}
+.badge.err{background:var(--err-soft);color:#991b1b}
+.badge.neutral{background:var(--panel-2);color:var(--ink-soft)}
+.badge.blue{background:var(--primary-soft);color:var(--primary-ink)}
+
+table.tech{width:100%;border-collapse:collapse;font-size:13px}
+table.tech td{padding:8px 10px;border-bottom:1px solid var(--line-soft)}
+table.tech tr:last-child td{border-bottom:0}
+table.tech td:first-child{color:var(--ink-soft);font-weight:600}
+table.tech td:last-child{text-align:right;font-family:var(--mono);font-weight:600}
+table.tech tr.hl td{background:var(--accent-soft)}
+table.tech tr.hl td:last-child{color:var(--accent-ink)}
+
+.callout{border-radius:12px;padding:13px 15px;font-size:12.5px;line-height:1.5;display:flex;gap:11px}
+.callout .cic{font-size:17px;flex:none;line-height:1}
+.callout.edu{background:linear-gradient(180deg,#f0f7ff,#e8f1fe);border:1px solid #cfe0fb;color:#1e3a5f}
+.callout.edu b{color:var(--primary-ink)}
+.callout.warn{background:var(--warn-soft);border:1px solid #fcd34d;color:#78350f}
+.callout.ok{background:var(--ok-soft);border:1px solid #86efac;color:#14532d}
+
+.locked-veil{
+  display:none;position:absolute;inset:0;background:rgba(244,246,249,.86);
+  backdrop-filter:blur(2px);z-index:20;place-items:center;text-align:center;padding:40px;
+}
+.locked-veil.on{display:grid}
+.locked-veil .lk{max-width:420px}
+.locked-veil .lkic{font-size:40px}
+.locked-veil h2{font-size:19px;margin:10px 0 6px}
+.locked-veil p{color:var(--ink-soft);margin:0 0 16px}
+
+/* MACHINE CARDS */
+.machine-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:14px}
+.machine-card{
+  background:var(--panel);border:1.5px solid var(--line);border-radius:14px;padding:0;
+  cursor:pointer;overflow:hidden;transition:border .15s,box-shadow .15s,transform .1s;text-align:left;
+}
+.machine-card:hover{border-color:var(--primary);box-shadow:var(--shadow-md);transform:translateY(-2px)}
+.machine-card.selected{border-color:var(--accent);box-shadow:0 0 0 3px var(--accent-soft),var(--shadow-md)}
+.mc-head{padding:13px 15px 11px;background:linear-gradient(180deg,#fafcff,#f2f6fb);border-bottom:1px solid var(--line-soft);position:relative}
+.mc-head .mc-name{font-size:14.5px;font-weight:800;letter-spacing:-.2px}
+.mc-head .mc-class{font-size:11px;color:var(--ink-muted);font-weight:600;margin-top:1px}
+.mc-head .mc-pick{position:absolute;top:12px;right:12px}
+.mc-body{padding:12px 15px}
+.mc-spec{display:flex;justify-content:space-between;align-items:baseline;padding:5px 0;border-bottom:1px dashed var(--line-soft);font-size:12px}
+.mc-spec:last-child{border-bottom:0}
+.mc-spec .k{color:var(--ink-soft);font-weight:600;font-size:10.5px;letter-spacing:.4px;text-transform:uppercase}
+.mc-spec .v{font-family:var(--mono);font-weight:700;color:var(--ink)}
+.mc-diagram{padding:10px 15px 14px;background:var(--panel-soft);border-top:1px solid var(--line-soft)}
+.mc-diagram .dcap{font-size:9.5px;letter-spacing:.6px;color:var(--ink-muted);font-weight:700;text-transform:uppercase;margin-bottom:6px}
+
+/* IMPOSITION WORKSPACE */
+.impo-wrap{display:grid;grid-template-columns:1fr 300px;gap:0;height:calc(100vh - 98px)}
+@media(max-width:1100px){.impo-wrap{grid-template-columns:1fr}}
+.impo-stage{background:#5a6674;position:relative;overflow:hidden;
+  background-image:radial-gradient(circle at 1px 1px,rgba(255,255,255,.10) 1px,transparent 0);background-size:22px 22px}
+.impo-toolbar{
+  position:absolute;top:0;left:0;right:0;height:44px;z-index:5;
+  background:rgba(13,17,23,.92);backdrop-filter:blur(6px);
+  display:flex;align-items:center;gap:8px;padding:0 12px;border-bottom:1px solid #000;
+}
+.impo-toolbar .seg2{display:inline-flex;background:#1c232c;border-radius:7px;padding:2px}
+.impo-toolbar .seg2 button{background:transparent;border:0;color:#9aa6b3;font-size:11.5px;font-weight:600;padding:5px 10px;border-radius:5px;cursor:pointer}
+.impo-toolbar .seg2 button.on{background:var(--accent);color:#fff}
+.impo-toolbar .tsep{width:1px;height:22px;background:#2a3543}
+.impo-toolbar .zbtn{background:#1c232c;border:1px solid #2a3543;color:#c8d3df;width:28px;height:28px;border-radius:6px;cursor:pointer;font-weight:700}
+.impo-toolbar .zbtn:hover{background:#232c37}
+.impo-toolbar .zlab{color:#c8d3df;font-size:12px;font-family:var(--mono);min-width:46px;text-align:center}
+.impo-toolbar .spacer{flex:1}
+.impo-scroll{position:absolute;inset:44px 0 0 0;overflow:auto;display:grid;place-items:center;padding:30px}
+#plateSvg{background:transparent;filter:drop-shadow(0 20px 40px rgba(0,0,0,.4))}
+
+.impo-side{background:var(--bg-2);color:#cdd6e0;overflow-y:auto;border-left:1px solid #000}
+.impo-side .isec{border-bottom:1px solid #10151b;padding:14px 15px}
+.impo-side .isec h4{font-size:10.5px;letter-spacing:1.2px;color:#6b7887;font-weight:800;text-transform:uppercase;margin:0 0 10px}
+.marks-list{display:flex;flex-direction:column;gap:2px}
+.mark-toggle{display:flex;align-items:center;gap:9px;padding:7px 8px;border-radius:8px;cursor:pointer;transition:background .12s}
+.mark-toggle:hover{background:#131922}
+.mark-toggle .sw{
+  width:34px;height:19px;border-radius:999px;background:#2a3543;position:relative;flex:none;transition:background .18s;
+}
+.mark-toggle .sw::after{content:"";position:absolute;top:2px;left:2px;width:15px;height:15px;border-radius:50%;background:#8895a3;transition:transform .18s,background .18s}
+.mark-toggle.on .sw{background:var(--accent)}
+.mark-toggle.on .sw::after{transform:translateX(15px);background:#fff}
+.mark-toggle .mlab{font-size:12.5px;font-weight:600;color:#dbe4ee}
+.mark-toggle .mwarn{margin-left:auto;font-size:9px;color:#fbbf24}
+.mark-toggle.disabled{opacity:.45;cursor:not-allowed}
+
+.mt-btn{width:100%;background:#232c37;border:1px solid #2a3543;color:#e6edf3;font-size:12.5px;font-weight:600;padding:8px;border-radius:8px;cursor:pointer;margin-bottom:8px}
+.mt-btn:hover{background:#2c3744}
+.mt-btn.ghost{background:transparent;color:#9aa6b3}
+.mt-btn.ghost:hover{background:#1c232c;color:#e6edf3}
+.mt-btn.active{background:var(--accent);border-color:var(--accent);color:#fff}
+.mt-sub{font-size:10px;letter-spacing:.5px;color:#6b7887;font-weight:700;text-transform:uppercase;margin:8px 0 5px}
+.seg2b{display:flex;background:#1c232c;border-radius:8px;padding:3px;gap:2px}
+.seg2b button{flex:1;background:transparent;border:0;color:#9aa6b3;font-size:11.5px;font-weight:600;padding:6px;border-radius:6px;cursor:pointer}
+.seg2b button.on{background:var(--accent);color:#fff}
+.nudge-pad{display:grid;grid-template-columns:repeat(3,1fr);grid-template-areas:". up ." "left c right" ". down .";gap:4px;max-width:150px}
+.nudge-pad .nb{background:#232c37;border:1px solid #2a3543;color:#dbe4ee;font-size:14px;font-weight:700;padding:7px;border-radius:7px;cursor:pointer}
+.nudge-pad .nb:hover{background:var(--accent);color:#fff}
+.nudge-pad .nb[data-n="up"]{grid-area:up}.nudge-pad .nb[data-n="down"]{grid-area:down}
+.nudge-pad .nb[data-n="left"]{grid-area:left}.nudge-pad .nb[data-n="right"]{grid-area:right}
+.nudge-pad .nb-c{grid-area:c;background:#1c232c;font-size:12px;color:#8895a3}
+.mt-read{font-size:11px;color:#8895a3;font-family:var(--mono);margin-top:7px}
+.cbar-ctrl{display:flex;flex-direction:column;gap:6px}
+.cbar-up{display:block;text-align:center;background:#232c37;border:1px dashed #2a3543;color:#dbe4ee;font-size:12px;font-weight:600;padding:9px;border-radius:8px;cursor:pointer}
+.cbar-up:hover{background:#2c3744;border-color:var(--accent)}
+.art-drop{border:1.5px dashed #2a3543;border-radius:10px;padding:16px 12px;text-align:center;cursor:pointer;background:#131922;transition:border .15s,background .15s}
+.art-drop:hover,.art-drop.drag{border-color:var(--accent);background:#1c232c}
+.art-drop .ai{font-size:26px}
+.art-drop .at{font-size:12px;font-weight:700;color:#dbe4ee;margin-top:4px}
+.art-drop .ah{font-size:10.5px;color:#6b7887;margin-top:2px}
+.art-stage{margin-top:10px;background:#0a0e13;border:1px solid #1c232c;border-radius:10px;min-height:110px;display:grid;place-items:center;padding:10px;text-align:center}
+.art-stage .empty{color:#6b7887;font-size:11px}
+.art-stage .empty .ei{font-size:30px;margin-bottom:4px}
+.art-stage img{max-width:100%;max-height:150px;border-radius:4px;box-shadow:0 4px 12px rgba(0,0,0,.4);background:#fff}
+.art-meta{font-size:10.5px;color:#8895a3;font-family:var(--mono);margin-top:7px;display:flex;justify-content:space-between;gap:8px}
+.art-exports{display:flex;flex-direction:column;gap:6px;margin-top:10px}
+.art-xbtn{display:flex;gap:9px;align-items:center;background:#232c37;border:1px solid #2a3543;color:#e6edf3;padding:9px 10px;border-radius:9px;cursor:pointer;text-align:left}
+.art-xbtn:hover{background:#2c3744;border-color:var(--accent)}
+.art-xbtn .xic{font-size:16px}
+.art-xbtn .xn{font-size:12px;font-weight:700}
+.art-xbtn .xd{font-size:10px;color:#8895a3;margin-top:1px}
+.isec-desc{font-size:11px;color:#8895a3;line-height:1.5;margin-bottom:9px}
+.isec-desc .en{color:#5c6773;font-style:italic;font-size:10.5px}
+.seg2b.wrap{flex-wrap:wrap}
+.seg2b.wrap button{flex:1 1 44%}
+.gutter-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:5px}
+.gutter-tog{background:#1c232c;border:1px solid #2a3543;color:#9aa6b3;font-size:11px;font-weight:600;padding:7px 4px;border-radius:7px;cursor:pointer;text-align:center}
+.gutter-tog:hover{background:#232c37;color:#dbe4ee}
+.gutter-tog.on{background:#16a34a;border-color:#16a34a;color:#fff}
+.art-drop.hot{border-color:var(--accent);background:#241a12;box-shadow:0 0 0 3px rgba(255,107,26,.15)}
+.art-note{font-size:10.5px;color:#fbbf24;margin-top:7px;line-height:1.45}
+.side-alert{margin:0 12px 10px;padding:11px 13px;border-radius:11px;background:#2a1e05;border:1px solid #78350f;color:#fcd34d;font-size:11.5px;line-height:1.45;display:none}
+.side-alert.on{display:block}
+.side-alert b{color:#fde68a}
+.side-alert.err{background:#2a0d0d;border-color:#7f1d1d;color:#fca5a5}
+.side-alert.err b{color:#fecaca}
+.side-alert.ok{background:#052e16;border-color:#14532d;color:#4ade80}
+.side-alert.ok b{color:#86efac}
+.pose-props{font-size:12px}
+.pose-props .pp{display:flex;justify-content:space-between;padding:5px 0;border-bottom:1px solid #10151b}
+.pose-props .pp .k{color:#7a8797;font-weight:600}
+.pose-props .pp .v{font-family:var(--mono);color:#eef3f8;font-weight:600}
+.pose-empty{color:#6b7887;font-size:11.5px;text-align:center;padding:14px 0}
+
+/* OPTIMIZER */
+.opt-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(190px,1fr));gap:12px}
+.opt-card{border:1.5px solid var(--line);border-radius:12px;padding:13px;background:var(--panel);position:relative;transition:border .15s}
+.opt-card.best{border-color:var(--ok);box-shadow:0 0 0 3px var(--ok-soft)}
+.opt-card.invalid{opacity:.55;background:var(--panel-soft)}
+.opt-card .oc-t{font-size:10.5px;font-weight:800;letter-spacing:.5px;color:var(--ink-soft);text-transform:uppercase}
+.opt-card .oc-grid{font-size:13px;font-weight:700;color:var(--primary);margin-top:3px}
+.opt-card .oc-poses{font-size:30px;font-weight:800;line-height:1;margin:8px 0 3px}
+.opt-card .oc-poses small{font-size:12px;color:var(--ink-muted);font-weight:600}
+.opt-card .oc-util{font-size:12px;font-weight:700;color:var(--ok)}
+.opt-card .oc-util.mid{color:var(--warn)}
+.opt-card .oc-util.low{color:var(--err)}
+.opt-card .oc-meta{font-size:10.5px;color:var(--ink-muted);margin-top:6px;line-height:1.5;border-top:1px dashed var(--line);padding-top:6px}
+.opt-card .oc-star{position:absolute;top:-9px;left:50%;transform:translateX(-50%);background:var(--ok);color:#fff;
+  font-size:9.5px;font-weight:800;letter-spacing:.4px;padding:3px 9px;border-radius:999px;white-space:nowrap}
+.opt-svg{margin:8px 0 4px;display:block}
+
+/* PREFLIGHT */
+.pf-list{display:flex;flex-direction:column;gap:8px}
+.pf-item{display:flex;gap:12px;padding:12px 14px;border:1px solid var(--line);border-radius:11px;background:var(--panel);align-items:flex-start}
+.pf-item.ok{border-left:4px solid var(--ok)}
+.pf-item.warn{border-left:4px solid var(--warn);background:#fffdf7}
+.pf-item.err{border-left:4px solid var(--err);background:#fff8f8}
+.pf-ic{font-size:16px;flex:none;margin-top:1px}
+.pf-txt{flex:1}
+.pf-txt .pf-name{font-weight:700;font-size:13px;display:flex;align-items:center;gap:8px}
+.pf-txt .pf-val{font-family:var(--mono);font-size:11.5px;color:var(--ink-soft);margin-top:2px}
+.pf-diag{margin-top:8px;font-size:11.5px;line-height:1.55;display:none}
+.pf-item.expanded .pf-diag{display:block}
+.pf-diag .d-row{display:grid;grid-template-columns:70px 1fr;gap:8px;padding:2px 0}
+.pf-diag .d-row .dk{font-weight:800;font-size:9.5px;letter-spacing:.5px;color:var(--ink-muted);text-transform:uppercase;padding-top:2px}
+.pf-toggle{background:none;border:0;color:var(--primary);font-size:11px;font-weight:700;cursor:pointer;padding:4px 0 0}
+.pf-summary{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-bottom:16px}
+.pf-sum-card{border-radius:12px;padding:14px;text-align:center;border:1px solid}
+.pf-sum-card.ok{background:var(--ok-soft);border-color:#86efac}
+.pf-sum-card.warn{background:var(--warn-soft);border-color:#fcd34d}
+.pf-sum-card.err{background:var(--err-soft);border-color:#fca5a5}
+.pf-sum-card .n{font-size:28px;font-weight:800;line-height:1}
+.pf-sum-card .l{font-size:11px;font-weight:700;letter-spacing:.5px;text-transform:uppercase;margin-top:4px}
+
+/* EXPORT */
+.exp-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(210px,1fr));gap:12px}
+.exp-btn{display:flex;gap:12px;align-items:center;padding:14px;border:1px solid var(--line-strong);border-radius:12px;background:var(--panel);cursor:pointer;text-align:left;transition:border .15s,transform .1s}
+.exp-btn:hover{border-color:var(--accent);transform:translateY(-2px);box-shadow:var(--shadow-md)}
+.exp-btn:disabled{opacity:.5;cursor:not-allowed;transform:none;box-shadow:none}
+.exp-btn .eic{width:38px;height:38px;border-radius:10px;display:grid;place-items:center;font-size:18px;flex:none;background:var(--panel-2)}
+.exp-btn .en{font-weight:700;font-size:13px}
+.exp-btn .ed{font-size:11px;color:var(--ink-muted);margin-top:1px}
+
+/* PROCESS DIAGRAM */
+.proc-flow{display:flex;flex-wrap:wrap;gap:0;align-items:stretch;margin-top:6px}
+.proc-node{
+  flex:1 1 120px;min-width:120px;background:var(--panel);border:1.5px solid var(--line);
+  border-radius:11px;padding:12px 10px;text-align:center;cursor:pointer;position:relative;transition:border .15s,transform .1s;margin:5px;
+}
+.proc-node:hover{border-color:var(--primary);transform:translateY(-2px);box-shadow:var(--shadow-md)}
+.proc-node .pn-ic{font-size:22px}
+.proc-node .pn-n{font-size:11.5px;font-weight:700;margin-top:5px;letter-spacing:.2px}
+.proc-node .pn-i{font-size:9px;color:var(--ink-muted);margin-top:2px}
+.proc-node.stage-active{border-color:var(--accent);background:var(--accent-soft)}
+
+/* DASHBOARD */
+.dash{background:linear-gradient(160deg,#0d1117,#161b22);border-radius:18px;padding:24px;color:#e6edf3;box-shadow:var(--shadow-lg)}
+.dash-h{display:flex;align-items:center;gap:12px;margin-bottom:18px}
+.dash-h .dic{width:44px;height:44px;border-radius:12px;background:linear-gradient(135deg,var(--accent),#ff9540);display:grid;place-items:center;font-size:22px}
+.dash-h h2{font-size:19px;margin:0;font-weight:800}
+.dash-h .dsub{font-size:12px;color:#8895a3}
+.dash-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:12px}
+.dash-cell{background:#0a0e13;border:1px solid #1c232c;border-radius:12px;padding:13px 14px}
+.dash-cell .dk{font-size:10px;letter-spacing:1px;color:#6b7887;font-weight:800;text-transform:uppercase}
+.dash-cell .dv{font-size:19px;font-weight:800;margin-top:5px;font-family:var(--mono);color:#f0f6fc}
+.dash-cell .dv small{font-size:11px;color:#8895a3;font-weight:500}
+.dash-cell.accent .dv{color:var(--accent)}
+.dash-cell.ok .dv{color:#4ade80}
+.dash-ready{margin-top:16px;padding:14px;border-radius:12px;text-align:center;font-weight:800;letter-spacing:2px;font-size:15px}
+.dash-ready.on{background:linear-gradient(135deg,#052e16,#064e3b);color:#4ade80;border:1px solid #14532d}
+.dash-ready.off{background:#2a1e05;color:#fbbf24;border:1px solid #78350f}
+
+/* SUMMARY LINE (orden) */
+.order-summary{position:sticky;top:0;z-index:2}
+.os-body{display:grid;grid-template-columns:repeat(auto-fill,minmax(130px,1fr));gap:1px;background:var(--line-soft);border-radius:10px;overflow:hidden;border:1px solid var(--line)}
+.os-cell{background:#fff;padding:9px 11px}
+.os-cell .k{font-size:9.5px;letter-spacing:.5px;color:var(--ink-muted);font-weight:700;text-transform:uppercase}
+.os-cell .v{font-size:13px;font-weight:700;margin-top:2px;font-family:var(--mono)}
+
+/* DOCK NAV */
+.dock{
+  position:fixed;bottom:0;left:0;right:320px;height:60px;background:#fff;border-top:1px solid var(--line);
+  display:flex;align-items:center;gap:12px;padding:0 26px;z-index:15;box-shadow:0 -4px 16px rgba(15,23,42,.05);
+}
+@media(max-width:1100px){.dock{right:0}}
+.dock .dprog{flex:1;font-size:12px;color:var(--ink-soft)}
+.dock .dprog b{color:var(--ink)}
+
+/* MODAL */
+.modal-bg{position:fixed;inset:0;background:rgba(13,17,23,.6);display:none;align-items:center;justify-content:center;z-index:1000;backdrop-filter:blur(4px);padding:20px}
+.modal-bg.on{display:flex;animation:fade .2s ease}
+.modal{background:#fff;border-radius:var(--r-xl);max-width:600px;width:100%;max-height:88vh;overflow-y:auto;box-shadow:var(--shadow-lg)}
+.modal-h{padding:18px 22px;border-bottom:1px solid var(--line-soft);display:flex;align-items:center;gap:12px;position:sticky;top:0;background:#fff;z-index:1}
+.modal-h .mic{width:36px;height:36px;border-radius:10px;display:grid;place-items:center;font-size:18px;background:var(--primary-soft)}
+.modal-h h3{margin:0;font-size:17px;font-weight:800}
+.modal-h .mkick{font-size:10.5px;letter-spacing:1.5px;color:var(--primary);font-weight:800;text-transform:uppercase}
+.modal-h .mx{margin-left:auto;background:var(--panel-2);border:0;width:32px;height:32px;border-radius:9px;cursor:pointer;font-size:16px;color:var(--ink-soft)}
+.modal-h .mx:hover{background:var(--line)}
+.modal-b{padding:20px 22px}
+.concept-block{margin-bottom:15px}
+.concept-block:last-child{margin-bottom:0}
+.concept-block .cb-lab{font-size:10px;font-weight:800;letter-spacing:1.2px;text-transform:uppercase;color:var(--accent);margin-bottom:4px}
+.concept-block .cb-txt{font-size:13.5px;line-height:1.55;color:var(--ink)}
+.concept-block.consequence{background:var(--accent-soft);border-radius:10px;padding:11px 13px}
+.concept-block.consequence .cb-lab{color:var(--accent-ink)}
+
+/* TOAST */
+.toast{position:fixed;bottom:76px;left:50%;transform:translateX(-50%) translateY(20px);
+  background:var(--bg);color:#fff;padding:11px 20px;border-radius:11px;font-size:13px;font-weight:600;
+  box-shadow:var(--shadow-lg);opacity:0;pointer-events:none;transition:.25s;z-index:1100;max-width:90vw}
+.toast.on{opacity:1;transform:translateX(-50%) translateY(0)}
+.toast.ok{background:#14532d}.toast.warn{background:#78350f}.toast.err{background:#7f1d1d}
+
+@media print{
+  .app,.dock,.topbar,.flowbar,.side{display:none!important}
+  body{overflow:visible}
+  #printArea{display:block!important}
+  #printArea .print-plate{width:100%;text-align:center}
+  #printArea .print-plate svg{display:block;margin:0 auto}
+}
+#printArea{display:none}
+</style>
+</head>
+<body>
+<div class="app">
+  <!-- TOPBAR -->
+  <header class="topbar">
+    <div class="brand">
+      <div class="brand-mark">IDC</div>
+      <div>
+        <div class="t1">Simulador Offset · Imposición Digital</div>
+        <div class="t2">Producción Industrial · Orden → Máquina → Papel → Imposición → CTP</div>
+      </div>
+    </div>
+    <div class="spacer"></div>
+    <div class="chip" id="chipJob">JOB <b id="tbJob">—</b></div>
+    <div class="unit-seg" id="unitSeg" title="Unidad de medida">
+      <button data-u="mm">mm</button>
+      <button data-u="cm" class="on">cm</button>
+      <button data-u="in">in</button>
+    </div>
+    <div class="chip status-chip" id="tbStatus">● NO INICIADO</div>
+    <button class="tb" id="btnDemo" title="Cargar demo: tarjeta personal 9×5" style="background:var(--accent);color:#fff;border-color:var(--accent)">▶ DEMO tarjeta</button>
+    <button class="tb" id="btnReset" title="Reiniciar todo">↺ Reiniciar</button>
+  </header>
+
+  <!-- FLOW STEPPER -->
+  <nav class="flowbar" id="flowbar"></nav>
+
+  <!-- MAIN -->
+  <main class="main" id="main">
+    <!-- PANE 1: ORDEN -->
+    <section class="pane on" data-pane="1">
+      <div class="pane-inner">
+        <div class="page-head">
+          <div class="kicker">Etapa 01 · Definición del trabajo</div>
+          <h1>Orden de Producción</h1>
+          <p>Toda decisión industrial parte de una orden de trabajo. Los datos que introduzcas aquí se propagan
+             automáticamente a la máquina, al cálculo de papel, a la imposición y a la plancha CTP. Completa al menos
+             los campos marcados para desbloquear la siguiente etapa.</p>
+        </div>
+
+        <div class="card order-summary" style="margin-bottom:16px">
+          <div class="card-b" style="padding:12px">
+            <div class="os-body" id="orderSummary"></div>
+          </div>
+        </div>
+
+        <div class="grid g2">
+          <div class="card">
+            <div class="card-h"><span class="ic">📋</span><h3>Identificación</h3></div>
+            <div class="card-b">
+              <div class="field-row">
+                <div class="field"><label>N.º de orden de trabajo <button class="info-i" data-concept="orden">i</button></label><input id="f_job" value="JOB-63025"></div>
+                <div class="field"><label>N.º de producto / pieza</label><input id="f_piece" value="PZ-01"></div>
+              </div>
+              <div class="field"><label>Descripción del producto</label><input id="f_desc" value="Volante publicitario A5"></div>
+              <div class="field-row-3">
+                <div class="field"><label>Ancho <span class="uu">cm</span></label><input id="f_prodW" type="number" step="0.1" value="14.8"></div>
+                <div class="field"><label>Alto <span class="uu">cm</span></label><input id="f_prodH" type="number" step="0.1" value="21.0"></div>
+                <div class="field"><label>Sangrado <span class="uu-mm">mm</span> <button class="info-i" data-concept="sangrado">i</button></label><input id="f_bleed" type="number" step="0.5" value="3"></div>
+              </div>
+              <div class="field-row">
+                <div class="field"><label>Cantidad a producir (tiraje) <button class="info-i" data-concept="tiraje">i</button></label><input id="f_qty" type="number" value="1000"></div>
+                <div class="field"><label>Referencia del pedido</label><input id="f_ref" value="PED-2026-118"></div>
+              </div>
+              <div class="field"><label>Fecha de producción</label><input id="f_date" type="date"></div>
+            </div>
+          </div>
+
+          <div class="card">
+            <div class="card-h"><span class="ic">🏭</span><h3>Proceso y calidad</h3></div>
+            <div class="card-b">
+              <div class="field"><label>Materias primas</label><input id="f_raw" value="Couché mate 150 g/m² · CMYK"></div>
+              <div class="field-row">
+                <div class="field"><label>Máquina / estación</label><input id="f_stationHint" placeholder="Se define en Etapa 02" readonly style="background:var(--panel-2)"></div>
+                <div class="field"><label>Ruta de producción</label><input id="f_route" value="Preprensa → CTP → Offset → Acabado"></div>
+              </div>
+              <div class="field"><label>Especificaciones de calidad</label><input id="f_quality" value="ISO 12647-2 · ΔE ≤ 4 · registro ≤ 0,1 mm"></div>
+              <div class="field"><label>Encuadernación / Acabado <button class="info-i" data-concept="encuadernacion" type="button">i</button></label>
+                <select id="f_binding">
+                  <option value="Sin encuadernación">Sin encuadernación</option>
+                  <option value="Engrampado metálico">Engrampado metálico</option>
+                  <option value="Fresado">Fresado (encolado / hotmelt)</option>
+                  <option value="Cosido">Cosido</option>
+                  <option value="Termocosido">Termocosido</option>
+                  <option value="Tapa dura">Encuadernación de tapa dura</option>
+                  <option value="Espiral">Encuadernación en espiral</option>
+                </select></div>
+              <div class="field-row-3">
+                <div class="field"><label>Tiempo estimado (h)</label><input id="f_time" type="number" step="0.5" value="4"></div>
+                <div class="field"><label>Mano de obra</label><input id="f_labor" value="1 op. CTP + 1 op. prensa"></div>
+                <div class="field"><label>Desperdicio previsto (%)</label><input id="f_waste" type="number" step="0.5" value="8"></div>
+              </div>
+              <div class="field-row">
+                <div class="field"><label>Materiales emitidos</label><input id="f_materials" value="Pliegos + planchas Al"></div>
+                <div class="field"><label>Cantidad completada</label><input id="f_done" type="number" value="0"></div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="card" style="margin-top:16px">
+          <div class="card-h"><span class="ic">✍️</span><h3>Inspección, cierre y aprobación</h3></div>
+          <div class="card-b">
+            <div class="grid g3">
+              <div class="field"><label>Resultados de inspección</label><input id="f_inspect" value="Pendiente"></div>
+              <div class="field"><label>Responsable</label><input id="f_owner" value="M. Quiroz"></div>
+              <div class="field"><label>Aprobación</label>
+                <select id="f_approval"><option>Pendiente</option><option>Aprobado</option><option>Rechazado</option></select>
+              </div>
+            </div>
+            <div class="field" style="margin-top:4px"><label>Notas</label><textarea id="f_notes">Trabajo escolar de demostración — taller offset IDC.</textarea></div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- PANE 2: MÁQUINA -->
+    <section class="pane" data-pane="2">
+      <div class="pane-inner">
+        <div class="page-head">
+          <div class="kicker">Etapa 02 · Recurso físico</div>
+          <h1>Máquina Offset y Plancha</h1>
+          <p>Primero eliges la <b>máquina</b>: su cilindro determina el tamaño de plancha, la pinza y el área
+             imprimible. No puedes definir la plancha antes que la máquina — es una restricción física real.
+             Al seleccionar, sus dimensiones pasan automáticamente al módulo de imposición.</p>
+        </div>
+
+        <div class="callout edu" style="margin-bottom:16px">
+          <span class="cic">🔗</span>
+          <div><b>Relación física:</b> PLACA → <b>ÁREA NO IMPRIMIBLE</b> → <b>ÁREA DE IMPRESIÓN</b> → PRODUCTO.
+          La banda superior es la <b>pinza normal = blanco de mordaza + pinza de papel</b> (p. ej. GTO 52 = 3 cm → 2 + 1). En el extremo va el
+          <b>blanco de mordaza</b> (pertenece a la <b>plancha</b>) y, debajo, la <b>pinza de papel</b> (el <b>área del pliego</b> que sujetan las mordazas).
+          El <b>formato mínimo de papel</b> es la hoja más pequeña que la máquina arrastra sin fallar el registro.</div>
+        </div>
+
+        <div class="machine-grid" id="machineGrid"></div>
+
+        <div class="card" id="machineDetail" style="margin-top:18px;display:none">
+          <div class="card-h"><span class="ic">🖨️</span><h3 id="mdName">—</h3>
+            <span class="sub" id="mdClass"></span></div>
+          <div class="card-b">
+            <div class="g-split grid">
+              <div>
+                <table class="tech" id="mdTable"></table>
+              </div>
+              <div>
+                <div style="font-size:10px;letter-spacing:.8px;color:var(--ink-muted);font-weight:800;text-transform:uppercase;margin-bottom:8px">Anatomía de la plancha</div>
+                <div id="mdDiagram" style="background:var(--panel-soft);border:1px solid var(--line);border-radius:12px;padding:14px"></div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- PANE 3: PAPEL -->
+    <section class="pane" data-pane="3">
+      <div class="pane-inner">
+        <div class="page-head">
+          <div class="kicker">Etapa 03 · Cálculo y montaje</div>
+          <h1>Cálculo de Papel e Imposición</h1>
+          <p>Con la pieza y la máquina definidas, el sistema calcula automáticamente cuántas <b>poses</b> caben en el
+             pliego, el aprovechamiento, el desperdicio, los pliegos a comprar y el costo del papel. El optimizador
+             compara alternativas de montaje y recomienda la mejor.</p>
+        </div>
+
+        <div class="grid g-split">
+          <div class="card">
+            <div class="card-h"><span class="ic">🧮</span><h3>Datos de producción</h3></div>
+            <div class="card-b">
+              <div class="field-row-3">
+                <div class="field"><label>Tiraje</label><input id="c_qty" type="number" value="1000"></div>
+                <div class="field"><label>Páginas / unidad <button class="info-i" data-concept="paginas">i</button></label><input id="c_pages" type="number" value="1"></div>
+                <div class="field"><label>Tipo de impresión</label>
+                  <select id="c_print"><option value="tiro">Solo tiro</option><option value="tiroretiro">Tiro y retiro</option></select></div>
+              </div>
+              <div class="field-row-3">
+                <div class="field"><label>Gramaje (g/m²) <button class="info-i" data-concept="gramaje">i</button></label><input id="c_weight" type="number" value="150"></div>
+                <div class="field"><label>Precio papel (USD/kg)</label><input id="c_price" type="number" step="0.05" value="1.85"></div>
+                <div class="field"><label>Tipo de cambio</label><input id="c_fx" type="number" step="0.01" value="3.75"></div>
+              </div>
+              <div class="field-row-3">
+                <div class="field"><label>Moneda local</label>
+                  <select id="c_cur"><option value="S/">PEN · Soles</option><option value="$">USD · Dólar</option><option value="MXN$">MXN · Peso</option><option value="€">EUR · Euro</option></select></div>
+                <div class="field"><label>Merma producción (%) <button class="info-i" data-concept="merma">i</button></label><input id="c_wastepct" type="number" step="0.5" value="8"></div>
+                <div class="field"><label>Hojas de arranque <button class="info-i" data-concept="arranque">i</button></label><input id="c_setup" type="number" value="50"></div>
+              </div>
+              <div class="field-row-3">
+                <div class="field"><label>Producto ancho <span class="uu">cm</span></label><input id="c_prodW" type="number" step="0.1" value="14.8"></div>
+                <div class="field"><label>Producto alto <span class="uu">cm</span></label><input id="c_prodH" type="number" step="0.1" value="21.0"></div>
+                <div class="field"><label>Separación poses <span class="uu-mm">mm</span> <button class="info-i" data-concept="gap">i</button></label><input id="c_gap" type="number" step="0.5" value="4"></div>
+              </div>
+              <div class="field">
+                <label>Orientación de montaje</label>
+                <div class="seg" id="orientSeg">
+                  <button data-o="auto" class="on">Automática</button>
+                  <button data-o="vertical">Vertical</button>
+                  <button data-o="horizontal">Horizontal</button>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="card">
+            <div class="card-h"><span class="ic">📊</span><h3>Cálculo automático</h3>
+              <span class="sub" id="c_machineLbl">—</span></div>
+            <div class="card-b" style="padding:0">
+              <table class="tech" id="calcTable"></table>
+            </div>
+          </div>
+        </div>
+
+        <div class="card" style="margin-top:16px">
+          <div class="card-h"><span class="ic">⭐</span><h3>Optimizador de Imposición</h3>
+            <span class="sub">La recomendación busca el mayor aprovechamiento compatible con la máquina</span></div>
+          <div class="card-b">
+            <div id="agentMsg" class="callout edu" style="margin-bottom:14px"><span class="cic">🤖</span><div>Ingresa medidas válidas para comparar alternativas de montaje.</div></div>
+            <div class="opt-grid" id="optGrid"></div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- PANE 4: IMPOSICIÓN -->
+    <section class="pane" data-pane="4" style="padding:0">
+      <div class="impo-wrap">
+        <div class="impo-stage">
+          <div class="impo-toolbar">
+            <div class="seg2" id="viewSeg">
+              <button data-v="tecnica" class="on">Técnica</button>
+              <button data-v="imposicion">Imposición</button>
+              <button data-v="marcas">Marcas</button>
+              <button data-v="separaciones">Separaciones</button>
+            </div>
+            <div class="tsep"></div>
+            <div class="seg2" id="faceSeg">
+              <button data-f="tiro" class="on">Tiro</button>
+              <button data-f="retiro">Retiro</button>
+            </div>
+            <div class="spacer"></div>
+            <button class="zbtn" id="zOut">−</button>
+            <span class="zlab" id="zLab">Ajustar</span>
+            <button class="zbtn" id="zIn">+</button>
+            <select id="zSel" style="background:#1c232c;color:#c8d3df;border:1px solid #2a3543;border-radius:6px;padding:4px 6px;font-size:11.5px">
+              <option value="fit">Ajustar</option><option value="0.25">25%</option><option value="0.5">50%</option>
+              <option value="0.75">75%</option><option value="1">100%</option><option value="1.5">150%</option>
+            </select>
+          </div>
+          <div class="impo-scroll" id="impoScroll">
+            <svg id="plateSvg"></svg>
+          </div>
+        </div>
+
+        <aside class="impo-side">
+          <div class="isec">
+            <h4>★ Arte final · Documento PDF</h4>
+            <div class="art-drop hot" id="artDrop">
+              <div class="ai">⬆</div>
+              <div class="at">Arrastra tu PDF aquí o haz clic para elegir</div>
+              <div class="ah">Producto final, ya con sangrado incluido si aplica.</div>
+            </div>
+            <div class="art-note">⚠ El PDF debe ir <b>con sangrado</b> y <b>SIN marcas de impresión</b>: las marcas de corte, registro y control las agrega la imposición sobre la plancha.</div>
+            <input type="file" id="artFile" accept="application/pdf,image/*" hidden>
+            <div class="art-stage" id="artStage">
+              <div class="empty"><div class="ei">📄</div>Sin documento cargado<div class="ah">La vista previa aparecerá aquí</div></div>
+            </div>
+            <div class="art-meta" id="artMeta" style="display:none"><span id="artNameLbl">—</span><span id="artSizeLbl">—</span></div>
+            <button class="mt-btn ghost" id="artClear" style="display:none;margin-top:8px">Quitar arte y volver al esquema</button>
+            <div class="art-exports">
+              <button class="art-xbtn" id="artExpImpo"><span class="xic">📄</span><div><div class="xn">PDF Imposicionado</div><div class="xd">Poses montadas en plancha, listo para CTP.</div></div></button>
+              <button class="art-xbtn" id="artExpReport"><span class="xic">📊</span><div><div class="xn">Reporte de producción</div><div class="xd">HTML/imprimible con cálculos y especificaciones.</div></div></button>
+            </div>
+          </div>
+          <div class="isec">
+            <h4>Panel técnico · JOB</h4>
+            <div class="pose-props" id="jobPanel"></div>
+          </div>
+          <div class="isec">
+            <h4>📚 Acabado / Encuadernación</h4>
+            <div id="bindingPanel"></div>
+          </div>
+          <div class="isec">
+            <h4>Montaje · rotación y desplazamiento</h4>
+            <button class="mt-btn" id="btnRotate90">⟳ Rotar montaje 90°</button>
+            <div class="mt-sub">Alineación vertical</div>
+            <div class="seg2b" id="alignSeg">
+              <button data-a="centro" class="on">Centrado</button>
+              <button data-a="pinza">Pegar a pinza</button>
+            </div>
+            <div class="mt-sub">Desplazamiento manual (0,5 cm)</div>
+            <div class="nudge-pad">
+              <button class="nb" data-n="up">↑</button>
+              <button class="nb" data-n="left">←</button>
+              <button class="nb nb-c" data-n="reset">⨯</button>
+              <button class="nb" data-n="right">→</button>
+              <button class="nb" data-n="down">↓</button>
+            </div>
+            <div class="mt-read" id="nudgeRead">Δ 0,0 · 0,0 cm</div>
+          </div>
+          <div class="isec">
+            <h4>Marcas de producción</h4>
+            <div class="marks-list" id="marksList"></div>
+          </div>
+          <div class="isec">
+            <h4>▦ Tira de control · Color Bar SmartMarks</h4>
+            <div class="isec-desc">Selecciona un preset de tira de control SmartMarks o carga el tuyo propio (PDF/PNG).<br><span class="en">Choose a SmartMarks color bar preset or upload your own (PDF/PNG).</span></div>
+            <div class="seg2b wrap" id="cbarPreset">
+              <button data-p="cmyk" class="on">CMYK</button>
+              <button data-p="4color">4-Color</button>
+              <button data-p="6color">6-Color</button>
+              <button data-p="5spot">5-Spot</button>
+            </div>
+            <label class="cbar-up" style="margin-top:8px">📎 Cargar tira propia (PDF/PNG)
+              <input type="file" id="cbarFile" accept="application/pdf,.svg,image/*" hidden>
+            </label>
+            <button class="mt-btn ghost" id="cbarDefault" style="margin-top:6px">Usar preset por defecto</button>
+            <div class="mt-sub">Desplazamiento de la tira (0,5 cm)</div>
+            <div class="nudge-pad" id="cbarNudgePad">
+              <button class="nb" data-n="up">↑</button>
+              <button class="nb" data-n="left">←</button>
+              <button class="nb nb-c" data-n="reset">⨯</button>
+              <button class="nb" data-n="right">→</button>
+              <button class="nb" data-n="down">↓</button>
+            </div>
+            <div class="mt-read" id="cbarRead">Tira actual: CMYK (preset)</div>
+          </div>
+          <div class="isec">
+            <h4>⚏ Gutters · SmartMarks (.smk)</h4>
+            <div class="isec-desc">Posiciones de marcas adicionales (texto, registros, signaturas) en la plancha.<br><span class="en">Anchor positions for SmartMarks gutters loaded from .smk files.</span></div>
+            <div class="gutter-grid" id="gutterGrid"></div>
+            <label class="cbar-up" style="margin-top:8px">📎 Cargar archivo .smk
+              <input type="file" id="smkFile" accept=".smk,text/plain" hidden>
+            </label>
+          </div>
+          <div class="isec">
+            <h4>Pose seleccionada</h4>
+            <div id="poseProps"><div class="pose-empty">Haz clic en una pose de la plancha para ver sus propiedades.</div></div>
+          </div>
+        </aside>
+      </div>
+    </section>
+
+    <!-- PANE 5: PREFLIGHT -->
+    <section class="pane" data-pane="5">
+      <div class="pane-inner">
+        <div class="page-head">
+          <div class="kicker">Etapa 05 · Validación y salida</div>
+          <h1>Preflight &amp; Salida CTP</h1>
+          <p>Antes de grabar la plancha, el sistema verifica cada condición técnica. Cada hallazgo explica
+             <b>qué ocurre → por qué → cómo solucionarlo</b>. Solo con todo en verde el trabajo queda <b>CTP READY</b>.</p>
+        </div>
+
+        <div class="pf-summary" id="pfSummary"></div>
+        <div class="card">
+          <div class="card-h"><span class="ic">🔍</span><h3>Checklist de Preflight</h3>
+            <span class="sub">Haz clic en cualquier fila para ver el diagnóstico completo</span></div>
+          <div class="card-b"><div class="pf-list" id="pfList"></div></div>
+        </div>
+
+        <div class="card" style="margin-top:16px">
+          <div class="card-h"><span class="ic">📤</span><h3>Exportación</h3></div>
+          <div class="card-b">
+            <div class="exp-grid">
+              <button class="exp-btn" id="expImpo"><span class="eic">📄</span><div><div class="en">PDF Imposicionado</div><div class="ed">Genera un PDF con las poses montadas en plancha, listo para enviar al CTP.</div></div></button>
+              <button class="exp-btn" id="expSpreads"><span class="eic">📰</span><div><div class="en">PDF Printer Spreads</div><div class="ed">Páginas reorganizadas para imprimir</div></div></button>
+              <button class="exp-btn" id="expReport"><span class="eic">📊</span><div><div class="en">Reporte de producción</div><div class="ed">Documento HTML/imprimible con todos los cálculos, plancha y especificaciones.</div></div></button>
+              <button class="exp-btn" id="expJpg"><span class="eic">🖼️</span><div><div class="en">JPG RGB 300 DPI</div><div class="ed">Visualización del resultado</div></div></button>
+              <button class="exp-btn" id="expCtp"><span class="eic">🟦</span><div><div class="en">CTP Plate</div><div class="ed">Versión final de la plancha</div></div></button>
+            </div>
+          </div>
+        </div>
+
+        <div class="card" style="margin-top:16px">
+          <div class="card-h"><span class="ic">🔄</span><h3>Flujo industrial de producción</h3>
+            <span class="sub">Cada etapa es clicable</span></div>
+          <div class="card-b"><div class="proc-flow" id="procFlow"></div></div>
+        </div>
+
+        <div style="margin-top:20px">
+          <div class="dash" id="dashboard"></div>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <!-- SIDE PANEL -->
+  <aside class="side">
+    <div class="side-h">Panel Técnico <span class="live"><i></i>LIVE</span></div>
+    <div class="tech-grid" id="sideTech"></div>
+    <div class="side-alert" id="sideAlert"></div>
+    <div class="mini-plate">
+      <div class="cap">Vista de plancha</div>
+      <svg id="miniPlate" viewBox="0 0 200 160" style="width:100%;height:auto"></svg>
+    </div>
+    <div class="side-status" id="sideStatus">
+      <div class="lab">ESTADO DE PRODUCCIÓN</div>
+      <div class="big">NO INICIADO</div>
+      <div class="sub">Completa las etapas para llegar a CTP READY.</div>
+    </div>
+    <div class="side-credit">Diseñado por <b>Mg Mario Quiroz Martínez</b><br>d3magindesign · 2026</div>
+  </aside>
+
+  <!-- DOCK -->
+  <div class="dock">
+    <button class="btn btn-ghost" id="btnPrev">← Anterior</button>
+    <div class="dprog" id="dockProg"></div>
+    <button class="btn btn-primary" id="btnNext">Siguiente →</button>
+  </div>
+</div>
+
+<!-- MODAL -->
+<div class="modal-bg" id="modalBg">
+  <div class="modal">
+    <div class="modal-h">
+      <div class="mic" id="mIc">ⓘ</div>
+      <div><div class="mkick" id="mKick">CONCEPTO</div><h3 id="mTitle">—</h3></div>
+      <button class="mx" id="mClose">✕</button>
+    </div>
+    <div class="modal-b" id="mBody"></div>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+<div id="printArea"></div>
+
+<script>
+/* ============================================================
+   DATOS TÉCNICOS — coherentes con la documentación fuente
+   (imposiciondigitalv2 · PLATES + fórmulas Excel Cálculo de Papel)
+   Plancha = pliego para el cálculo de peso (peso = w·h·gramaje/1e7).
+   Área de impresión = (w − 2·margen) × (h − pinza − mordaza).
+   ============================================================ */
+/* Medidas exactas del taller (mm → cm). Área de impresión, formatos de papel
+   y pinza NO se calculan: son valores medidos de la documentación.
+   PINZA NORMAL = blanco de mordaza + pinza de papel (bandas separadas). */
+const MACHINES = [
+  { id:'gto52',  name:'GTO 52 doble oficio', cls:'Heidelberg · pliego pequeño',
+    w:52.1, h:41.5, printW:50.5, printH:34.0, paperMaxW:52.0, paperMaxH:36.0, minW:18.0, minH:10.5,
+    pinzaPapel:1.0, mordaza:2.0 },
+  { id:'solna',  name:'Solna 125', cls:'Solna · medio pliego',
+    w:64.5, h:51.0, printW:63.5, printH:46.9, paperMaxW:64.0, paperMaxH:48.3, minW:25.0, minH:21.0,
+    pinzaPapel:1.0, mordaza:2.0 },
+  { id:'kord',   name:'Heidelberg Kord', cls:'Heidelberg · medio pliego',
+    w:65.0, h:55.0, printW:64.0, printH:45.0, paperMaxW:64.0, paperMaxH:46.0, minW:18.0, minH:14.0,
+    pinzaPapel:1.0, mordaza:4.0 },
+  { id:'sorm',   name:'Heidelberg Sorm', cls:'Heidelberg · pliego ¾',
+    w:72.4, h:61.5, printW:71.0, printH:51.0, paperMaxW:72.0, paperMaxH:52.0, minW:40.0, minH:28.0,
+    pinzaPapel:1.0, mordaza:5.0 },
+  { id:'speed',  name:'Heidelberg Speed Master 102', cls:'Heidelberg · pliego grande',
+    w:103.0, h:79.0, printW:102.0, printH:71.0, paperMaxW:102.0, paperMaxH:72.0, minW:48.0, minH:34.0,
+    pinzaPapel:1.0, mordaza:4.2 },
+  { id:'roland', name:'Roland Favorit RVF0B', cls:'Roland · pliego ¾',
+    w:72.4, h:61.5, printW:72.0, printH:51.0, paperMaxW:72.0, paperMaxH:52.0, minW:28.0, minH:21.0,
+    pinzaPapel:1.0, mordaza:5.0 },
+  { id:'miller', name:'Miller Tp41S 1', cls:'Miller · pliego grande',
+    w:104.8, h:79.0, printW:103.0, printH:71.0, paperMaxW:104.0, paperMaxH:72.0, minW:28.0, minH:21.0,
+    pinzaPapel:1.0, mordaza:4.0 },
+  { id:'lithrone', name:'Lithrone L-528', cls:'Komori · pliego ¾',
+    w:72.4, h:61.0, printW:71.0, printH:51.0, paperMaxW:72.0, paperMaxH:52.0, minW:40.0, minH:28.0,
+    pinzaPapel:1.0, mordaza:5.0 },
+];
+/* Derivados: gripper (pinza total), margen lateral y cola (contrapinza) */
+MACHINES.forEach(m=>{
+  m.gripper=+(m.pinzaPapel+m.mordaza).toFixed(2);       // banda superior no imprimible
+  m.side=+(((m.w-m.printW)/2)).toFixed(2);              // margen lateral por lado
+  m.tail=+((m.h-m.gripper-m.printH)).toFixed(2);        // margen de cola inferior
+});
+
+/* Diccionario educativo: CONCEPTO → DEFINICIÓN → FUNCIÓN → CONSECUENCIA */
+const CONCEPTS = {
+  orden:{ic:'📋',t:'Orden de producción',def:'Documento que define el trabajo: producto, cantidad, materiales, ruta y calidad.',fun:'Es la fuente única de verdad; todos los cálculos posteriores parten de sus datos.',con:'Un dato erróneo aquí (medida, tiraje) se arrastra hasta el desperdicio y el costo final.'},
+  sangrado:{ic:'🩸',t:'Sangrado (bleed)',def:'Excedente de imagen que sobrepasa la línea de corte, normalmente 3 mm por lado.',fun:'Absorbe la tolerancia de la guillotina para que no aparezcan filos blancos al cortar.',con:'Sin sangrado, un corte 1 mm desviado deja borde blanco; con sangrado, la pieza sale limpia.'},
+  tiraje:{ic:'🔢',t:'Tiraje',def:'Número total de ejemplares buenos que se deben entregar.',fun:'Determina cuántos pliegos netos se imprimen y, con la merma, cuántos se compran.',con:'Un tiraje alto reparte el costo de arranque; uno bajo lo encarece por unidad.'},
+  paginas:{ic:'📄',t:'Páginas por unidad',def:'Cuántas páginas tiene cada ejemplar del producto.',fun:'Junto al tiro/retiro define cuántas poses se necesitan por pliego.',con:'A más páginas, más pliegos o más caras impresas por unidad.'},
+  gramaje:{ic:'⚖️',t:'Gramaje',def:'Masa del papel en gramos por metro cuadrado (g/m²).',fun:'Interviene en el peso del pliego: peso = ancho·alto·gramaje / 10 000 000.',con:'Más gramaje = pliego más pesado y más caro; también afecta rigidez y secado.'},
+  merma:{ic:'♻️',t:'Merma de producción',def:'Porcentaje de pliegos que se pierden en el proceso (registro, atascos, control).',fun:'Se suma al tiraje neto para saber cuánto papel comprar realmente.',con:'Subestimar la merma deja el trabajo corto; sobrestimarla encarece el papel.'},
+  arranque:{ic:'🚀',t:'Hojas de arranque',def:'Pliegos consumidos hasta lograr registro y densidad de tinta correctos.',fun:'Se compran de más porque nunca sirven como producto final.',con:'Cada cambio de plancha añade arranque; por eso conviene agrupar trabajos.'},
+  gap:{ic:'↔️',t:'Separación entre poses (gap)',def:'Espacio entre dos piezas montadas en el pliego.',fun:'Deja lugar para las líneas de corte y evita que se toquen los sangrados.',con:'Gap grande reduce poses; gap nulo impide cortar sin dañar la pieza vecina.'},
+  pinza:{ic:'🤏',t:'Pinza (gripper)',def:'Franja del borde que sujetan las mordazas del cilindro de impresión.',fun:'Garantiza el arrastre del pliego; en ella no se imprime nada.',con:'Si una pose invade la pinza, esa zona sale sin tinta: montaje inválido.'},
+  mordaza:{ic:'🗜️',t:'Mordaza / contrapinza',def:'Margen del borde opuesto a la pinza, necesario por el mecanismo de transferencia.',fun:'Reduce el área imprimible junto con la pinza y los márgenes laterales.',con:'Ignorarla hace creer que caben más poses de las reales.'},
+  plancha:{ic:'🟦',t:'Plancha CTP',def:'Lámina de aluminio donde un láser graba la imagen (Computer-to-Plate).',fun:'Su tamaño debe coincidir con el cilindro de la prensa; una por cada tinta.',con:'Plancha incompatible = no monta en la máquina; trabajo detenido.'},
+  poses:{ic:'🔲',t:'Poses',def:'Número de veces que la pieza cabe repetida dentro del área imprimible.',fun:'poses = columnas × filas; a más poses, menos pliegos para el mismo tiraje.',con:'Duplicar poses puede reducir a la mitad el papel y el costo.'},
+  utilizacion:{ic:'📈',t:'Aprovechamiento (utilización)',def:'Porcentaje del pliego ocupado por producto útil.',fun:'util % = poses · área_producto / área_pliego × 100.',con:'Baja utilización = mucho papel al basurero; guía la imposición recomendada.'},
+  registro:{ic:'🎯',t:'Cruces de registro',def:'Marcas que alinean las cuatro planchas de color.',fun:'Permiten superponer C, M, Y y K sin desfase.',con:'Sin registro correcto la imagen sale "movida" o con halos de color.'},
+  ctp:{ic:'💿',t:'CTP READY',def:'Estado en que todas las condiciones técnicas están validadas.',fun:'Autoriza el grabado de la plancha y el paso a prensa.',con:'Grabar sin CTP READY arriesga replanchar: tiempo y aluminio perdidos.'},
+  encuadernacion:{ic:'📚',t:'Encuadernación / Acabado',def:'Sistema que une las hojas del producto terminado. Opciones: engrampado metálico (grapa a caballete), fresado (lomo encolado con hotmelt), cosido (hilo), termocosido, tapa dura (cartón forrado) y espiral.',fun:'Determina el acabado final y define cómo se pliega, junta y refila el producto.',con:'Cada sistema exige un montaje distinto: el engrampado y el cosido necesitan pliegos y signaturas; el fresado, lomo; la espiral, margen de perforado.'},
+};
+
+/* Ayuda por campo: qué información se ingresa en cada cuadro de texto.
+   Se inyecta un botón ⓘ en TODOS los campos. */
+const FIELD_HELP = {
+  f_job:{t:'N.º de orden de trabajo',d:'Código único que identifica el trabajo en el taller (p. ej. JOB-63025). Aparece en el Plate ID y en el reporte.'},
+  f_piece:{t:'N.º de producto / pieza',d:'Identificador de la pieza dentro de la orden (p. ej. PZ-01). Útil cuando una orden tiene varias piezas.'},
+  f_desc:{t:'Descripción del producto',d:'Nombre claro de lo que se imprime: "Volante A5", "Tarjeta de visita", "Tríptico".'},
+  f_prodW:{t:'Ancho del producto',d:'Medida horizontal de la pieza terminada (después de cortar), en la unidad activa.'},
+  f_prodH:{t:'Alto del producto',d:'Medida vertical de la pieza terminada, en la unidad activa.'},
+  f_bleed:{t:'Sangrado',d:'Excedente de imagen fuera del corte, en milímetros. Normalmente 3 mm por lado.'},
+  f_qty:{t:'Cantidad a producir (tiraje)',d:'Número de ejemplares buenos a entregar. Determina cuántos pliegos se imprimen.'},
+  f_ref:{t:'Referencia del pedido',d:'Código del pedido del cliente o de venta, para trazabilidad.'},
+  f_date:{t:'Fecha de producción',d:'Día programado para imprimir el trabajo.'},
+  f_raw:{t:'Materias primas',d:'Papel y tintas a usar: tipo, gramaje y color (p. ej. "Couché 150 g · CMYK").'},
+  f_route:{t:'Ruta de producción',d:'Secuencia de estaciones por las que pasa el trabajo (Preprensa → CTP → Offset → Acabado).'},
+  f_quality:{t:'Especificaciones de calidad',d:'Norma y tolerancias exigidas (p. ej. ISO 12647-2, ΔE ≤ 4, registro ≤ 0,1 mm).'},
+  f_binding:{t:'Encuadernación / Acabado',d:'Sistema de unión del producto: engrampado metálico, fresado, cosido, termocosido, tapa dura o espiral. Define el acabado y el tipo de montaje.'},
+  f_time:{t:'Tiempo estimado',d:'Horas previstas de producción, para planificar la máquina.'},
+  f_labor:{t:'Mano de obra',d:'Operarios necesarios (p. ej. 1 op. CTP + 1 op. prensa).'},
+  f_waste:{t:'Desperdicio previsto',d:'Porcentaje de pliegos que se perderán; se sincroniza con la merma de la Etapa 03.'},
+  f_materials:{t:'Materiales emitidos',d:'Insumos entregados a producción (pliegos, planchas de aluminio, tintas).'},
+  f_done:{t:'Cantidad completada',d:'Unidades buenas ya producidas; sirve para el seguimiento del avance.'},
+  f_inspect:{t:'Resultados de inspección',d:'Observaciones de control de calidad (color, registro, corte).'},
+  f_owner:{t:'Responsable',d:'Persona que responde por el trabajo.'},
+  f_approval:{t:'Aprobación',d:'Estado de autorización del trabajo: Pendiente, Aprobado o Rechazado.'},
+  f_notes:{t:'Notas',d:'Comentarios libres o instrucciones especiales para el operario.'},
+  c_qty:{t:'Tiraje',d:'Cantidad de ejemplares buenos; se sincroniza con la orden.'},
+  c_pages:{t:'Páginas por unidad',d:'Cuántas páginas tiene cada ejemplar. Junto al tiro/retiro define las poses necesarias.'},
+  c_print:{t:'Tipo de impresión',d:'Solo tiro (una cara) o tiro y retiro (ambas caras del pliego).'},
+  c_weight:{t:'Gramaje',d:'Masa del papel en g/m². Interviene en el peso del pliego.'},
+  c_price:{t:'Precio del papel',d:'Costo del papel en dólares por kilogramo (USD/kg).'},
+  c_fx:{t:'Tipo de cambio',d:'Cuántas unidades de moneda local equivalen a 1 USD.'},
+  c_cur:{t:'Moneda local',d:'Moneda en la que se muestra el costo final.'},
+  c_wastepct:{t:'Merma de producción',d:'Porcentaje de pliegos que se pierden en registro, atascos y control.'},
+  c_setup:{t:'Hojas de arranque',d:'Pliegos gastados hasta lograr registro y densidad correctos.'},
+  c_prodW:{t:'Producto — ancho',d:'Ancho de la pieza; se sincroniza con la orden.'},
+  c_prodH:{t:'Producto — alto',d:'Alto de la pieza; se sincroniza con la orden.'},
+  c_gap:{t:'Separación entre poses',d:'Espacio entre piezas montadas, en milímetros. Deja lugar para las líneas de corte.'},
+};
+
+/* ============================================================
+   ESTADO GLOBAL
+   ============================================================ */
+const state = {
+  step:1, maxUnlocked:1, unit:'cm',
+  order:{}, machine:null,
+  prod:{w:14.8,h:21.0,bleed:3,gap:4},
+  calc:{qty:1000,pages:1,print:'tiro',weight:150,price:1.85,fx:3.75,cur:'S/',wastepct:8,setup:50},
+  orient:'auto',
+  view:'tecnica', face:'tiro', zoom:'fit',
+  marks:{crop:true,reg:true,rules:false,scale:false,color:true,fold:false,plateid:true,barcode:false,smart:false},
+  selectedPose:null,
+  result:null,
+  alignPinza:false,          // pegar el montaje a la pinza
+  nudge:{x:0,y:0},           // desplazamiento manual (cm)
+  customColorBar:null,       // dataURL de tira de color cargada
+  colorBarPreset:'cmyk',     // preset SmartMarks: cmyk|4color|6color|5spot
+  cbarNudge:{x:0,y:0},       // desplazamiento de la tira de control (cm)
+  signature:'octava',        // esquema de pliego para encuadernado con doblez
+  gutters:{Top:false,Bottom:false,Left:false,Right:false,Center:false,Mid:false},
+  art:{pages:[], name:'', size:null},  // arte final PDF/imagen cargado
+};
+
+const $=id=>document.getElementById(id);
+const $$=s=>document.querySelectorAll(s);
+const num=(el)=>{const v=parseFloat($(el).value);return Number.isFinite(v)?v:0;};
+const fmt=(n,d=0)=>Number.isFinite(n)?n.toLocaleString('es-PE',{minimumFractionDigits:d,maximumFractionDigits:d}):'—';
+
+function toast(msg,kind=''){const t=$('toast');t.textContent=msg;t.className='toast on '+kind;clearTimeout(t._t);t._t=setTimeout(()=>t.className='toast '+kind,2400);}
+
+/* ---------- Conversión de unidades ---------- */
+function toUnit(cm){ if(state.unit==='mm')return cm*10; if(state.unit==='in')return cm/2.54; return cm; }
+function uDim(cm,d=null){ const v=toUnit(cm); const dec=d!==null?d:(state.unit==='mm'?0:state.unit==='in'?2:1); return v.toFixed(dec)+' '+state.unit; }
+function updateUnitLabels(){ $$('.uu').forEach(e=>e.textContent=state.unit); }
+
+/* ============================================================
+   FLOW STEPPER
+   ============================================================ */
+const STEPS=[
+  {n:1,lab:'ORDEN',sub:'Definir trabajo'},
+  {n:2,lab:'MÁQUINA',sub:'Recurso físico'},
+  {n:3,lab:'PAPEL',sub:'Cálculo · imposición'},
+  {n:4,lab:'IMPOSICIÓN',sub:'Montaje CTP'},
+  {n:5,lab:'PREFLIGHT',sub:'Validación · salida'},
+];
+function buildFlow(){
+  const f=$('flowbar');
+  f.innerHTML=STEPS.map(s=>`
+    <div class="flow-step" data-step="${s.n}">
+      <div class="fnum">${String(s.n).padStart(2,'0')}</div>
+      <div><span class="flab">${s.lab}</span><span class="fsub">${s.sub}</span></div>
+      <span class="fdot"></span>
+    </div>`).join('')+
+    `<div class="flow-ctp" id="flowCtp"><span class="rd"></span>CTP</div>`;
+  f.querySelectorAll('.flow-step').forEach(el=>{
+    el.addEventListener('click',()=>goStep(+el.dataset.step));
+  });
+}
+function stepStatus(n){
+  // returns 'done' | 'warn' | 'err' | 'active' | 'todo' | 'locked'
+  if(n>state.maxUnlocked) return 'locked';
+  if(n===state.step) return 'active';
+  const g=gateFor(n);
+  if(g.ok && g.done) return 'done';
+  if(g.ok) return 'warn';
+  return 'todo';
+}
+function renderFlow(){
+  $('flowbar').querySelectorAll('.flow-step').forEach(el=>{
+    const n=+el.dataset.step; const st=stepStatus(n);
+    el.className='flow-step'+(n===state.step?' active':'')+
+      (st==='locked'?' locked':'')+(st==='done'?' done':'')+(st==='warn'?' warn':'');
+    const dot=el.querySelector('.fdot');
+    dot.textContent=st==='done'?'✓':st==='locked'?'🔒':st==='warn'?'▲':'';
+  });
+  const ready=isCtpReady();
+  const ctp=$('flowCtp'); ctp.className='flow-ctp'+(ready?' ready':'');
+}
+
+/* ---------- Gating: condiciones mínimas por etapa ---------- */
+function gateFor(n){
+  switch(n){
+    case 1:{ const ok=!!(state.order.job&&state.prod.w>0&&state.prod.h>0&&state.calc.qty>0);
+      return {ok, done:ok, msg:'Completa n.º de orden, dimensiones del producto y tiraje.'};}
+    case 2:{ const ok=!!state.machine; return {ok,done:ok,msg:'Selecciona una máquina offset para continuar.'};}
+    case 3:{ const r=state.result; const ok=!!(r&&!r.error&&r.poses>0);
+      return {ok,done:ok,msg:'La pieza debe caber en el pliego (poses ≥ 1). Ajusta medidas o máquina.'};}
+    case 4:{ const r=state.result; const ok=!!(r&&!r.error&&r.poses>0);
+      return {ok,done:ok,msg:'Requiere una imposición válida desde la etapa de papel.'};}
+    case 5:{ const ok=true; return {ok,done:isCtpReady(),msg:''};}
+  }
+  return {ok:true,done:false,msg:''};
+}
+function recomputeUnlock(){
+  let maxU=1;
+  for(let n=1;n<=5;n++){ if(gateFor(n).ok) maxU=Math.min(5,n+1); else break; }
+  state.maxUnlocked=Math.max(state.maxUnlocked, maxU); // no re-lock what was reached... but keep honest:
+  // Actually recompute strictly so removing data re-locks:
+  let strict=1;
+  for(let n=1;n<=4;n++){ if(gateFor(n).ok) strict=n+1; else break; }
+  state.maxUnlocked=strict;
+  if(state.step>state.maxUnlocked) state.step=state.maxUnlocked;
+}
+
+function goStep(n){
+  if(n>state.maxUnlocked){
+    const g=gateFor(n-1);
+    toast('🔒 '+g.msg,'warn'); return;
+  }
+  state.step=n;
+  $$('.pane').forEach(p=>p.classList.toggle('on',+p.dataset.pane===n));
+  renderAll();
+  $('main').scrollTop=0;
+  if(n===4) requestAnimationFrame(drawPlate);
+}
+
+/* ============================================================
+   CÁLCULO DE IMPOSICIÓN — fórmulas de la documentación fuente
+   ============================================================ */
+function calcImposition(){
+  const m=state.machine;
+  if(!m) return {error:'Selecciona una máquina en la Etapa 02.'};
+  const plate={w:m.w,h:m.h,gripper:m.gripper,side:m.side};
+  const prod=state.prod, cc=state.calc;
+  // Área imprimible = valor medido de la máquina (no calculado)
+  const usableW=m.printW;
+  const mordaza=m.mordaza;
+  const usableH=m.printH;
+  const bleed=prod.bleed/10, gap=prod.gap/10;
+  const pieceW=prod.w+2*bleed, pieceH=prod.h+2*bleed;
+
+  const pesoPliego=(plate.w*plate.h*cc.weight)/1e7;   // kg/pliego
+  const pesoCorte=(prod.w*prod.h*cc.weight)/1e7;       // kg/corte
+  const pesoResma=pesoPliego*500;
+  const hojasKg=pesoPliego>0?1/pesoPliego:0;
+
+  function trial(pw,ph,real){
+    if(pw<=0||ph<=0) return null;
+    const W=real?usableW:plate.w, H=real?usableH:plate.h, g=real?gap:0;
+    const cols=Math.floor((W+g)/(pw+g)), rows=Math.floor((H+g)/(ph+g));
+    if(cols<1||rows<1) return null;
+    return {cols,rows,poses:cols*rows,pieceW:pw,pieceH:ph};
+  }
+  const cuts=[
+    {id:1,label:'Corte 1',desc:'Vertical · montaje real',rotated:false,theoretical:false,...(trial(pieceW,pieceH,true)||{})},
+    {id:2,label:'Corte 2',desc:'Horizontal · montaje real',rotated:true,theoretical:false,...(trial(pieceH,pieceW,true)||{})},
+    {id:3,label:'Corte 3',desc:'Vertical · al ras (teórico)',rotated:false,theoretical:true,...(trial(prod.w,prod.h,false)||{})},
+    {id:4,label:'Corte 4',desc:'Horizontal · al ras (teórico)',rotated:true,theoretical:true,...(trial(prod.h,prod.w,false)||{})},
+  ].map(c=>{
+    if(!c.poses) return {...c,valid:false};
+    const util=(c.poses*prod.w*prod.h)/(plate.w*plate.h)*100;
+    return {...c,valid:true,utilPct:util,despPct:100-util};
+  });
+
+  const realCuts=cuts.filter(c=>c.valid&&!c.theoretical);
+  let chosen;
+  if(state.orient==='vertical') chosen=realCuts.find(c=>!c.rotated);
+  else if(state.orient==='horizontal') chosen=realCuts.find(c=>c.rotated);
+  else chosen=realCuts.reduce((b,c)=>!b||c.poses>b.poses?c:b,null);
+  if(!chosen && realCuts.length) chosen=realCuts[0];
+
+  if(!chosen) return {cuts,pesoPliego,pesoCorte,pesoResma,hojasKg,error:'La pieza no cabe en el área imprimible de esta máquina.',usableW,usableH};
+
+  const totalUnits=cc.qty*cc.pages;
+  const sides=cc.print==='tiroretiro'?2:1;
+  const netSheets=Math.ceil(totalUnits/chosen.poses/sides);
+  const wasteSheets=Math.ceil(netSheets*cc.wastepct/100);
+  const totalSheets=netSheets+wasteSheets+cc.setup;
+  const totalKg=totalSheets*pesoPliego;
+  const cost=totalKg*cc.price;
+  const costLocal=cost*cc.fx;
+
+  cuts.forEach(c=>{ if(!c.valid)return; const sh=Math.ceil(totalUnits/c.poses/sides);
+    c.pliegos=sh; c.costoUsd=sh*pesoPliego*cc.price; });
+
+  return {...chosen,usableW,usableH,mordaza,pieceW,pieceH,
+    usePct:chosen.utilPct,despPct:100-chosen.utilPct,
+    netSheets,wasteSheets,totalSheets,totalKg,cost,costLocal,sides,
+    pesoPliego,pesoCorte,pesoResma,hojasKg,cuts,plate};
+}
+
+function isCtpReady(){
+  const checks=buildPreflight();
+  return checks.length>0 && checks.every(c=>c.level!=='err') && !!state.machine && !!(state.result&&!state.result.error&&state.result.poses>0);
+}
+
+/* ============================================================
+   RECÁLCULO Y RENDER GLOBAL
+   ============================================================ */
+function syncFromInputs(){
+  // Orden
+  state.order={
+    job:$('f_job').value.trim(), piece:$('f_piece').value.trim(), desc:$('f_desc').value.trim(),
+    qty:num('f_qty'), ref:$('f_ref').value.trim(), date:$('f_date').value, raw:$('f_raw').value.trim(),
+    route:$('f_route').value.trim(), quality:$('f_quality').value.trim(), time:num('f_time'),
+    labor:$('f_labor').value.trim(), materials:$('f_materials').value.trim(), done:num('f_done'),
+    inspect:$('f_inspect').value.trim(), owner:$('f_owner').value.trim(), approval:$('f_approval').value,
+    notes:$('f_notes').value.trim(), binding:$('f_binding')?$('f_binding').value:'Sin encuadernación',
+  };
+  state.prod.w=num('f_prodW'); state.prod.h=num('f_prodH'); state.prod.bleed=num('f_bleed');
+  state.calc.qty=num('f_qty');
+  // Papel (etapa 3) — mantener sincronía con producto
+  if($('c_qty')){
+    state.calc.qty=num('c_qty'); state.calc.pages=num('c_pages'); state.calc.print=$('c_print').value;
+    state.calc.weight=num('c_weight'); state.calc.price=num('c_price'); state.calc.fx=num('c_fx');
+    state.calc.cur=$('c_cur').value; state.calc.wastepct=num('c_wastepct'); state.calc.setup=num('c_setup');
+    state.prod.w=num('c_prodW'); state.prod.h=num('c_prodH'); state.prod.gap=num('c_gap');
+  }
+}
+function pushToPaperInputs(){
+  $('c_qty').value=state.calc.qty; $('c_prodW').value=state.prod.w; $('c_prodH').value=state.prod.h;
+  $('f_waste').value=state.calc.wastepct;
+}
+function recalc(){
+  syncFromInputs();
+  state.result=calcImposition();
+  recomputeUnlock();
+  renderAll();
+  saveState();
+}
+function renderAll(){
+  renderFlow();
+  renderTopbar();
+  renderOrderSummary();
+  renderMachineDetail();
+  renderCalcTable();
+  renderOptimizer();
+  renderSideTech();
+  renderMiniPlate();
+  renderSideStatus();
+  renderSideAlert();
+  renderJobPanel();
+  renderBindingPanel();
+  renderMontageControls();
+  renderDock();
+  if(state.step===4){ renderArtStage(); drawPlate(); }
+  if(state.step===5){ renderPreflight(); renderProcFlow(); renderDashboard(); }
+  updateUnitLabels();
+}
+
+function renderTopbar(){
+  $('tbJob').textContent=state.order.job||'—';
+  const ready=isCtpReady();
+  const s=$('tbStatus');
+  if(ready){ s.className='chip status-chip'; s.textContent='● CTP READY'; }
+  else if(state.machine&&state.result&&!state.result.error){ s.className='chip status-chip warn'; s.textContent='● EN PROCESO'; }
+  else { s.className='chip status-chip err'; s.textContent='● NO LISTO'; }
+}
+
+function renderOrderSummary(){
+  const o=state.order, r=state.result;
+  const cells=[
+    ['Trabajo',o.job||'—'],['Producto',o.desc||'—'],
+    ['Medida',state.prod.w?`${uDim(state.prod.w)} × ${uDim(state.prod.h)}`:'—'],
+    ['Sangrado',uDim(state.prod.bleed/10)],
+    ['Tiraje',fmt(o.qty)],['Máquina',state.machine?state.machine.name:'— (Etapa 02)'],
+    ['Poses',r&&!r.error?r.poses:'—'],['Aprobación',o.approval||'—'],
+  ];
+  $('orderSummary').innerHTML=cells.map(([k,v])=>`<div class="os-cell"><div class="k">${k}</div><div class="v">${v}</div></div>`).join('');
+}
+
+/* ---------- MÁQUINAS ---------- */
+function plateDiagram(m,big){
+  const W=big?250:210, H=big?168:140, pad=big?20:15;
+  const pw=W-pad*2, ph=H-pad*2;
+  const sy=ph/m.h, sx=pw/m.w;
+  const pinza=m.pinzaPapel*sy;                 // banda extrema (pinza de papel)
+  const mord=m.mordaza*sy;                       // blanco de mordaza
+  const sd=m.side*sx;                            // margen lateral
+  const tail=m.tail*sy;                          // cola
+  const areaX=pad+sd, areaY=pad+pinza+mord, areaW=pw-2*sd, areaH=ph-pinza-mord-tail;
+  return `<svg viewBox="0 0 ${W} ${H}" style="width:100%;height:auto">
+    <rect x="${pad}" y="${pad}" width="${pw}" height="${ph}" fill="#1c2531" stroke="#0b0f14" rx="3"/>
+    <!-- área imprimible -->
+    <rect x="${areaX}" y="${areaY}" width="${areaW}" height="${areaH}" fill="#dbeafe" opacity=".95" rx="1"/>
+    <text x="${areaX+areaW/2}" y="${areaY+areaH/2-2}" font-size="8" fill="#1e3a5f" text-anchor="middle" font-weight="800">ÁREA IMPRIMIBLE</text>
+    <text x="${areaX+areaW/2}" y="${areaY+areaH/2+9}" font-size="7" fill="#1e3a5f" text-anchor="middle">${m.printW}×${m.printH} cm</text>
+    <!-- blanco de mordaza (extremo — parte de la plancha) -->
+    <rect x="${pad}" y="${pad}" width="${pw}" height="${mord}" fill="#f59e0b" opacity=".9"/>
+    ${big?`<text x="${pad+pw/2}" y="${pad+mord/2+3}" font-size="6.5" fill="#3b2600" text-anchor="middle" font-weight="800">BLANCO DE MORDAZA ${m.mordaza} cm</text>`:`<text x="${pad+pw/2}" y="${pad+mord/2+2.5}" font-size="5.5" fill="#3b2600" text-anchor="middle" font-weight="800">MORDAZA+PINZA ${m.gripper}cm</text>`}
+    <!-- pinza de papel (debajo — área del pliego) -->
+    <rect x="${pad}" y="${pad+mord}" width="${pw}" height="${pinza}" fill="#e11d48" opacity=".85"/>
+    ${big?`<text x="${pad+pw/2}" y="${pad+mord+pinza/2+3}" font-size="6.5" fill="#fff" text-anchor="middle" font-weight="800">PINZA DE PAPEL ${m.pinzaPapel} cm</text>`:''}
+    <!-- márgenes laterales -->
+    <rect x="${pad}" y="${areaY}" width="${sd}" height="${areaH}" fill="#64748b" opacity=".45"/>
+    <rect x="${pad+pw-sd}" y="${areaY}" width="${sd}" height="${areaH}" fill="#64748b" opacity=".45"/>
+    <!-- cola -->
+    <rect x="${pad}" y="${pad+ph-tail}" width="${pw}" height="${tail}" fill="#94a3b8" opacity=".6"/>
+    ${big?`<text x="${pad+pw/2}" y="${pad+ph-tail/2+3}" font-size="6" fill="#1c2531" text-anchor="middle" font-weight="700">COLA ${m.tail} cm</text>`:''}
+  </svg>`;
+}
+function buildMachines(){
+  $('machineGrid').innerHTML=MACHINES.map(m=>{
+    return `<button class="machine-card" data-id="${m.id}">
+      <div class="mc-head">
+        <div class="mc-name">${m.name}</div>
+        <div class="mc-class">${m.cls}</div>
+        <span class="mc-pick badge neutral">Elegir</span>
+      </div>
+      <div class="mc-body">
+        <div class="mc-spec"><span class="k">Medidas de placa</span><span class="v">${m.w}×${m.h} cm</span></div>
+        <div class="mc-spec"><span class="k">Área máx. de impresión</span><span class="v">${m.printW}×${m.printH} cm</span></div>
+        <div class="mc-spec"><span class="k">Formato máx. papel</span><span class="v">${m.paperMaxW}×${m.paperMaxH} cm</span></div>
+        <div class="mc-spec"><span class="k">Formato mín. papel</span><span class="v">${m.minW}×${m.minH} cm</span></div>
+        <div class="mc-spec"><span class="k">Pinza normal (mordaza + pinza)</span><span class="v">${m.gripper} cm = ${m.mordaza} + ${m.pinzaPapel}</span></div>
+        <div class="mc-spec" style="border-bottom:0"><span class="k" style="color:#f59e0b">Blanco de mordaza</span><span class="v">${m.mordaza} cm</span></div>
+        <div class="mc-spec"><span class="k" style="color:#e11d48">Pinza de papel</span><span class="v">${m.pinzaPapel} cm</span></div>
+      </div>
+      <div class="mc-diagram">
+        <div class="dcap">Plancha → área no imprimible → impresión → producto</div>
+        ${plateDiagram(m,false)}
+      </div>
+    </button>`;
+  }).join('');
+  $('machineGrid').querySelectorAll('.machine-card').forEach(c=>{
+    c.addEventListener('click',()=>selectMachine(c.dataset.id));
+  });
+}
+function selectMachine(id){
+  const m=MACHINES.find(x=>x.id===id); if(!m)return;
+  state.machine=m;
+  $('f_stationHint').value=m.name;
+  $('machineGrid').querySelectorAll('.machine-card').forEach(c=>c.classList.toggle('selected',c.dataset.id===id));
+  toast('Máquina seleccionada · '+m.name+' → dimensiones enviadas a imposición','ok');
+  recalc();
+}
+function renderMachineDetail(){
+  const m=state.machine, box=$('machineDetail');
+  if(!m){ box.style.display='none'; $('machineGrid').querySelectorAll('.machine-card').forEach(c=>c.classList.remove('selected')); return; }
+  box.style.display='';
+  $('machineGrid').querySelectorAll('.machine-card').forEach(c=>{
+    c.classList.toggle('selected',c.dataset.id===m.id);
+    c.querySelector('.mc-pick').className='mc-pick badge '+(c.dataset.id===m.id?'ok':'neutral');
+    c.querySelector('.mc-pick').textContent=c.dataset.id===m.id?'✓ Seleccionada':'Elegir';
+  });
+  $('mdName').textContent=m.name; $('mdClass').textContent=m.cls;
+  $('mdTable').innerHTML=[
+    ['Medidas de placa',`${uDim(m.w)} × ${uDim(m.h)}`,true],
+    ['Área máxima de impresión',`${uDim(m.printW)} × ${uDim(m.printH)}`,true],
+    ['Formato máximo de papel',`${uDim(m.paperMaxW)} × ${uDim(m.paperMaxH)}`],
+    ['Formato mínimo de papel',`${uDim(m.minW)} × ${uDim(m.minH)}`],
+    ['Pinza de papel',uDim(m.pinzaPapel)],
+    ['Blanco de mordaza',uDim(m.mordaza)],
+    ['Pinza normal (mordaza + pinza)',`${uDim(m.gripper)}`,true],
+    ['Margen lateral',uDim(m.side)],
+    ['Margen de cola',uDim(m.tail)],
+    ['Área de placa',`${fmt(m.w*m.h,0)} cm²`],
+  ].map(([k,v,hl])=>`<tr class="${hl?'hl':''}"><td>${k}</td><td>${v}</td></tr>`).join('');
+  $('mdDiagram').innerHTML=plateDiagram(m,true);
+}
+
+/* ---------- CÁLCULO (etapa 3) ---------- */
+function renderCalcTable(){
+  const r=state.result;
+  $('c_machineLbl').textContent=state.machine?state.machine.name+' · '+state.machine.w+'×'+state.machine.h+' cm':'Sin máquina';
+  const t=$('calcTable');
+  if(!r||r.error){
+    t.innerHTML=`<tr><td colspan="2" style="color:var(--err);text-align:center;padding:18px">${r?r.error:'—'}</td></tr>`;
+    return;
+  }
+  const cc=state.calc;
+  const rows=[
+    ['Tamaño útil del pliego',`${uDim(r.usableW)} × ${uDim(r.usableH)}`],
+    ['Producto + sangrado',`${uDim(r.pieceW)} × ${uDim(r.pieceH)}`],
+    ['Número de poses',`${r.poses}`,true],
+    ['Distribución',`${r.cols} × ${r.rows}${r.rotated?' (girado 90°)':''}`],
+    ['Orientación',r.rotated?'Horizontal':'Vertical'],
+    ['Aprovechamiento',`${r.usePct.toFixed(2)} %`,true],
+    ['Desperdicio',`${r.despPct.toFixed(2)} %`],
+    ['Peso por pliego',`${fmt(r.pesoPliego,4)} kg (${fmt(r.pesoPliego*1000,1)} g)`],
+    ['Peso de resma (500 h.)',`${fmt(r.pesoResma,2)} kg`],
+    ['Hojas por kg',`${fmt(r.hojasKg,2)}`],
+    ['Pliegos netos',`${fmt(r.netSheets)}`],
+    ['Hojas de arranque',`${fmt(cc.setup)}`],
+    ['Merma',`${fmt(r.wasteSheets)} (${cc.wastepct}%)`],
+    ['Pliegos a comprar',`${fmt(r.totalSheets)}`,true],
+    ['Peso total',`${fmt(r.totalKg,2)} kg`],
+    ['Costo del papel',`USD ${fmt(r.cost,2)}`],
+    ['Costo en moneda local',`${cc.cur} ${fmt(r.costLocal,2)}`,true],
+  ];
+  t.innerHTML=rows.map(([k,v,hl])=>`<tr class="${hl?'hl':''}"><td>${k}</td><td>${v}</td></tr>`).join('');
+}
+
+function optSvg(cut){
+  const W=150,H=95,pad=6;
+  if(!cut.valid) return `<svg class="opt-svg" viewBox="0 0 ${W} ${H}"><rect x="${pad}" y="${pad}" width="${W-2*pad}" height="${H-2*pad}" fill="#f1f5f9" stroke="#cbd5e1" stroke-dasharray="4 3"/><text x="${W/2}" y="${H/2}" text-anchor="middle" font-size="11" fill="#94a3b8">No cabe</text></svg>`;
+  const pw=W-2*pad, ph=H-2*pad;
+  const cw=pw/cut.cols, ch=ph/cut.rows;
+  let cells='';
+  for(let r=0;r<cut.rows;r++)for(let c=0;c<cut.cols;c++){
+    cells+=`<rect x="${pad+c*cw+1}" y="${pad+r*ch+1}" width="${cw-2}" height="${ch-2}" fill="${cut.theoretical?'#e0e7ff':'#dbeafe'}" stroke="${cut.theoretical?'#818cf8':'#3b82f6'}" stroke-width="0.8" rx="1"/>`;
+  }
+  return `<svg class="opt-svg" viewBox="0 0 ${W} ${H}"><rect x="${pad}" y="${pad}" width="${pw}" height="${ph}" fill="#1c2531" rx="2"/>${cells}</svg>`;
+}
+function renderOptimizer(){
+  const r=state.result, grid=$('optGrid'), msg=$('agentMsg');
+  if(!r||!r.cuts){ grid.innerHTML='<div style="color:var(--ink-muted)">Ingresa medidas válidas.</div>'; return; }
+  const valids=r.cuts.filter(c=>c.valid);
+  const realValids=valids.filter(c=>!c.theoretical);
+  const best=realValids.reduce((b,c)=>!b||c.utilPct>b.utilPct?c:b,null);
+  const bestId=best?best.id:null;
+
+  if(best){
+    const other=realValids.find(c=>c.id!==best.id&&c.valid);
+    let why=`Con la <b>${state.machine?state.machine.name:'máquina'}</b>, el montaje <strong>${best.label}</strong> (${best.cols}×${best.rows}) coloca <strong>${best.poses} poses</strong> y logra <span style="color:var(--ok);font-weight:800">${best.utilPct.toFixed(2)}% de aprovechamiento</span>.`;
+    if(other&&other.valid) why+=` Frente a ${other.label} (${other.poses} poses, ${other.utilPct.toFixed(2)}%), aprovecha mejor el pliego respetando pinza y sangrado.`;
+    msg.innerHTML=`<span class="cic">🤖</span><div>${why} Por eso se marca como <strong>★ imposición recomendada</strong>.</div>`;
+  }
+  grid.innerHTML=r.cuts.map(c=>{
+    if(!c.valid) return `<div class="opt-card invalid"><div class="oc-t">${c.label}</div><div style="font-size:11px;color:var(--ink-muted);margin-top:2px">${c.desc}</div>${optSvg(c)}<div class="oc-poses" style="color:var(--ink-muted)">—</div><div style="font-size:11px;color:var(--ink-muted)">No cabe en el pliego</div></div>`;
+    const isBest=c.id===bestId;
+    const uc=c.utilPct>=60?'':c.utilPct>=45?'mid':'low';
+    return `<div class="opt-card ${isBest?'best':''}">
+      ${isBest?'<span class="oc-star">★ IMPOSICIÓN RECOMENDADA</span>':''}
+      <div class="oc-t">${c.label}${c.theoretical?' · teórico':''}</div>
+      <div class="oc-grid">${c.cols} × ${c.rows}</div>
+      ${optSvg(c)}
+      <div class="oc-poses">${c.poses}<small> poses</small></div>
+      <div class="oc-util ${uc}">${c.utilPct.toFixed(2)}% util · ${c.despPct.toFixed(2)}% desp.</div>
+      <div class="oc-meta">${c.rotated?'Horizontal (girado 90°)':'Vertical'}<br>${fmt(c.pliegos)} pliegos · USD ${fmt(c.costoUsd,2)}</div>
+    </div>`;
+  }).join('');
+}
+
+/* ============================================================
+   IMPOSICIÓN — dibujo de plancha (SVG)
+   ============================================================ */
+const MARK_DEFS=[
+  {k:'crop',lab:'Marcas de corte'},{k:'reg',lab:'Cruces de registro'},
+  {k:'rules',lab:'Reglas'},{k:'scale',lab:'Escalas'},
+  {k:'color',lab:'Tira de control CMYK'},{k:'fold',lab:'Líneas de plegado'},
+  {k:'plateid',lab:'Plate ID'},{k:'barcode',lab:'Código de barras'},
+  {k:'smart',lab:'SmartMarks'},
+];
+function buildMarks(){
+  $('marksList').innerHTML=MARK_DEFS.map(m=>`
+    <div class="mark-toggle${state.marks[m.k]?' on':''}" data-k="${m.k}">
+      <span class="sw"></span><span class="mlab">${m.lab}</span><span class="mwarn" data-warn="${m.k}"></span>
+    </div>`).join('');
+  $('marksList').querySelectorAll('.mark-toggle').forEach(t=>{
+    t.addEventListener('click',()=>{
+      if(t.classList.contains('disabled'))return;
+      const k=t.dataset.k; state.marks[k]=!state.marks[k];
+      t.classList.toggle('on',state.marks[k]); drawPlate(); saveState();
+    });
+  });
+}
+/* Encuadernación / acabado → efecto en el montaje CTP */
+const BINDINGS={
+  'Sin encuadernación':{icon:'▭',draw:'none',imp:'Piezas sueltas: sin plegado, cosido ni perforado.'},
+  'Engrampado metálico':{icon:'📎',draw:'fold',fold:true,imp:'Grapa a caballete: pliegos plegados en signaturas. Las uniones van en las calles entre páginas contiguas (el LOMO es el doblez central).'},
+  'Fresado':{icon:'📘',draw:'spine',imp:'Lomo encolado (hotmelt): se marca el borde de encolado (lomo) de cada pieza.'},
+  'Cosido':{icon:'🧵',draw:'fold',fold:true,imp:'Cosido por signaturas plegadas: las uniones van en las calles entre páginas contiguas.'},
+  'Termocosido':{icon:'🧵',draw:'fold',fold:true,imp:'Signaturas cosidas y termofijadas: uniones en las calles entre páginas contiguas.'},
+  'Tapa dura':{icon:'📗',draw:'fold',fold:true,imp:'Signaturas cosidas + tapa dura: uniones en las calles entre páginas contiguas.'},
+  'Espiral':{icon:'🌀',draw:'punch',imp:'Encuadernación en espiral: margen de perforado (troquel de anillos) en el lomo de cada pieza.'},
+};
+function bindingInfo(){ return BINDINGS[state.order.binding]||BINDINGS['Sin encuadernación']; }
+/* Esquemas de pliego (signatura) para encuadernado con doblez */
+const SIGNATURES={
+  folio:{n:2,lab:'Folio (2 pp)'},
+  cuarta:{n:4,lab:'Cuarta · 4to (4 pp)'},
+  octava:{n:8,lab:'Octava · 8vo (8 pp)'},
+  dieciseisava:{n:16,lab:'Dieciseisava · 16vo (16 pp)'},
+  treintaidosava:{n:32,lab:'Treintaidosava · 32vo (32 pp)'},
+};
+function isFoldBinding(){ return bindingInfo().draw==='fold'; }
+/* Secuencia de plegado: en qué posición física va cada página de una signatura.
+   Para n=8 → [1,8,2,7,3,6,4,5] (las páginas emparejadas quedan CONTIGUAS). */
+function foldSeq(n){ const a=[]; for(let i=0;i<n;i++) a.push(i%2===0 ? 1+i/2 : n-(i-1)/2); return a; }
+function imposedPageNumbers(poses,sigN){
+  const seq=foldSeq(sigN), arr=[];
+  for(let p=0;p<poses;p++){ const blk=Math.floor(p/sigN), pos=p%sigN; arr.push(blk*sigN+seq[pos]); }
+  return arr;
+}
+function getColorBarSwatches(type){
+  switch(type){
+    case '4color': return [['#00B7EB','C'],['#EC008C','M'],['#FFE800','Y'],['#111','K'],['#7DDCEF','C50'],['#F47BBE','M50'],['#FFF480','Y50'],['#7F7F7F','K50'],['#005C75','C+'],['#760046','M+'],['#807400','Y+'],['#1A1A1A','K+']];
+    case '6color': return [['#00B7EB','C'],['#7DDCEF','Lc'],['#EC008C','M'],['#F47BBE','Lm'],['#FFE800','Y'],['#FFA500','Or'],['#111','K'],['#7F7F7F','K50']];
+    case '5spot': return [['#00B7EB','C'],['#EC008C','M'],['#FFE800','Y'],['#111','K'],['#a78bfa','S1'],['#54bdb0','S2'],['#fb923c','S3'],['#10b981','S4']];
+    case 'cmyk': default: return [['#00B7EB','C'],['#EC008C','M'],['#FFE800','Y'],['#111','K'],['#7DDCEF','C50'],['#F47BBE','M50'],['#FFF480','Y50'],['#7F7F7F','K50']];
+  }
+}
+const GUTTER_KEYS=['Top','Bottom','Left','Right','Center','Mid'];
+function buildGutters(){
+  const g=$('gutterGrid'); if(!g)return;
+  g.innerHTML=GUTTER_KEYS.map(k=>`<button class="gutter-tog${state.gutters[k]?' on':''}" data-g="${k}">${k}</button>`).join('');
+  g.querySelectorAll('.gutter-tog').forEach(b=>b.addEventListener('click',()=>{
+    const k=b.dataset.g; state.gutters[k]=!state.gutters[k]; b.classList.toggle('on',state.gutters[k]); drawPlate(); saveState();
+  }));
+}
+function computeGeom(){
+  const r=state.result; if(!r||r.error)return null;
+  const m=state.machine;
+  const usableW=r.usableW, usableH=r.usableH;
+  const gridW=r.cols*r.pieceW+(r.cols-1)*(state.prod.gap/10);
+  const gridH=r.rows*r.pieceH+(r.rows-1)*(state.prod.gap/10);
+  // Base: centrado horizontal; vertical según alineación (pinza vs centro)
+  let offX=m.side+(usableW-gridW)/2;
+  let offY=state.alignPinza ? m.gripper : m.gripper+(usableH-gridH)/2;
+  // Desplazamiento manual
+  offX+=state.nudge.x; offY+=state.nudge.y;
+  // Mantener dentro de la placa
+  offX=Math.max(0,Math.min(offX,m.w-gridW));
+  offY=Math.max(0,Math.min(offY,m.h-gridH));
+  return {m,usableW,usableH,gridW,gridH,offX,offY,r};
+}
+function currentScale(){
+  if(state.zoom!=='fit') return parseFloat(state.zoom);
+  const g=computeGeom(); if(!g)return 1;
+  const box=$('impoScroll');
+  let availW=(box?box.clientWidth:0)-70, availH=(box?box.clientHeight:0)-70;
+  if(!(availW>40)||!(availH>40)){ availW=760; availH=600; }   // fallback si el contenedor aún no tiene tamaño
+  const s=Math.min(availW/g.m.w, availH/g.m.h);
+  return Math.max(2,Math.min(s,60))/7; // normalize to px/cm base of 7
+}
+function buildPlateMarkup(g,pxcm){
+  const {m,usableW,usableH,offX,offY,r}=g;
+  const PAD=46;
+  const W=m.w*pxcm, H=m.h*pxcm;
+  const VW=W+PAD*2, VH=H+PAD*2;
+  const gap=state.prod.gap/10, bleedPx=(state.prod.bleed/10)*pxcm;
+  const sep=state.view==='separaciones';
+
+  let s='';
+  // Plancha
+  s+=`<rect x="${PAD}" y="${PAD}" width="${W}" height="${H}" fill="${sep?'#0b1220':'#1c2531'}" stroke="#000" stroke-width="1" rx="3"/>`;
+  // Área no imprimible superior: blanco de mordaza (parte de la plancha, al extremo)
+  // + pinza de papel (área del pliego, debajo, junto al área imprimible)
+  const pinzaPx=m.pinzaPapel*pxcm, mordPx=m.mordaza*pxcm, grPx=m.gripper*pxcm;
+  const sidePx=m.side*pxcm, tailPx=m.tail*pxcm;
+  // blanco de mordaza (banda extrema — pertenece a la plancha)
+  s+=`<rect x="${PAD}" y="${PAD}" width="${W}" height="${mordPx}" fill="#f59e0b" opacity=".85"/>`;
+  s+=`<text x="${PAD+W/2}" y="${PAD+mordPx/2+3.5}" text-anchor="middle" font-size="9" fill="#3b2600" font-weight="800" letter-spacing="1">BLANCO DE MORDAZA ${uDim(m.mordaza)}</text>`;
+  // pinza de papel (debajo — área del pliego que sujetan las mordazas)
+  s+=`<rect x="${PAD}" y="${PAD+mordPx}" width="${W}" height="${pinzaPx}" fill="#e11d48" opacity=".8"/>`;
+  s+=`<text x="${PAD+W/2}" y="${PAD+mordPx+pinzaPx/2+3.5}" text-anchor="middle" font-size="9" fill="#fff" font-weight="800" letter-spacing="1">PINZA DE PAPEL ${uDim(m.pinzaPapel)}</text>`;
+  // cola inferior
+  s+=`<rect x="${PAD}" y="${PAD+H-tailPx}" width="${W}" height="${tailPx}" fill="#64748b" opacity=".6"/>`;
+  s+=`<text x="${PAD+W/2}" y="${PAD+H-tailPx/2+3}" text-anchor="middle" font-size="7.5" fill="#e2e8f0" font-weight="700">COLA ${uDim(m.tail)}</text>`;
+  // Márgenes laterales
+  s+=`<rect x="${PAD}" y="${PAD+grPx}" width="${sidePx}" height="${H-grPx-tailPx}" fill="#64748b" opacity=".35"/>`;
+  s+=`<rect x="${PAD+W-sidePx}" y="${PAD+grPx}" width="${sidePx}" height="${H-grPx-tailPx}" fill="#64748b" opacity=".35"/>`;
+  // Área imprimible
+  if(state.view==='tecnica'){
+    s+=`<rect x="${PAD+sidePx}" y="${PAD+grPx}" width="${W-2*sidePx}" height="${H-grPx-tailPx}" fill="#1e293b" stroke="#3b82f6" stroke-dasharray="6 4" stroke-width="1" opacity=".5"/>`;
+    s+=`<text x="${PAD+sidePx+6}" y="${PAD+grPx+16}" font-size="9" fill="#7dd3fc" font-weight="700">ÁREA IMPRIMIBLE ${uDim(usableW)} × ${uDim(usableH)}</text>`;
+  }
+
+  // Poses — numeración según estilo de encuadernación (orden de imposición)
+  const CMYK=['#00B7EB','#EC008C','#FFE800','#111'];
+  const bdFold=bindingInfo().draw==='fold';
+  const sigN=(SIGNATURES[state.signature]||SIGNATURES.octava).n;
+  const imposed=bdFold?imposedPageNumbers(r.poses,sigN):null;
+  const tiroretiro=state.calc.print==='tiroretiro';
+  // devuelve el número a mostrar en cada pose y su sub-etiqueta
+  const poseNum=(idx0)=>{
+    if(!imposed) return {n:idx0+1, sub:state.face==='retiro'?'RETIRO':'TIRO'};
+    const base=imposed[idx0];
+    const isRet=state.face==='retiro';
+    const pg=(tiroretiro&&isRet)?(base%2?base+1:base-1):base;
+    return {n:pg, sub:(isRet?'RETIRO':'TIRO')+' · pos '+(idx0+1)};
+  };
+  for(let row=0;row<r.rows;row++)for(let col=0;col<r.cols;col++){
+    const visCol=state.face==='retiro'?(r.cols-1-col):col;
+    const x=PAD+(offX+visCol*(r.pieceW+gap))*pxcm;
+    const y=PAD+(offY+row*(r.pieceH+gap))*pxcm;
+    const w=r.pieceW*pxcm, h=r.pieceH*pxcm;
+    const nEl=row*r.cols+col+1;
+    const pn=poseNum(nEl-1);
+    const isSel=state.selectedPose===nEl;
+    const fill=sep?CMYK[(nEl-1)%4]:'var(--paper)';
+    const op=sep?0.35:1;
+    s+=`<g class="pose" data-pose="${nEl}" style="cursor:pointer">
+      <rect x="${x}" y="${y}" width="${w}" height="${h}" fill="${fill}" fill-opacity="${op}" stroke="${isSel?'#ff6b1a':(state.face==='retiro'?'#8b5cf6':'#0ea5e9')}" stroke-width="${isSel?2.4:1}" rx="1.5"/>`;
+    if(!sep){
+      const hasArt=state.art.pages.length>0;
+      if(hasArt){
+        // Arte final montado en la pose (una página por pose, cíclico)
+        const pg=state.art.pages[(nEl-1)%state.art.pages.length];
+        s+=`<image x="${x}" y="${y}" width="${w}" height="${h}" href="${pg}" preserveAspectRatio="xMidYMid slice"/>`;
+        s+=`<rect x="${x+bleedPx}" y="${y+bleedPx}" width="${w-2*bleedPx}" height="${h-2*bleedPx}" fill="none" stroke="#dc2626" stroke-dasharray="3 2" stroke-width="0.7"/>`;
+        s+=`<rect x="${x}" y="${y}" width="${bdFold?22:15}" height="12" fill="#0d1117" opacity=".8"/><text x="${x+(bdFold?11:7.5)}" y="${y+9}" text-anchor="middle" font-size="8" font-weight="800" fill="${bdFold?'#4ade80':'#fff'}">${bdFold?'p'+pn.n:pn.n}</text>`;
+      }else{
+        s+=`<rect x="${x+bleedPx}" y="${y+bleedPx}" width="${w-2*bleedPx}" height="${h-2*bleedPx}" fill="none" stroke="#9ca3af" stroke-dasharray="3 2" stroke-width="0.7"/>`;
+        s+=`<text x="${x+w/2}" y="${y+h/2-2}" text-anchor="middle" font-size="13" font-weight="800" fill="${bdFold?'#15803d':'#1e293b'}">${bdFold?'pág. '+pn.n:pn.n}</text>`;
+        s+=`<text x="${x+w/2}" y="${y+h/2+12}" text-anchor="middle" font-size="8" fill="#64748b">${pn.sub}</text>`;
+      }
+    }
+    // Marcas de corte por pose
+    if(state.marks.crop&&(state.view==='marcas'||state.view==='tecnica'||state.view==='imposicion')){
+      const L=10;
+      s+=`<g stroke="#000" stroke-width="1">
+        <line x1="${x-3}" y1="${y+bleedPx}" x2="${x-3-L}" y2="${y+bleedPx}"/>
+        <line x1="${x+bleedPx}" y1="${y-3}" x2="${x+bleedPx}" y2="${y-3-L}"/>
+        <line x1="${x+w+3}" y1="${y+bleedPx}" x2="${x+w+3+L}" y2="${y+bleedPx}"/>
+        <line x1="${x+w-bleedPx}" y1="${y-3}" x2="${x+w-bleedPx}" y2="${y-3-L}"/>
+        <line x1="${x-3}" y1="${y+h-bleedPx}" x2="${x-3-L}" y2="${y+h-bleedPx}"/>
+        <line x1="${x+bleedPx}" y1="${y+h+3}" x2="${x+bleedPx}" y2="${y+h+3+L}"/>
+        <line x1="${x+w+3}" y1="${y+h-bleedPx}" x2="${x+w+3+L}" y2="${y+h-bleedPx}"/>
+        <line x1="${x+w-bleedPx}" y1="${y+h+3}" x2="${x+w-bleedPx}" y2="${y+h+3+L}"/>
+      </g>`;
+    }
+    if(state.marks.fold&&state.view==='marcas'){
+      s+=`<line x1="${x+w/2}" y1="${y}" x2="${x+w/2}" y2="${y+h}" stroke="#22c55e" stroke-dasharray="2 3" stroke-width="0.7"/>`;
+    }
+    // Encuadernación / acabado — marca por pieza (espiral y fresado son por pieza)
+    if(!sep){
+      const bd=bindingInfo();
+      if(bd.draw==='punch'){
+        for(let hy=y+5; hy<y+h-4; hy+=Math.max(6,h/8)){ s+=`<circle cx="${x+3}" cy="${hy}" r="1.5" fill="#0d1117" stroke="#22c55e" stroke-width="0.6"/>`; }
+        s+=`<line x1="${x+6}" y1="${y}" x2="${x+6}" y2="${y+h}" stroke="#22c55e" stroke-dasharray="1 2" stroke-width="0.5"/>`;
+      }else if(bd.draw==='spine'){
+        s+=`<rect x="${x}" y="${y}" width="3.5" height="${h}" fill="#7c3aed" opacity="0.75"/>`;
+      }
+    }
+    s+=`</g>`;
+  }
+
+  // Uniones de encuadernado (dobleces) — ENTRE páginas contiguas, en las calles
+  if(bindingInfo().draw==='fold' && r.cols){
+    const gridW2=r.cols*r.pieceW+(r.cols-1)*gap;
+    const gridH2=r.rows*r.pieceH+(r.rows-1)*gap;
+    const top=PAD+offY*pxcm, bot=PAD+(offY+gridH2)*pxcm;
+    const left=PAD+offX*pxcm, right=PAD+(offX+gridW2)*pxcm;
+    const cxCenter=PAD+(offX+gridW2/2)*pxcm;               // lomo central
+    for(let c=0;c<r.cols-1;c++){
+      const gx=PAD+(offX+(c+1)*(r.pieceW+gap)-gap/2)*pxcm;
+      const isSpine=Math.abs(gx-cxCenter)<(gap*pxcm)+2;
+      s+=`<line x1="${gx}" y1="${top}" x2="${gx}" y2="${bot}" stroke="${isSpine?'#16a34a':'#4ade80'}" stroke-dasharray="${isSpine?'7 3':'3 3'}" stroke-width="${isSpine?1.8:1}"/>`;
+      if(isSpine) s+=`<text x="${gx}" y="${top-5}" text-anchor="middle" font-size="8" font-weight="800" fill="#16a34a">▲ LOMO · unión</text>`;
+    }
+    for(let rr=0;rr<r.rows-1;rr++){
+      const gy=PAD+(offY+(rr+1)*(r.pieceH+gap)-gap/2)*pxcm;
+      s+=`<line x1="${left}" y1="${gy}" x2="${right}" y2="${gy}" stroke="#4ade80" stroke-dasharray="3 3" stroke-width="1"/>`;
+    }
+  }
+
+  // Cruces de registro
+  if(state.marks.reg){
+    const cross=(cx,cy)=>`<circle cx="${cx}" cy="${cy}" r="3.4" fill="none"/><line x1="${cx-6}" y1="${cy}" x2="${cx+6}" y2="${cy}"/><line x1="${cx}" y1="${cy-6}" x2="${cx}" y2="${cy+6}"/>`;
+    s+=`<g stroke="#a78bfa" stroke-width="0.8" fill="none">
+      ${cross(PAD+W/2,PAD+grPx-6)}${cross(PAD+W/2,PAD+H-tailPx+6)}
+      ${cross(PAD+sidePx-6,PAD+H/2)}${cross(PAD+W-sidePx+6,PAD+H/2)}</g>`;
+  }
+  // Tira de control de color (custom SVG/imagen o preset SmartMarks) — desplazable
+  if(state.marks.color){
+    const cbDx=state.cbarNudge.x*pxcm, cbDy=state.cbarNudge.y*pxcm;
+    if(state.customColorBar){
+      const cbW=Math.min(W-2*sidePx-4, W*0.5), cbH=Math.min(tailPx>14?tailPx-4:16, cbW*(state.customColorBar.h/state.customColorBar.w)||16);
+      const bx0=PAD+sidePx+2+cbDx, by=PAD+H-tailPx-cbH-2+cbDy;
+      s+=`<image x="${bx0}" y="${by}" width="${cbW}" height="${cbH}" href="${state.customColorBar.url}" preserveAspectRatio="xMidYMid meet"/>`;
+      s+=`<text x="${bx0}" y="${by-3}" font-size="6.5" fill="#22c55e" font-weight="700">★ TIRA DE CONTROL PROPIA</text>`;
+    }else{
+      const bars=getColorBarSwatches(state.colorBarPreset);
+      const sw=Math.max(8,W/(bars.length+2)), sh=9; let bx=PAD+sidePx+2+cbDx; const by=PAD+H-tailPx-sh-3+cbDy;
+      const label={cmyk:'CMYK','4color':'4-COLOR','6color':'6-COLOR','5spot':'5-SPOT'}[state.colorBarPreset]||'CMYK';
+      s+=`<text x="${PAD+sidePx+2+cbDx}" y="${by-3}" font-size="6.5" fill="#94a3b8" font-weight="700">▦ SMARTMARKS · ${label}</text>`;
+      bars.forEach(([c,l])=>{ s+=`<rect x="${bx}" y="${by}" width="${sw}" height="${sh}" fill="${c}" stroke="#000" stroke-width="0.3"/><text x="${bx+sw/2}" y="${by+sh+6}" font-size="5" fill="#94a3b8" text-anchor="middle">${l}</text>`; bx+=sw; });
+    }
+  }
+  // Reglas
+  if(state.marks.rules){
+    s+=`<g stroke="#94a3b8" stroke-width="0.5" fill="#94a3b8" font-size="6">`;
+    for(let cm=0;cm<=m.w;cm+=5){ const xx=PAD+cm*pxcm; s+=`<line x1="${xx}" y1="${PAD-6}" x2="${xx}" y2="${PAD-2}"/><text x="${xx}" y="${PAD-8}" text-anchor="middle">${cm}</text>`; }
+    s+=`</g>`;
+  }
+  // Escalas (esquinas)
+  if(state.marks.scale){
+    const st=(cx,cy)=>`<rect x="${cx}" y="${cy}" width="18" height="5" fill="url(#grad)"/>`;
+    s=`<defs><linearGradient id="grad"><stop offset="0" stop-color="#fff"/><stop offset="1" stop-color="#000"/></linearGradient></defs>`+s;
+    s+=st(PAD+4,PAD+grPx+3)+st(PAD+W-24,PAD+grPx+3);
+  }
+  // Plate ID
+  if(state.marks.plateid){
+    const bTag=state.order.binding&&state.order.binding!=='Sin encuadernación'?' · '+state.order.binding:'';
+    s+=`<text x="${PAD+4}" y="${PAD-16}" font-size="9" fill="#e2e8f0" font-weight="700" font-family="monospace">${(state.order.job||'JOB')} · ${state.machine?state.machine.name:''} · ${sep?'SEP':'CMYK'} · ${state.face.toUpperCase()}${bTag}</text>`;
+  }
+  // Código de barras
+  if(state.marks.barcode){
+    let bx=PAD+W-90,by=PAD-14,bar='';
+    for(let i=0;i<40;i++){ if(Math.random()>.5)bar+=`<rect x="${bx+i*2}" y="${by}" width="1.2" height="10" fill="#e2e8f0"/>`; }
+    s+=bar;
+  }
+  // SmartMarks / Gutters (posiciones ancla)
+  const anchors={
+    Top:[PAD+W/2,PAD+grPx+4], Bottom:[PAD+W/2,PAD+H-tailPx-4],
+    Left:[PAD+sidePx+4,PAD+H/2], Right:[PAD+W-sidePx-4,PAD+H/2],
+    Center:[PAD+W/2,PAD+H/2], Mid:[PAD+W/2,PAD+grPx+(H-grPx-tailPx)/2],
+  };
+  const showG=state.marks.smart;
+  GUTTER_KEYS.forEach(k=>{
+    if(!(state.gutters[k]||(showG&&(k==='Top'||k==='Center'))))return;
+    const [cx,cy]=anchors[k];
+    s+=`<g fill="#22c55e" font-size="6" font-weight="700"><circle cx="${cx}" cy="${cy}" r="2.2"/><text x="${cx+5}" y="${cy+2}">${k}</text></g>`;
+  });
+
+  return {s,VW,VH};
+}
+function drawPlate(){
+  const svg=$('plateSvg'); if(!svg)return;
+  const g=computeGeom();
+  if(!g){ svg.setAttribute('viewBox','0 0 400 300');
+    svg.innerHTML=`<text x="200" y="150" text-anchor="middle" fill="#e2e8f0" font-size="14">${state.result&&state.result.error?state.result.error:'Sin imposición válida'}</text>`;
+    return; }
+  try{
+    const {s,VW,VH}=buildPlateMarkup(g,7*currentScale());
+    svg.setAttribute('viewBox',`0 0 ${VW} ${VH}`);
+    svg.setAttribute('width',VW); svg.setAttribute('height',VH);
+    svg.innerHTML=s;
+    svg.querySelectorAll('.pose').forEach(p=>p.addEventListener('click',()=>selectPose(+p.dataset.pose)));
+    updateZoomLabel();
+    checkMarkSpace();
+  }catch(err){
+    svg.setAttribute('viewBox','0 0 400 300');
+    svg.innerHTML=`<text x="200" y="150" text-anchor="middle" fill="#f87171" font-size="12">Error al dibujar la plancha</text>`;
+    console.error('drawPlate error',err);
+  }
+}
+function updateZoomLabel(){
+  $('zLab').textContent = state.zoom==='fit'?'Ajustar':Math.round(parseFloat(state.zoom)*100)+'%';
+}
+function selectPose(n){
+  state.selectedPose=n; drawPlate(); renderPoseProps();
+}
+function renderPoseProps(){
+  const r=state.result, n=state.selectedPose;
+  const box=$('poseProps');
+  if(!r||r.error||!n){ box.innerHTML='<div class="pose-empty">Haz clic en una pose de la plancha para ver sus propiedades.</div>'; return; }
+  const col=(n-1)%r.cols, row=Math.floor((n-1)/r.cols);
+  const bdFold=bindingInfo().draw==='fold';
+  const sigN=(SIGNATURES[state.signature]||SIGNATURES.octava).n;
+  let pageRow;
+  if(bdFold){
+    const base=imposedPageNumbers(r.poses,sigN)[n-1];
+    const back=base%2?base+1:base-1;
+    pageRow=state.calc.print==='tiroretiro'?`tiro p${base} / retiro p${back}`:`p${base} (imposición)`;
+  }else pageRow=state.calc.print==='tiroretiro'?`${n} / ${n+r.poses}`:`${n}`;
+  box.innerHTML=[
+    ['Número de pose',`#${n} de ${r.poses}`],
+    ['Posición',`Col ${col+1} · Fila ${row+1}`],
+    ['Página',pageRow],
+    ['Orientación',r.rotated?'Horizontal':'Vertical'],
+    ['Producto',`${uDim(state.prod.w)} × ${uDim(state.prod.h)}`],
+    ['Con sangrado',`${uDim(r.pieceW)} × ${uDim(r.pieceH)}`],
+    ['Sangrado',uDim(state.prod.bleed/10)],
+    ['Separación',uDim(state.prod.gap/10)],
+    ['Cara',state.face==='retiro'?'Retiro':'Tiro'],
+  ].map(([k,v])=>`<div class="pp"><span class="k">${k}</span><span class="v">${v}</span></div>`).join('');
+}
+function checkMarkSpace(){
+  // advertir si no hay espacio físico para marcas
+  const m=state.machine; if(!m)return;
+  const tightGripper=m.gripper<3.2;
+  $$('.mark-toggle .mwarn').forEach(w=>{
+    const k=w.dataset.warn; let msg='';
+    if((k==='color'||k==='barcode')&&m.side<0.5) msg='⚠ poco margen';
+    if(k==='reg'&&tightGripper) msg='⚠ pinza justa';
+    w.textContent=msg;
+  });
+}
+
+function renderBindingPanel(){
+  const el=$('bindingPanel'); if(!el)return;
+  const bd=bindingInfo(); const name=state.order.binding||'Sin encuadernación';
+  const chip={punch:'Perforado en lomo',spine:'Lomo encolado',fold:'Doblez entre páginas',none:'Sin marca'}[bd.draw];
+  let extra='';
+  if(bd.draw==='fold'){
+    const r=state.result;
+    const opts=Object.entries(SIGNATURES).map(([k,v])=>`<option value="${k}"${k===state.signature?' selected':''}>${v.lab}</option>`).join('');
+    let pairs='';
+    if(r&&!r.error&&r.poses>=2){
+      const sn=(SIGNATURES[state.signature]||SIGNATURES.octava).n;
+      const seq=foldSeq(Math.min(sn,r.poses));
+      const list=[]; for(let i=0;i<seq.length;i+=2) list.push(`${seq[i]}–${seq[i+1]!==undefined?seq[i+1]:''}`);
+      pairs=`<div style="font-size:11px;color:#9aa6b3;margin-top:8px;line-height:1.5">La <b style="color:#86efac">numeración de las poses</b> sigue el orden de imposición del plegado (no 1,2,3…). Las páginas emparejadas quedan <b style="color:#86efac">contiguas</b>: ${list.join(' · ')}. El <b style="color:#86efac">▲ LOMO</b> marca el doblez central; las uniones van en las calles entre páginas.</div>`;
+    }
+    extra=`<div class="mt-sub">Esquema de pliego (signatura)</div>
+      <select id="sigSel" style="width:100%;padding:7px 9px;border:1px solid #2a3543;border-radius:8px;background:#1c232c;color:#e6edf3;font-size:12px">${opts}</select>${pairs}`;
+  }
+  el.innerHTML=`
+    <div style="display:flex;align-items:center;gap:9px;margin-bottom:8px">
+      <span style="font-size:20px">${bd.icon}</span>
+      <div><div style="font-weight:700;font-size:13px;color:#e6edf3">${name}</div>
+      <div style="font-size:10.5px;color:#8895a3">Marca en plancha: ${chip}</div></div>
+    </div>
+    <div style="font-size:11px;color:#9aa6b3;line-height:1.5">${bd.imp}</div>${extra}`;
+  const sel=$('sigSel');
+  if(sel) sel.addEventListener('change',()=>{ state.signature=sel.value; drawPlate(); saveState(); });
+}
+function renderMontageControls(){
+  if(!$('alignSeg'))return;
+  $('alignSeg').querySelectorAll('button').forEach(b=>b.classList.toggle('on',(b.dataset.a==='pinza')===state.alignPinza));
+  $('nudgeRead').textContent=`Δ ${state.nudge.x.toFixed(1)} · ${state.nudge.y.toFixed(1)} cm`;
+  const rot=state.result&&!state.result.error&&state.result.rotated;
+  const rb=$('btnRotate90'); if(rb){ rb.classList.toggle('active',rot); rb.textContent=rot?'⟳ Montaje rotado 90° (activo)':'⟳ Rotar montaje 90°'; }
+  const cr=$('cbarRead'); if(cr){ const lbl={cmyk:'CMYK','4color':'4-Color','6color':'6-Color','5spot':'5-Spot'}[state.colorBarPreset]||'CMYK';
+    const d=(state.cbarNudge.x||state.cbarNudge.y)?` · Δ ${state.cbarNudge.x.toFixed(1)},${state.cbarNudge.y.toFixed(1)} cm`:'';
+    cr.textContent=(state.customColorBar?'Tira actual: archivo propio':('Tira actual: '+lbl+' (preset)'))+d; }
+  if($('cbarPreset')) $('cbarPreset').querySelectorAll('button').forEach(b=>b.classList.toggle('on',b.dataset.p===state.colorBarPreset&&!state.customColorBar));
+}
+function toggleRotate90(){
+  const r=state.result; const nowRot=r&&!r.error&&r.rotated;
+  state.orient=nowRot?'vertical':'horizontal';
+  $('orientSeg').querySelectorAll('button').forEach(b=>b.classList.toggle('on',b.dataset.o===state.orient));
+  recalc();
+  toast(nowRot?'Montaje en vertical':'Montaje rotado 90°','ok');
+}
+
+/* ---------- Arte final (PDF / imagen) ---------- */
+async function loadArt(file){
+  if(!file)return;
+  const isPdf=file.type==='application/pdf'||/\.pdf$/i.test(file.name);
+  try{
+    if(isPdf){
+      if(typeof pdfjsLib==='undefined'){ toast('PDF.js no disponible (sin conexión). Carga una imagen PNG/JPG.','warn'); return; }
+      pdfjsLib.GlobalWorkerOptions.workerSrc='https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js';
+      toast('Procesando PDF…');
+      const buf=await file.arrayBuffer();
+      const doc=await pdfjsLib.getDocument({data:buf}).promise;
+      const pages=[]; let size=null; const max=Math.min(doc.numPages,32);
+      for(let i=1;i<=max;i++){
+        const pg=await doc.getPage(i);
+        const vp=pg.getViewport({scale:1.4});
+        const c=document.createElement('canvas'); c.width=vp.width; c.height=vp.height;
+        await pg.render({canvasContext:c.getContext('2d'),viewport:vp}).promise;
+        pages.push(c.toDataURL('image/png'));
+        if(i===1){ const v1=pg.getViewport({scale:1}); size={w:v1.width/28.3465,h:v1.height/28.3465}; }
+      }
+      state.art={pages,name:file.name,size,count:doc.numPages};
+      toast('Arte cargado · '+doc.numPages+' pág.','ok');
+    }else if(/^image\//.test(file.type)||/\.(png|jpe?g|svg|webp)$/i.test(file.name)){
+      const url=await new Promise((res,rej)=>{const r=new FileReader();r.onload=()=>res(r.result);r.onerror=rej;r.readAsDataURL(file);});
+      state.art={pages:[url],name:file.name,size:null,count:1};
+      toast('Imagen cargada como arte final','ok');
+    }else{ toast('Formato no soportado: usa PDF o imagen','err'); return; }
+    renderArtStage(); drawPlate();
+  }catch(e){ toast('No se pudo leer el archivo','err'); }
+}
+function clearArt(){ state.art={pages:[],name:'',size:null}; renderArtStage(); drawPlate(); toast('Arte quitado — vuelve al esquema','ok'); }
+/* Arte demo: tarjeta personal 9×5 cm (SVG → dataURL) */
+function makeCardArt(){
+  const W=900,H=500;
+  const svg=`<svg xmlns="http://www.w3.org/2000/svg" width="${W}" height="${H}" viewBox="0 0 ${W} ${H}">
+    <rect width="${W}" height="${H}" fill="#0d1117"/>
+    <rect x="0" y="0" width="16" height="${H}" fill="#ff6b1a"/>
+    <circle cx="${W-70}" cy="70" r="130" fill="#ff6b1a" opacity="0.16"/>
+    <text x="60" y="180" fill="#ffffff" font-family="Inter,Arial,sans-serif" font-size="56" font-weight="800">Mario Quiroz M.</text>
+    <text x="63" y="226" fill="#ff9540" font-family="Inter,Arial,sans-serif" font-size="24" font-weight="600" letter-spacing="4">DISEÑO &amp; PREPRENSA</text>
+    <line x1="63" y1="256" x2="400" y2="256" stroke="#2a3543" stroke-width="2"/>
+    <text x="63" y="316" fill="#c8d3df" font-family="Inter,Arial,sans-serif" font-size="24">✉  marioquirozm@gmail.com</text>
+    <text x="63" y="356" fill="#c8d3df" font-family="Inter,Arial,sans-serif" font-size="24">◈  d3magindesign</text>
+    <text x="63" y="452" fill="#6b7887" font-family="Inter,Arial,sans-serif" font-size="19">Tarjeta personal · 9 × 5 cm · con sangrado</text>
+  </svg>`;
+  return 'data:image/svg+xml;base64,'+btoa(unescape(encodeURIComponent(svg)));
+}
+function loadDemo(){
+  const set=(id,v)=>{ if($(id))$(id).value=v; };
+  set('f_job','JOB-DEMO-95'); set('f_piece','TARJETA-01'); set('f_desc','Tarjeta personal');
+  set('f_prodW','9'); set('f_prodH','5'); set('f_bleed','3'); set('f_qty','1000');
+  set('f_ref','DEMO-TARJETA'); set('f_raw','Couché mate 300 g/m² · CMYK');
+  if($('f_binding'))$('f_binding').value='Sin encuadernación';
+  set('c_qty','1000'); set('c_pages','1'); $('c_print').value='tiro';
+  set('c_weight','300'); set('c_prodW','9'); set('c_prodH','5'); set('c_gap','4');
+  state.orient='auto';
+  $('orientSeg').querySelectorAll('button').forEach(b=>b.classList.toggle('on',b.dataset.o==='auto'));
+  selectMachine('gto52');
+  state.art={pages:[makeCardArt()],name:'tarjeta-personal.svg',size:{w:9,h:5},count:1};
+  renderArtStage(); recalc(); goStep(4);
+  toast('DEMO · Tarjeta personal 9×5 cm montada en GTO 52','ok');
+}
+function renderSideAlert(){
+  const el=$('sideAlert'); if(!el)return;
+  const r=state.result;
+  if(r&&!r.error){
+    if(r.usePct<85){
+      el.className='side-alert on'+(r.usePct<50?' err':'');
+      el.innerHTML=`⚠ <b>Desperdicio alto de papel.</b> Aprovechamiento <b>${r.usePct.toFixed(1)}%</b> (&lt; 85%) · desperdicio ${r.despPct.toFixed(1)}%. Prueba otra orientación, otra máquina o agrupa más poses.`;
+    }else{
+      el.className='side-alert on ok';
+      el.innerHTML=`✓ <b>Aprovechamiento óptimo:</b> ${r.usePct.toFixed(1)}% (≥ 85%). Desperdicio ${r.despPct.toFixed(1)}%.`;
+    }
+  }else{ el.className='side-alert'; el.innerHTML=''; }
+}
+function renderArtStage(){
+  const st=$('artStage'); if(!st)return;
+  const meta=$('artMeta'), clr=$('artClear');
+  if(state.art.pages.length){
+    st.innerHTML=`<img src="${state.art.pages[0]}" alt="arte final">`;
+    meta.style.display='flex'; clr.style.display='';
+    $('artNameLbl').textContent=state.art.name.length>22?state.art.name.slice(0,20)+'…':state.art.name;
+    $('artSizeLbl').textContent=(state.art.count||1)+' pág.'+(state.art.size?` · ${state.art.size.w.toFixed(1)}×${state.art.size.h.toFixed(1)} cm`:'');
+  }else{
+    st.innerHTML=`<div class="empty"><div class="ei">📄</div>Sin documento cargado<div class="ah">La vista previa aparecerá aquí</div></div>`;
+    meta.style.display='none'; clr.style.display='none';
+  }
+}
+function renderJobPanel(){
+  const r=state.result;
+  $('jobPanel').innerHTML=[
+    ['JOB',state.order.job||'—'],
+    ['PLATE',state.order.piece||'P-01'],
+    ['PRESS',state.machine?state.machine.name:'—'],
+    ['SIZE',state.machine?`${state.machine.w}×${state.machine.h} cm`:'—'],
+    ['PAPER',`${state.calc.weight} g/m²`],
+    ['COLOR','CMYK'],
+    ['PINZA NORMAL',state.machine?`${uDim(state.machine.gripper)} (${state.machine.mordaza}+${state.machine.pinzaPapel})`:'—'],
+    ['· Blanco mordaza',state.machine?uDim(state.machine.mordaza):'—'],
+    ['· Pinza papel',state.machine?uDim(state.machine.pinzaPapel):'—'],
+    ['POSES',r&&!r.error?r.poses:'—'],
+    ['BLEED',uDim(state.prod.bleed/10)],
+    ['ACABADO',`${bindingInfo().icon} ${state.order.binding||'—'}`],
+    ['STATUS',isCtpReady()?'CTP READY':'EN PROCESO'],
+  ].map(([k,v])=>`<div class="pp"><span class="k">${k}</span><span class="v">${v}</span></div>`).join('');
+}
+
+/* ============================================================
+   PREFLIGHT
+   ============================================================ */
+function buildPreflight(){
+  const r=state.result, m=state.machine, o=state.order, cc=state.calc;
+  const items=[];
+  const add=(name,level,val,q,w,h)=>items.push({name,level,val,q,w,h});
+  const okv='🟢', wv='🟡', ev='🔴';
+
+  // Tamaño documento / página
+  add('Tamaño del documento', (state.prod.w>0&&state.prod.h>0)?'ok':'err',
+    `${state.prod.w||0} × ${state.prod.h||0} cm`,
+    'Define el tamaño final de la pieza a imprimir.',
+    'Se calcula desde la orden de producción; sin medidas no hay montaje.',
+    'Introduce ancho y alto del producto en la Etapa 01 o 03.');
+  add('Tamaño de página', (state.prod.w>0&&state.prod.h>0)?'ok':'err',
+    `${state.prod.w} × ${state.prod.h} cm`,
+    'Cada página debe tener dimensiones válidas.',
+    'Coincide con el producto; páginas por unidad = '+cc.pages+'.',
+    'Corrige las dimensiones del producto.');
+  // Sangrado
+  add('Sangrado', state.prod.bleed>=2?'ok':state.prod.bleed>0?'warn':'err',
+    `${state.prod.bleed} mm`,
+    'Excedente para corte seguro.',
+    state.prod.bleed>=2?'Cumple el mínimo de 2–3 mm.':'Sangrado insuficiente para la tolerancia de guillotina.',
+    'Usa 3 mm de sangrado por lado en la orden.');
+  // Área segura
+  add('Área segura', state.prod.bleed>0?'ok':'warn',
+    `margen ${Math.max(0,state.prod.bleed)} mm`,
+    'Zona interior donde no debe haber texto crítico.',
+    'Protege el contenido de cortes desviados.',
+    'Mantén textos a ≥ 3 mm del filo.');
+  // Compatibilidad plancha / máquina
+  add('Compatibilidad con la plancha', m?'ok':'err',
+    m?`${m.w}×${m.h} cm`:'sin plancha',
+    'La plancha debe corresponder al cilindro de la máquina.',
+    m?'La plancha se derivó de la máquina seleccionada.':'No hay máquina seleccionada.',
+    'Selecciona una máquina en la Etapa 02.');
+  add('Compatibilidad con la máquina',
+    (m&&r&&!r.error)?'ok':'err',
+    m?m.name:'—',
+    'La pieza debe caber en el área imprimible.',
+    (r&&r.error)?r.error:'La pieza cabe respetando pinza y márgenes.',
+    'Reduce la pieza, cambia orientación o usa una máquina mayor.');
+  // Poses
+  add('Número de poses', (r&&!r.error&&r.poses>0)?'ok':'err',
+    (r&&!r.error)?`${r.poses} (${r.cols}×${r.rows})`:'0',
+    'Cuántas piezas por pliego.',
+    (r&&!r.error)?`Aprovechamiento ${r.usePct.toFixed(1)}%.`:'No caben poses.',
+    'Ajusta medidas o separación entre poses.');
+  // Marcas
+  const anyMark=Object.values(state.marks).some(Boolean);
+  add('Marcas', anyMark?'ok':'warn',
+    Object.entries(state.marks).filter(([k,v])=>v).map(([k])=>k).join(', ')||'ninguna',
+    'Marcas técnicas para corte, registro y control.',
+    anyMark?'Hay marcas activas.':'Sin marcas, el acabado no tiene guías.',
+    'Activa al menos corte y registro en la Etapa 04.');
+  // Separaciones
+  add('Separaciones', 'ok', 'CMYK · 4 planchas',
+    'Cada tinta se graba en su propia plancha.',
+    'Trabajo definido como CMYK (proceso).',
+    'Añade tintas especiales si el diseño lo requiere.');
+  // CMYK
+  add('CMYK', 'ok', 'C M Y K',
+    'Modo de color de proceso.',
+    'Coherente con impresión offset estándar.',
+    'Convierte imágenes RGB a CMYK antes del CTP.');
+  // Tintas especiales
+  add('Tintas especiales', 'ok', 'ninguna',
+    'Pantone / spot adicionales.',
+    'No se detectaron tintas especiales.',
+    'Declara los Pantone si existen para sumar planchas.');
+  // Resolución
+  add('Resolución', 'ok', '300 dpi',
+    'Densidad de la imagen a grabar.',
+    'Cumple el estándar de 300 dpi para offset.',
+    'Verifica que las imágenes no bajen de 300 dpi al tamaño final.');
+  // Fuentes
+  add('Fuentes', 'ok', 'incrustadas / vectorizadas',
+    'Tipografías del documento.',
+    'Se asumen incrustadas para evitar sustituciones.',
+    'Incrusta o vectoriza todas las fuentes antes de exportar.');
+  // Orientación
+  add('Orientación', (r&&!r.error)?'ok':'warn',
+    (r&&!r.error)?(r.rotated?'Horizontal':'Vertical'):'—',
+    'Cómo se monta la pieza en el pliego.',
+    'Elegida por el optimizador para mayor aprovechamiento.',
+    'Cambia la orientación en la Etapa 03 si lo necesitas.');
+  // Pinza
+  add('Pinza', m?'ok':'err',
+    m?`${m.gripper} cm`:'—',
+    'Franja de sujeción no imprimible.',
+    m?'Respetada en el montaje (poses fuera de la pinza).':'Sin máquina no hay pinza definida.',
+    'Selecciona máquina; el montaje evita la pinza automáticamente.');
+  // Márgenes
+  add('Márgenes', m?'ok':'warn',
+    m?`lateral ${m.side} cm · mordaza ${m.side} cm`:'—',
+    'Bordes no imprimibles del pliego.',
+    'Restados del área útil en el cálculo.',
+    'No coloques contenido en los márgenes laterales.');
+
+  return items;
+}
+function renderPreflight(){
+  const items=buildPreflight();
+  const c={ok:0,warn:0,err:0}; items.forEach(i=>c[i.level]++);
+  $('pfSummary').innerHTML=`
+    <div class="pf-sum-card ok"><div class="n">${c.ok}</div><div class="l">🟢 Correcto</div></div>
+    <div class="pf-sum-card warn"><div class="n">${c.warn}</div><div class="l">🟡 Advertencia</div></div>
+    <div class="pf-sum-card err"><div class="n">${c.err}</div><div class="l">🔴 Error</div></div>`;
+  const ic={ok:'🟢',warn:'🟡',err:'🔴'};
+  $('pfList').innerHTML=items.map((i,idx)=>`
+    <div class="pf-item ${i.level}" data-i="${idx}">
+      <span class="pf-ic">${ic[i.level]}</span>
+      <div class="pf-txt">
+        <div class="pf-name">${i.name} ${i.level==='err'?'<span class="badge err">ERROR</span>':i.level==='warn'?'<span class="badge warn">ADVERTENCIA</span>':'<span class="badge ok">OK</span>'}</div>
+        <div class="pf-val">${i.val}</div>
+        <button class="pf-toggle">Ver diagnóstico ▾</button>
+        <div class="pf-diag">
+          <div class="d-row"><span class="dk">Qué ocurre</span><span>${i.q}</span></div>
+          <div class="d-row"><span class="dk">Por qué</span><span>${i.w}</span></div>
+          <div class="d-row"><span class="dk">Cómo solucionarlo</span><span>${i.h}</span></div>
+        </div>
+      </div>
+    </div>`).join('');
+  $('pfList').querySelectorAll('.pf-item').forEach(el=>{
+    el.querySelector('.pf-toggle').addEventListener('click',()=>el.classList.toggle('expanded'));
+  });
+  // habilitar/deshabilitar exportaciones según CTP
+  const ready=isCtpReady();
+  ['expImpo','expSpreads','expJpg','expCtp'].forEach(id=>$(id).disabled=!(state.result&&!state.result.error));
+}
+
+/* ---------- Proceso industrial ---------- */
+const PROCESS=[
+  {ic:'📄',n:'Archivo PDF',d:'El diseño aprobado se entrega como PDF con fuentes incrustadas y sangrado.'},
+  {ic:'🔍',n:'Preflight',d:'Se verifican medidas, tintas, resolución y compatibilidad antes de grabar.'},
+  {ic:'🧩',n:'Imposición digital',d:'Se montan las poses en el pliego respetando pinza, márgenes y marcas.'},
+  {ic:'🟦',n:'Plancha CTP',d:'Un láser graba cada separación de color en una lámina de aluminio.'},
+  {ic:'🖨️',n:'Impresora offset',d:'La tinta pasa de la plancha al caucho y de éste al papel (offset).'},
+  {ic:'📃',n:'Pliego impreso',d:'Sale el pliego con todas las poses; se controla registro y densidad.'},
+  {ic:'✂️',n:'Corte',d:'La guillotina separa las piezas siguiendo las marcas de corte.'},
+  {ic:'📐',n:'Plegado',d:'Si el producto lo requiere, se pliega según las líneas marcadas.'},
+  {ic:'✨',n:'Acabado',d:'Barniz, laminado, troquel o encuadernado según especificación.'},
+  {ic:'📦',n:'Producto final',d:'Piezas terminadas, contadas y listas para entrega.'},
+];
+function renderProcFlow(){
+  const bind=state.order.binding&&state.order.binding!=='Sin encuadernación'?state.order.binding:null;
+  const steps=PROCESS.map(p=>p.n==='Acabado'&&bind?{...p,d:p.d+` En este trabajo: <b>${bind}</b>.`}:p);
+  $('procFlow').innerHTML=steps.map((p,i)=>`
+    <div class="proc-node" data-i="${i}">
+      <div class="pn-ic">${p.ic}</div><div class="pn-n">${p.n}</div><div class="pn-i">paso ${i+1}</div>
+    </div>`).join('');
+  $('procFlow').querySelectorAll('.proc-node').forEach(el=>{
+    el.addEventListener('click',()=>{ const p=steps[+el.dataset.i];
+      openModal('🏭','PROCESO INDUSTRIAL',p.n,`<div class="concept-block"><div class="cb-txt">${p.d}</div></div>`);
+    });
+  });
+}
+
+/* ---------- Dashboard ---------- */
+function renderDashboard(){
+  const r=state.result, o=state.order, m=state.machine, cc=state.calc;
+  const ready=isCtpReady();
+  const valid=r&&!r.error;
+  const cells=[
+    ['Trabajo',o.job||'—'],
+    ['Máquina',m?m.name:'—'],
+    ['Plancha',m?`${m.w}×${m.h} cm`:'—'],
+    ['Producto',`${state.prod.w}×${state.prod.h} cm +${state.prod.bleed}mm`],
+    ['Tiraje',fmt(o.qty)+' ud'],
+    ['Gramaje',cc.weight+' g/m²'],
+    ['Distribución',valid?`${r.cols}×${r.rows}`:'—'],
+    ['Poses',valid?r.poses:'—','accent'],
+    ['Utilización',valid?r.usePct.toFixed(2)+'%':'—','ok'],
+    ['Desperdicio',valid?r.despPct.toFixed(2)+'%':'—'],
+    ['Pliegos',valid?fmt(r.totalSheets):'—'],
+    ['Color','CMYK'],
+    ['Peso total',valid?fmt(r.totalKg,1)+' kg':'—'],
+    ['Encuadernación',o.binding||'Sin encuadernación'],
+    ['Costo',valid?cc.cur+' '+fmt(r.costLocal,2):'—','accent'],
+  ];
+  $('dashboard').innerHTML=`
+    <div class="dash-h">
+      <div class="dic">📊</div>
+      <div><h2>Resumen de Producción</h2><div class="dsub">Generado automáticamente a partir de los datos introducidos</div></div>
+    </div>
+    <div class="dash-grid">
+      ${cells.map(([k,v,cls])=>`<div class="dash-cell ${cls||''}"><div class="dk">${k}</div><div class="dv">${v}</div></div>`).join('')}
+    </div>
+    <div class="dash-ready ${ready?'on':'off'}">${ready?'● CTP READY':'▲ FALTAN CONDICIONES PARA CTP'}</div>
+    <div style="text-align:center;margin-top:14px;font-size:11px;color:#6b7887">Diseñado por <b style="color:#aab6c3">Mg Mario Quiroz Martínez</b> · d3magindesign 2026</div>`;
+}
+
+/* ============================================================
+   PANEL LATERAL
+   ============================================================ */
+function renderSideTech(){
+  const r=state.result, m=state.machine;
+  const rows=[
+    ['JOB',state.order.job||'—'],
+    ['PRESS',m?m.name:'—'],
+    ['PLATE',m?`${m.w}<small>×</small>${m.h}`:'—'],
+    ['PINZA NORM.',m?`${uDim(m.gripper)}<small> (${m.mordaza}+${m.pinzaPapel})</small>`:'—'],
+    ['PRODUCT',`${state.prod.w}<small>×</small>${state.prod.h}`],
+    ['POSES',r&&!r.error?r.poses:'—'],
+    ['USE',r&&!r.error?r.usePct.toFixed(1)+'<small>%</small>':'—'],
+    ['SHEETS',r&&!r.error?fmt(r.totalSheets):'—'],
+    ['COST',r&&!r.error?state.calc.cur+' '+fmt(r.costLocal,0):'—'],
+  ];
+  $('sideTech').innerHTML=rows.map(([k,v])=>`<div class="tech-row"><span class="k">${k}</span><span class="v">${v}</span></div>`).join('');
+}
+function renderMiniPlate(){
+  const svg=$('miniPlate'); const g=computeGeom();
+  if(!g){ svg.innerHTML=`<rect x="10" y="10" width="180" height="140" fill="#1c2531" rx="4"/><text x="100" y="85" text-anchor="middle" fill="#475766" font-size="10">sin imposición</text>`; return; }
+  const {m,offX,offY,r}=g; const pw=180,ph=140,ox=10,oy=10;
+  const sc=Math.min(pw/m.w,ph/m.h);
+  const W=m.w*sc,H=m.h*sc;
+  let s=`<rect x="${ox}" y="${oy}" width="${W}" height="${H}" fill="#1c2531" rx="3"/>`;
+  s+=`<rect x="${ox}" y="${oy}" width="${W}" height="${m.gripper*sc}" fill="#e11d48" opacity=".75"/>`;
+  const gap=state.prod.gap/10;
+  for(let row=0;row<r.rows;row++)for(let col=0;col<r.cols;col++){
+    const x=ox+(offX+col*(r.pieceW+gap))*sc, y=oy+(offY+row*(r.pieceH+gap))*sc;
+    s+=`<rect x="${x}" y="${y}" width="${r.pieceW*sc}" height="${r.pieceH*sc}" fill="#fdfbf6" stroke="#0ea5e9" stroke-width="0.6" rx="0.5"/>`;
+  }
+  svg.setAttribute('viewBox',`0 0 200 160`); svg.innerHTML=s;
+}
+function renderSideStatus(){
+  const el=$('sideStatus'); const ready=isCtpReady();
+  const valid=state.result&&!state.result.error;
+  if(ready){ el.className='side-status ready'; el.querySelector('.big').textContent='CTP READY';
+    el.querySelector('.sub').innerHTML='La plancha cumple zona de pinza y márgenes seguros.<br><span style="color:#6b7887;font-style:italic">Plate respects gripper and safe margins.</span>'; }
+  else if(valid){ el.className='side-status warn'; el.querySelector('.big').textContent='EN PROCESO';
+    el.querySelector('.sub').textContent='Imposición válida. Revisa el preflight para llegar a CTP.'; }
+  else { el.className='side-status'; el.querySelector('.big').textContent=state.machine?'SIN MONTAJE':'NO INICIADO';
+    el.querySelector('.sub').textContent=state.machine?'La pieza no cabe: ajusta medidas o máquina.':'Completa la orden y elige una máquina.'; }
+}
+
+/* ---------- Dock ---------- */
+function renderDock(){
+  $('btnPrev').disabled=state.step<=1;
+  const last=state.step>=5;
+  $('btnNext').textContent=last?'Finalizar ✓':'Siguiente →';
+  const g=gateFor(state.step);
+  $('dockProg').innerHTML=`Etapa <b>${String(state.step).padStart(2,'0')}</b> de 05 · ${STEPS[state.step-1].lab} ${g.ok?'<span class="badge ok" style="margin-left:6px">condiciones OK</span>':'<span class="badge warn" style="margin-left:6px">faltan datos</span>'}`;
+}
+
+/* ============================================================
+   MODAL EDUCATIVO
+   ============================================================ */
+function openModal(ic,kick,title,html){
+  $('mIc').textContent=ic; $('mKick').textContent=kick; $('mTitle').textContent=title; $('mBody').innerHTML=html;
+  $('modalBg').classList.add('on');
+}
+function openConcept(key){
+  const c=CONCEPTS[key]; if(!c)return;
+  openModal(c.ic,'Concepto técnico',c.t,`
+    <div class="concept-block"><div class="cb-lab">Definición</div><div class="cb-txt">${c.def}</div></div>
+    <div class="concept-block"><div class="cb-lab">Función</div><div class="cb-txt">${c.fun}</div></div>
+    <div class="concept-block consequence"><div class="cb-lab">Consecuencia en producción</div><div class="cb-txt">${c.con}</div></div>`);
+}
+function openFieldHelp(id){
+  const f=FIELD_HELP[id]; if(!f)return;
+  openModal('✏️','Qué información ingresar',f.t,
+    `<div class="concept-block"><div class="cb-lab">En este campo</div><div class="cb-txt">${f.d}</div></div>`);
+}
+// Inyecta un botón ⓘ en cada campo que no tenga ya uno
+function injectFieldHelp(){
+  document.querySelectorAll('.field').forEach(fld=>{
+    const inp=fld.querySelector('input,select,textarea'); if(!inp)return;
+    const lab=fld.querySelector('label'); if(!lab)return;
+    if(lab.querySelector('.info-i'))return;              // ya tiene concepto
+    if(!FIELD_HELP[inp.id])return;
+    const b=document.createElement('button');
+    b.className='info-i'; b.type='button'; b.dataset.fhelp=inp.id; b.textContent='i';
+    lab.appendChild(b);
+  });
+}
+
+/* ============================================================
+   EXPORTACIONES
+   ============================================================ */
+function reportHTML(){
+  const r=state.result,o=state.order,m=state.machine,cc=state.calc,valid=r&&!r.error;
+  return `<div style="font-family:Inter,sans-serif;max-width:720px;margin:0 auto;padding:30px;color:#0f1720">
+    <h1 style="margin:0 0 4px">Reporte de Producción</h1>
+    <div style="color:#475766;font-size:13px;margin-bottom:18px">${o.job||''} · ${new Date().toLocaleString('es-PE')}</div>
+    <table style="width:100%;border-collapse:collapse;font-size:13px">
+    ${[
+      ['N.º de orden',o.job],['Producto',o.desc],['Pieza',o.piece],
+      ['Dimensiones',`${state.prod.w}×${state.prod.h} cm + ${state.prod.bleed} mm sangrado`],
+      ['Tiraje',fmt(o.qty)+' unidades'],['Máquina',m?m.name:'—'],
+      ['Plancha',m?`${m.w}×${m.h} cm · pinza ${m.gripper} cm`:'—'],
+      ['Gramaje',cc.weight+' g/m²'],['Tipo impresión',cc.print==='tiroretiro'?'Tiro y retiro':'Solo tiro'],
+      ['Distribución',valid?`${r.cols}×${r.rows}`:'—'],['Poses',valid?r.poses:'—'],
+      ['Aprovechamiento',valid?r.usePct.toFixed(2)+'%':'—'],['Desperdicio',valid?r.despPct.toFixed(2)+'%':'—'],
+      ['Pliegos netos',valid?fmt(r.netSheets):'—'],['Merma',valid?fmt(r.wasteSheets)+` (${cc.wastepct}%)`:'—'],
+      ['Hojas de arranque',fmt(cc.setup)],['Pliegos a comprar',valid?fmt(r.totalSheets):'—'],
+      ['Peso total',valid?fmt(r.totalKg,2)+' kg':'—'],
+      ['Costo papel (USD)',valid?fmt(r.cost,2):'—'],['Costo local',valid?cc.cur+' '+fmt(r.costLocal,2):'—'],
+      ['Encuadernación',o.binding],['Ruta',o.route],['Calidad',o.quality],['Responsable',o.owner],['Aprobación',o.approval],
+      ['Estado',isCtpReady()?'CTP READY':'EN PROCESO'],
+    ].map(([k,v])=>`<tr><td style="padding:7px 10px;border-bottom:1px solid #eef2f6;color:#475766;font-weight:600">${k}</td><td style="padding:7px 10px;border-bottom:1px solid #eef2f6;text-align:right;font-weight:600">${v||'—'}</td></tr>`).join('')}
+    </table>
+    <div style="margin-top:14px;font-size:11px;color:#8a98a6">Fórmulas: peso = ancho·alto·gramaje/10⁷ · poses = columnas×filas · utilización = poses·área_producto/área_pliego. Simulador educativo IDC — no sustituye RIP/CTP de producción.</div>
+    <div style="margin-top:8px;font-size:11px;color:#475766;text-align:center;border-top:1px solid #eef2f6;padding-top:10px">Diseñado por <b>Mg Mario Quiroz Martínez</b> · d3magindesign 2026</div>
+  </div>`;
+}
+function printReport(){
+  setPrintPage('size:A4; margin:14mm;');
+  $('printArea').innerHTML=reportHTML();
+  window.print();
+}
+function setPrintPage(spec){
+  let st=$('printPageStyle');
+  if(!st){ st=document.createElement('style'); st.id='printPageStyle'; document.head.appendChild(st); }
+  st.textContent=`@media print{ @page{ ${spec} } }`;
+}
+function printImposition(){
+  const g=computeGeom();
+  if(!g||!(state.result&&!state.result.error)){ toast('Genera una imposición válida primero (Etapa 04)','warn'); return; }
+  // pxcm = 10  →  1 cm = 10 unidades de viewBox = 10 mm  →  tamaño REAL de plancha, sin escala
+  const {s,VW,VH}=buildPlateMarkup(g,10);
+  $('printArea').innerHTML=`<div class="print-plate">
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 ${VW} ${VH}" width="${VW}mm" height="${VH}mm">${s}</svg>
+  </div>`;
+  // Página exactamente del tamaño del pliego (con el pequeño margen de marcas), sin ajustar
+  setPrintPage(`size:${VW}mm ${VH}mm; margin:0;`);
+  toast('PDF a tamaño real de plancha ('+state.machine.w+'×'+state.machine.h+' cm) — usa "Guardar como PDF"','ok');
+  window.print();
+}
+function exportSvgJpg(){
+  const svg=$('plateSvg');
+  if(!svg||!svg.innerHTML){ toast('Ve a la Etapa 04 y genera la imposición primero','warn'); return; }
+  const xml=new XMLSerializer().serializeToString(svg);
+  const vb=svg.getAttribute('viewBox').split(' ').map(Number);
+  const w=vb[2],h=vb[3];
+  const scale=Math.min(3, 2480/Math.max(w,h)); // hacia ~300dpi
+  const img=new Image();
+  const svg64=btoa(unescape(encodeURIComponent(`<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 ${w} ${h}" width="${w}" height="${h}">${xml.replace(/<svg[^>]*>/,'').replace('</svg>','')}</svg>`)));
+  img.onload=()=>{
+    const cv=document.createElement('canvas'); cv.width=w*scale; cv.height=h*scale;
+    const ctx=cv.getContext('2d'); ctx.fillStyle='#5a6674'; ctx.fillRect(0,0,cv.width,cv.height);
+    ctx.drawImage(img,0,0,cv.width,cv.height);
+    const a=document.createElement('a'); a.download=(state.order.job||'imposicion')+'_300dpi.jpg';
+    a.href=cv.toDataURL('image/jpeg',0.92); a.click();
+    toast('JPG exportado ('+cv.width+'×'+cv.height+' px)','ok');
+  };
+  img.onerror=()=>toast('No se pudo rasterizar el SVG','err');
+  img.src='data:image/svg+xml;base64,'+svg64;
+}
+
+/* ============================================================
+   PERSISTENCIA
+   ============================================================ */
+function saveState(){
+  try{ localStorage.setItem('idc-sim',JSON.stringify({
+    order:state.order,machineId:state.machine?state.machine.id:null,prod:state.prod,
+    calc:state.calc,orient:state.orient,marks:state.marks,step:state.step,unit:state.unit,
+    alignPinza:state.alignPinza,nudge:state.nudge,
+    colorBarPreset:state.colorBarPreset,gutters:state.gutters,cbarNudge:state.cbarNudge,
+    signature:state.signature
+  })); }catch(e){}
+}
+function loadState(){
+  try{
+    const s=JSON.parse(localStorage.getItem('idc-sim')||'null'); if(!s)return false;
+    Object.assign(state.order,s.order||{}); Object.assign(state.prod,s.prod||{});
+    Object.assign(state.calc,s.calc||{}); Object.assign(state.marks,s.marks||{});
+    state.orient=s.orient||'auto'; state.unit=s.unit||'cm';
+    if(typeof s.alignPinza==='boolean')state.alignPinza=s.alignPinza;
+    if(s.nudge&&typeof s.nudge.x==='number')state.nudge=s.nudge;
+    if(s.colorBarPreset)state.colorBarPreset=s.colorBarPreset;
+    if(s.cbarNudge&&typeof s.cbarNudge.x==='number')state.cbarNudge=s.cbarNudge;
+    if(s.signature&&SIGNATURES[s.signature])state.signature=s.signature;
+    if(s.gutters)Object.assign(state.gutters,s.gutters);
+    if(s.machineId) state.machine=MACHINES.find(m=>m.id===s.machineId)||null;
+    // repoblar inputs
+    const o=state.order;
+    const set=(id,v)=>{ if($(id)&&v!==undefined&&v!==null&&v!=='') $(id).value=v; };
+    set('f_job',o.job);set('f_piece',o.piece);set('f_desc',o.desc);set('f_ref',o.ref);set('f_date',o.date);
+    set('f_raw',o.raw);set('f_route',o.route);set('f_quality',o.quality);set('f_time',o.time);
+    set('f_labor',o.labor);set('f_materials',o.materials);set('f_done',o.done);set('f_inspect',o.inspect);
+    set('f_owner',o.owner);set('f_notes',o.notes);
+    if(o.approval)$('f_approval').value=o.approval;
+    if(o.binding&&$('f_binding'))$('f_binding').value=o.binding;
+    buildGutters();
+    set('f_prodW',state.prod.w);set('f_prodH',state.prod.h);set('f_bleed',state.prod.bleed);set('f_qty',o.qty);
+    set('c_qty',state.calc.qty);set('c_pages',state.calc.pages);$('c_print').value=state.calc.print;
+    set('c_weight',state.calc.weight);set('c_price',state.calc.price);set('c_fx',state.calc.fx);
+    $('c_cur').value=state.calc.cur;set('c_wastepct',state.calc.wastepct);set('c_setup',state.calc.setup);
+    set('c_prodW',state.prod.w);set('c_prodH',state.prod.h);set('c_gap',state.prod.gap);
+    // orient seg
+    $('orientSeg').querySelectorAll('button').forEach(b=>b.classList.toggle('on',b.dataset.o===state.orient));
+    // unit seg
+    $('unitSeg').querySelectorAll('button').forEach(b=>b.classList.toggle('on',b.dataset.u===state.unit));
+    return true;
+  }catch(e){ return false; }
+}
+function resetAll(){
+  if(!confirm('¿Reiniciar todo el simulador? Se perderán los datos actuales.'))return;
+  localStorage.removeItem('idc-sim'); location.reload();
+}
+
+/* ============================================================
+   EVENTOS
+   ============================================================ */
+function bindEvents(){
+  // inputs orden + papel → recalc
+  ['f_job','f_piece','f_desc','f_ref','f_date','f_raw','f_route','f_quality','f_time','f_labor',
+   'f_materials','f_done','f_inspect','f_owner','f_approval','f_notes','f_binding','f_prodW','f_prodH','f_bleed','f_qty',
+   'c_qty','c_pages','c_print','c_weight','c_price','c_fx','c_cur','c_wastepct','c_setup','c_prodW','c_prodH','c_gap']
+   .forEach(id=>{ const el=$(id); if(el){ el.addEventListener('input',recalc); el.addEventListener('change',recalc);} });
+
+  // sincronizar producto entre etapa 1 y 3
+  ['f_prodW','c_prodW'].forEach(id=>$(id).addEventListener('input',e=>{ const v=e.target.value; $('f_prodW').value=v; $('c_prodW').value=v; }));
+  ['f_prodH','c_prodH'].forEach(id=>$(id).addEventListener('input',e=>{ const v=e.target.value; $('f_prodH').value=v; $('c_prodH').value=v; }));
+  ['f_qty','c_qty'].forEach(id=>$(id).addEventListener('input',e=>{ const v=e.target.value; $('f_qty').value=v; $('c_qty').value=v; }));
+
+  // orientación
+  $('orientSeg').querySelectorAll('button').forEach(b=>b.addEventListener('click',()=>{
+    $('orientSeg').querySelectorAll('button').forEach(x=>x.classList.remove('on')); b.classList.add('on');
+    state.orient=b.dataset.o; recalc();
+  }));
+
+  // unidades
+  $('unitSeg').querySelectorAll('button').forEach(b=>b.addEventListener('click',()=>{
+    $('unitSeg').querySelectorAll('button').forEach(x=>x.classList.remove('on')); b.classList.add('on');
+    state.unit=b.dataset.u; renderAll();
+  }));
+
+  // navegación
+  $('btnPrev').addEventListener('click',()=>goStep(Math.max(1,state.step-1)));
+  $('btnNext').addEventListener('click',()=>{ if(state.step>=5){ toast('Trabajo completo — revisa el resumen','ok'); return;} goStep(Math.min(5,state.step+1)); });
+  $('btnReset').addEventListener('click',resetAll);
+  $('btnDemo').addEventListener('click',loadDemo);
+
+  // vista imposición
+  $('viewSeg').querySelectorAll('button').forEach(b=>b.addEventListener('click',()=>{
+    $('viewSeg').querySelectorAll('button').forEach(x=>x.classList.remove('on')); b.classList.add('on');
+    state.view=b.dataset.v; drawPlate();
+  }));
+  $('faceSeg').querySelectorAll('button').forEach(b=>b.addEventListener('click',()=>{
+    $('faceSeg').querySelectorAll('button').forEach(x=>x.classList.remove('on')); b.classList.add('on');
+    state.face=b.dataset.f; drawPlate();
+  }));
+  // zoom
+  $('zIn').addEventListener('click',()=>{ let z=state.zoom==='fit'?1:parseFloat(state.zoom); z=Math.min(1.5,z+0.25); state.zoom=String(z); $('zSel').value=state.zoom; drawPlate(); });
+  $('zOut').addEventListener('click',()=>{ let z=state.zoom==='fit'?1:parseFloat(state.zoom); z=Math.max(0.25,z-0.25); state.zoom=String(z); $('zSel').value=state.zoom; drawPlate(); });
+  $('zSel').addEventListener('change',e=>{ state.zoom=e.target.value; drawPlate(); });
+
+  // rotación 90°
+  $('btnRotate90').addEventListener('click',toggleRotate90);
+  // alineación
+  $('alignSeg').querySelectorAll('button').forEach(b=>b.addEventListener('click',()=>{
+    state.alignPinza=(b.dataset.a==='pinza'); renderMontageControls(); drawPlate(); saveState();
+  }));
+  // desplazamiento
+  document.querySelectorAll('.nudge-pad .nb').forEach(b=>b.addEventListener('click',()=>{
+    const n=b.dataset.n, s=0.5;
+    if(n==='up')state.nudge.y-=s; else if(n==='down')state.nudge.y+=s;
+    else if(n==='left')state.nudge.x-=s; else if(n==='right')state.nudge.x+=s;
+    else if(n==='reset'){state.nudge.x=0;state.nudge.y=0;}
+    renderMontageControls(); drawPlate(); saveState();
+  }));
+  // tira de color: cargar archivo
+  $('cbarFile').addEventListener('change',e=>{
+    const f=e.target.files&&e.target.files[0]; if(!f)return;
+    const rd=new FileReader();
+    rd.onload=()=>{
+      const url=rd.result;
+      const img=new Image();
+      img.onload=()=>{ state.customColorBar={url,w:img.naturalWidth||300,h:img.naturalHeight||40};
+        renderMontageControls(); drawPlate(); toast('Tira de control cargada','ok'); };
+      img.onerror=()=>{ state.customColorBar={url,w:300,h:40}; renderMontageControls(); drawPlate(); toast('Tira cargada (SVG)','ok'); };
+      img.src=url;
+    };
+    rd.readAsDataURL(f);
+    e.target.value='';
+  });
+  $('cbarDefault').addEventListener('click',()=>{ state.customColorBar=null; renderMontageControls(); drawPlate(); toast('Tira '+state.colorBarPreset.toUpperCase()+' (preset)','ok'); });
+  // preset de tira SmartMarks
+  $('cbarPreset').querySelectorAll('button').forEach(b=>b.addEventListener('click',()=>{
+    state.colorBarPreset=b.dataset.p; state.customColorBar=null; state.marks.color=true;
+    $('marksList').querySelector('[data-k="color"]')?.classList.add('on');
+    renderMontageControls(); drawPlate(); saveState();
+  }));
+  // desplazamiento de la tira de control
+  document.querySelectorAll('#cbarNudgePad .nb').forEach(b=>b.addEventListener('click',()=>{
+    const n=b.dataset.n, st=0.5;
+    if(n==='up')state.cbarNudge.y-=st; else if(n==='down')state.cbarNudge.y+=st;
+    else if(n==='left')state.cbarNudge.x-=st; else if(n==='right')state.cbarNudge.x+=st;
+    else if(n==='reset'){state.cbarNudge.x=0;state.cbarNudge.y=0;}
+    state.marks.color=true; $('marksList').querySelector('[data-k="color"]')?.classList.add('on');
+    renderMontageControls(); drawPlate(); saveState();
+  }));
+  // gutters .smk
+  $('smkFile').addEventListener('change',e=>{
+    const f=e.target.files&&e.target.files[0]; if(!f)return;
+    GUTTER_KEYS.forEach(k=>state.gutters[k]=true); state.marks.smart=true;
+    buildGutters(); $('marksList').querySelector('[data-k="smart"]')?.classList.add('on');
+    drawPlate(); saveState(); toast('Gutters .smk cargado ('+f.name+')','ok'); e.target.value='';
+  });
+
+  // Arte final (PDF/imagen)
+  const adz=$('artDrop'), afi=$('artFile');
+  adz.addEventListener('click',()=>afi.click());
+  adz.addEventListener('dragover',e=>{e.preventDefault();adz.classList.add('drag');});
+  adz.addEventListener('dragleave',()=>adz.classList.remove('drag'));
+  adz.addEventListener('drop',e=>{e.preventDefault();adz.classList.remove('drag'); if(e.dataTransfer.files[0])loadArt(e.dataTransfer.files[0]);});
+  afi.addEventListener('change',()=>{ if(afi.files[0])loadArt(afi.files[0]); afi.value=''; });
+  $('artClear').addEventListener('click',clearArt);
+  $('artExpImpo').addEventListener('click',printImposition);
+  $('artExpReport').addEventListener('click',printReport);
+
+  // modal
+  $('mClose').addEventListener('click',()=>$('modalBg').classList.remove('on'));
+  $('modalBg').addEventListener('click',e=>{ if(e.target===$('modalBg'))$('modalBg').classList.remove('on'); });
+  document.addEventListener('click',e=>{ const i=e.target.closest('.info-i'); if(i){ if(i.dataset.fhelp)openFieldHelp(i.dataset.fhelp); else openConcept(i.dataset.concept); } });
+  document.addEventListener('keydown',e=>{ if(e.key==='Escape')$('modalBg').classList.remove('on'); });
+
+  // exportaciones
+  $('expReport').addEventListener('click',printReport);
+  $('expImpo').addEventListener('click',()=>{ goStep(4); setTimeout(printImposition,300); });
+  $('expSpreads').addEventListener('click',()=>toast('Printer spreads: reorganización didáctica (ver documentación v2)','ok'));
+  $('expJpg').addEventListener('click',exportSvgJpg);
+  $('expCtp').addEventListener('click',()=>{ goStep(4); $('viewSeg').querySelectorAll('button').forEach(x=>x.classList.toggle('on',x.dataset.v==='separaciones')); state.view='separaciones'; drawPlate(); toast('Vista de plancha CTP (separaciones)','ok'); });
+
+  // resize redibuja plancha si en fit
+  window.addEventListener('resize',()=>{ if(state.step===4&&state.zoom==='fit')drawPlate(); });
+}
+
+/* ============================================================
+   INIT
+   ============================================================ */
+document.addEventListener('DOMContentLoaded',()=>{
+  $('f_date').value=new Date().toISOString().slice(0,10);
+  buildFlow(); buildMachines(); buildMarks(); buildGutters(); injectFieldHelp();
+  const restored=loadState();
+  bindEvents();
+  recalc();
+  if(restored) toast('Sesión anterior restaurada','ok');
+});
+</script>
+</body>
+</html>

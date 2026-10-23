@@ -2,6 +2,43 @@ Imposición Digital — Sistema Offset 4.0
 Aplicativo educativo de imposición digital para producción offset industrial, con el módulo PDF Place & Export (printer spreads, nested, stack) y cálculo de papel, previsualización CTP y exportación.
 index.html
 
+---
+
+## Simulador educativo por etapas — `simulador.html`
+
+`simulador.html` es un **simulador interactivo de producción industrial offset** diseñado
+pedagógicamente. Guía al estudiante por un flujo secuencial de 5 etapas —
+**01 Orden → 02 Máquina → 03 Papel/Imposición → 04 Imposición Digital/CTP → 05 Preflight & CTP** —
+donde cada decisión se propaga automáticamente a la siguiente y se explica la relación
+`DECISIÓN → CÁLCULO → REPRESENTACIÓN VISUAL → CONSECUENCIA INDUSTRIAL`.
+
+Incluye:
+
+- **Gating secuencial**: cada etapa se desbloquea solo cuando la anterior cumple sus condiciones mínimas.
+- **Biblioteca de 8 máquinas** (GTO 52, Solna 125, Heidelberg Kord/Sorm/Speed Master 102, Roland Favorit, Miller TP41S, Lithrone L-528) con **medidas exactas** del taller: medidas de placa, área máxima de impresión, formato máximo y mínimo de papel, y **pinza normal = blanco de mordaza + pinza de papel** (bandas separadas en el diagrama). Primero se elige la máquina y sus dimensiones pasan a la imposición.
+- **Ayuda contextual en cada campo**: todos los cuadros de texto tienen un botón ⓘ que abre un diálogo explicando qué información se ingresa.
+- **Controles de montaje (Etapa 04)**: rotación 90°, alineación centrado/pegar a pinza, desplazamiento manual (nudge), y tira de control de color por **archivo propio (SVG/imagen)** o CMYK por defecto.
+- **Carga de arte final (Etapa 04)**: dropzone para el **PDF** (o imagen) del producto; las páginas se montan automáticamente en cada pose de la plancha y se pueden exportar como **PDF Imposicionado** o **Reporte de producción**.
+- Banda no imprimible correcta: **blanco de mordaza** (parte de la plancha) al extremo y **pinza de papel** (área del pliego) debajo.
+- **PDF Imposicionado a tamaño real** de la plancha (sin escala ni ajustes): la página se fija al formato del pliego en mm.
+- **Tira de control · Color Bar SmartMarks**: presets CMYK / 4-Color / 6-Color / 5-Spot o carga propia (PDF/PNG).
+- **Gutters · SmartMarks (.smk)**: posiciones ancla (Top/Bottom/Left/Right/Center/Mid) y carga de archivo `.smk`.
+- **Alertas de desperdicio**: el panel técnico avisa cuando el aprovechamiento cae por debajo del 85%.
+- **Botón DEMO** que monta una **tarjeta personal 9×5 cm** con arte de ejemplo.
+- **Encuadernación / acabado**: engrampado metálico, fresado, cosido, termocosido, tapa dura y espiral (se refleja en dashboard, reporte y flujo industrial).
+
+Diseñado por **Mg Mario Quiroz Martínez** · d3magindesign 2026.
+- **Cálculo automático** de poses, aprovechamiento, desperdicio, pliegos, peso y costo, con las mismas fórmulas del Excel *Cálculo de Papel* (`peso = w·h·gramaje/10⁷`, `poses = columnas×filas`, `utilización = poses·área_producto/área_pliego`).
+- **Optimizador de imposición** que compara alternativas de montaje y marca la **★ imposición recomendada**.
+- **Mesa de imposición SVG** con plancha, pinza, mordaza, márgenes, área imprimible, poses, sangrado, marcas de producción (corte, registro, tira CMYK, plegado, Plate ID, código de barras, SmartMarks), zoom y vistas técnica/imposición/marcas/separaciones.
+- **Preflight** con estados 🟢🟡🔴 y diagnóstico `QUÉ OCURRE → POR QUÉ → CÓMO SOLUCIONARLO`.
+- **Modales educativos** (ⓘ) `CONCEPTO → DEFINICIÓN → FUNCIÓN → CONSECUENCIA`, cambio de unidades mm/cm/in, flujo industrial clicable y **dashboard final** de producción.
+
+Un solo archivo HTML/CSS/JS vanilla, sin backend; guarda la sesión en `localStorage`.
+El `index.html` original (v2.0, con carga de PDF real y PDF Place & Export) se mantiene sin cambios.
+
+---
+
 Archivo principal: index.html (HTML/CSS/JS vanilla, sin servidor).
 index.html
 
